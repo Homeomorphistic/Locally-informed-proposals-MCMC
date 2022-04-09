@@ -1,0 +1,86 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage[polish]{babel}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{amsmath,amsthm}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{subcaption}
+\usepackage{float}
+
+\usepackage{listings}
+\lstset{breaklines=true, numbers=left, stepnumber=2, language=Python}
+
+\numberwithin{equation}{subsection}
+\counterwithin{table}{subsection}
+\counterwithin{figure}{subsection}
+
+\begin{document}
+	\thispagestyle{empty}
+	\begin{center}
+		\textbf{\large Uniwersytet Wroc\l{}awski\\
+			Wydzia\l{} Matematyki i Informatyki\\
+			Instytut Matematyczny}\\
+		\textit{\large specjalno\'{s}\'{c}: Analiza danych}\\
+		\vspace{4cm}
+		\textbf{\textit{\large Bartosz Chmiela}\\
+			\vspace{0.5cm}
+			{\Large Locally-informed proposals in Metropolis-Hastings algorithm with applications}}\\
+	\end{center}
+	\vspace{3cm}
+	{\large \hspace*{6.5cm}Praca magisterska\\
+		\hspace*{6.5cm}napisana pod kierunkiem\\
+		\hspace*{6.5cm}dr hab. Paw\l{}a Lorka }\\
+	\vfill
+	\begin{center}
+		{\large Wroc\l{}aw 2022}\\
+	\end{center}
+	
+	\newpage
+	\begin{abstract}
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean placerat consequat ex, at rutrum sem tincidunt sit amet. Nullam leo felis, venenatis ac dui eu, tristique placerat lectus. Suspendisse tristique eu tortor ac eleifend. Proin nec velit rutrum, lobortis mi at, lobortis felis. Aenean viverra non velit vitae posuere. Aliquam ac ornare ligula. Nam scelerisque sit amet velit vitae molestie. Curabitur purus ligula, blandit ut sapien eu, placerat interdum metus. Morbi eu ultricies urna. Quisque nec nulla lorem. Sed maximus nunc nisl, sit amet porta velit ornare eget. Aliquam arcu metus, convallis quis felis et, aliquet pretium sapien. Mauris elementum turpis libero, sed aliquam nisi eleifend in. Suspendisse tempus, erat pharetra pretium pellentesque, mi ligula porttitor erat, et vestibulum ipsum augue et risus. Vivamus dictum rhoncus turpis eu pretium. Integer metus nisl, iaculis sit amet augue ut, egestas lobortis lacus.
+		
+		\rule{0.8\textwidth}{0.4pt}
+		
+		
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean placerat consequat ex, at rutrum sem tincidunt sit amet. Nullam leo felis, venenatis ac dui eu, tristique placerat lectus. Suspendisse tristique eu tortor ac eleifend. Proin nec velit rutrum, lobortis mi at, lobortis felis. Aenean viverra non velit vitae posuere. Aliquam ac ornare ligula. Nam scelerisque sit amet velit vitae molestie. Curabitur purus ligula, blandit ut sapien eu, placerat interdum metus. Morbi eu ultricies urna. Quisque nec nulla lorem. Sed maximus nunc nisl, sit amet porta velit ornare eget. Aliquam arcu metus, convallis quis felis et, aliquet pretium sapien. Mauris elementum turpis libero, sed aliquam nisi eleifend in. Suspendisse tempus, erat pharetra pretium pellentesque, mi ligula porttitor erat, et vestibulum ipsum augue et risus. Vivamus dictum rhoncus turpis eu pretium. Integer metus nisl, iaculis sit amet augue ut, egestas lobortis lacus.
+	\end{abstract}
+	\clearpage
+	
+	\tableofcontents
+	\listoftables
+	\listoffigures
+	\clearpage
+	
+	\section{Introduction}
+	
+	\section{Markov Chains}
+	
+	\section{Markov Chain Monte Carlo methods}
+	
+	\section{Traveling salesman problem}
+	
+	\section{Decoding encrypted text}
+	
+	\section{Code description?}
+	
+	\section{Conclusions}
+	
+	\clearpage
+	\addcontentsline{toc}{section}{References}
+	\nocite{*}
+	\bibliographystyle{abbrv}
+	\bibliography{references}
+	
+	
+	
+	\appendix
+	\clearpage
+	\section{Source code} \label{apsec:code}
+		%\lstinputlisting[firstline=13, lastline=192]{genomeTesting.R}
+	\clearpage
+	
+	
+\end{document}
