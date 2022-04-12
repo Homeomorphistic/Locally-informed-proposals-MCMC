@@ -1,11 +1,17 @@
-"""Base classes"""
-from abc import ABC
-from abc import abstractmethod
+import numpy as np
 
-class StochasticProcess(ABC):
-    def __init__(self, current, next_fun, past=[None]):
-        self._past = past
-        self._past_len = len(past)
+
+class StochasticProcess:
+    def __init__(self, current, next_fun, past_min_len=0, past=[None]):
+        self._past_min_len = past_min_len
+        if type(past) is not list:
+            past = [past]
+
+        if len(past) >= self._past_min_len:
+            self._past = past
+        else:
+            raise ValueError(f"Past cannot be less than {past_min_len}")
+
         self._current = current
         self._next_fun = next_fun
 
@@ -15,10 +21,13 @@ class StochasticProcess(ABC):
 
     @past.setter
     def past(self, past):
-        if len(past) < self._past_len:
+        if type(past) is not list:
+            past = [past]
+
+        if len(past) >= self._past_min_len:
             self._past = past
         else:
-            raise ValueError("Past cannot be less than ")
+            raise ValueError(f"Past cannot be less than {self._past_min_len}")
 
     @property
     def current(self):
@@ -28,9 +37,16 @@ class StochasticProcess(ABC):
     def next_fun(self):
         return self._next_fun
 
-    @abstractmethod
-    def sample(self, n):
-        pass
+    def __iter__(self):
+        return self
 
-class DiscreteStochasticSeqence(StochasticProcess, ABC):
-    pass
+    def __next__(self):
+        self._current = self._next_fun(self._current, self._past)
+        return self._current
+
+    def sample(self, n):
+        X = np.zeros(n)
+        X[0] = self._current
+        for i in range(1, n):
+            X[i] = self.__next__()
+        return X
