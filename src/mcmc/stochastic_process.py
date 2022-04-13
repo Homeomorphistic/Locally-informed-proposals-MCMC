@@ -2,9 +2,9 @@ import numpy as np
 
 
 class StochasticProcess:
-    def __init__(self, current, next_fun, past_min_len=0, past=[None]):
+    def __init__(self, current, next_state, past_min_len=0, past=[None]):
         self._past_min_len = past_min_len
-        if type(past) is not list:
+        if isinstance(past, list):
             past = [past]
 
         if len(past) >= self._past_min_len:
@@ -13,7 +13,7 @@ class StochasticProcess:
             raise ValueError(f"Past cannot be less than {past_min_len}")
 
         self._current = current
-        self._next_fun = next_fun
+        self._next_state = next_state
 
     @property
     def past(self):
@@ -34,14 +34,14 @@ class StochasticProcess:
         return self._current
 
     @property
-    def next_fun(self):
-        return self._next_fun
+    def next_state(self):
+        return self._next_state
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        self._current = self._next_fun(self._current, self._past)
+        self._current = self._next_state(self._current, self._past)
         return self._current
 
     def sample(self, n):

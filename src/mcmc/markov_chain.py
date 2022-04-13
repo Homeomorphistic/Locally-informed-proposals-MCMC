@@ -3,9 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class MarkovChain(StochasticProcess):
-    def __init__(self, current, next_fun, past=[None]):
-        super().__init__(current, next_fun=lambda c, p: next_fun(c), past_min_len=0, past=past)
+    def __init__(self, current, next_state, past=[None]):
+        def mc_next_state(curr, pst=[None]):
+            return next_state(curr)
 
+        super().__init__(current, next_state=mc_next_state, past_min_len=0, past=past)
 
 class HomogeneousMarkovChain(MarkovChain):
     def __init__(self, mu, P, past=[None]):
@@ -13,10 +15,10 @@ class HomogeneousMarkovChain(MarkovChain):
         self._P = P
         self._states = np.arange(len(mu))
 
-        def next_fun(current):
-            return np.random.choice(self._states, size=1, p=P[current[0], :]) #FIND BETTER SOLUTION FOR [0]
+        def next_state(curr):
+            return np.random.choice(self._states, size=1, p=P[curr, :])
 
-        super().__init__(current=np.random.choice(self._states, size=1, p=mu), next_fun=next_fun, past=past)
+        super().__init__(current=np.random.choice(self._states, p=mu), next_state=next_state, past=past)
 
     @property
     def states(self):
@@ -31,18 +33,20 @@ class HomogeneousMarkovChain(MarkovChain):
         return self._P
 
 
-def Ehrenfest(N):
-    P = np.zeros((N+1, N+1))
+def Ehrenfest(N): # TO DO rethink  N
+    P = np.zeros((N-1, N-1))
     P[0, 1] = 1
-    P[N, N-1] = 1
-    for i in range(1, N):
+    P[-1, -2] = 1
+    for i in range(1, N-2):
         P[i, i-1] = i/N
         P[i, i+1] = (N-i)/N
     return P
 
-P = Ehrenfest(20)#np.array([[0, 1, 0], [0.5, 0, 0.5], [0, 1, 0]])
-mu = np.zeros(21)
-mu[0] = 1
-hmc = HomogeneousMarkovChain(mu, P)
-plt.hist(hmc.sample(10000))
-plt.show()
+def SymmetricWalk(N):
+    P = np.zeros((N-1, N-1))
+    P[0, 1] = 1
+    P[-1, -2] = 1
+    for i in range(1, N - 2):
+        P[i, i - 1] = 0.5
+        P[i, i + 1] = 0.5
+    return P
