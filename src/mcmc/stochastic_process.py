@@ -1,19 +1,23 @@
+# stochastic_process.py
+from collections import deque
+from utils import modify_past
 import numpy as np
 
 
 class StochasticProcess:
-    def __init__(self, current, next_state, past_min_len=0, past=[None]):
+    def __init__(self, current, next_state, past_min_len=0, past=None):
         self._past_min_len = past_min_len
-        if isinstance(past, list):
-            past = [past]
+        if not past:
+            if not isinstance(past, (list, np.ndarray)):
+                past = [past]
 
-        if len(past) >= self._past_min_len:
-            self._past = past
-        else:
-            raise ValueError(f"Past cannot be less than {past_min_len}")
+            if len(past) >= self._past_min_len:
+                self._past = deque(past)
+            else:
+                raise ValueError(f"Past cannot be less than {past_min_len}")
 
         self._current = current
-        self._next_state = next_state
+        self._next_state = modify_past(next_state, past_min_len)
 
     @property
     def past(self):
@@ -50,3 +54,8 @@ class StochasticProcess:
         for i in range(1, n):
             X[i] = self.__next__()
         return X
+
+sp = StochasticProcess(1, lambda x,y: x+1, past_min_len=0, past=[0,0,0])
+print(sp.past)
+print(next(sp))
+print(sp.past)
