@@ -1,11 +1,57 @@
-# stochastic_process.py
+"""A module used to represent stochastic process.
+
+TO DO: longer description?
+
+Attributes
+----------
+State : TypeVar
+    Type of state
+
+Classes
+-------
+StochasticProcess
+"""
+
 from collections import deque
 from utils import modify_past
+from typing import TypeVar, Generic
 import numpy as np
 
+State = TypeVar('State')
 
-class StochasticProcess:
+
+class StochasticProcess(Generic[State]):
+    """A class used to represent a stochastic process.
+
+    TO DO: longer description?
+
+    Attributes
+    ----------
+    says_str : str
+        a formatted string to print out what the animal says
+    name : str
+        the name of the animal
+    sound : str
+        the sound that the animal makes
+    num_legs : int
+        the number of legs the animal has (default 4)
+
+    Methods
+    -------
+    says(sound=None)
+        Prints the animals name and what sound it makes
+    """
+
     def __init__(self, current, next_state, past_min_len=0, past=None):
+        """
+        Parameters
+        ----------
+        name : str
+            The name of the animal
+        current: Any
+            Current state of the process
+        """
+
         self._past_min_len = past_min_len
         if not past:
             if not isinstance(past, (list, np.ndarray)):
@@ -55,7 +101,9 @@ class StochasticProcess:
             X[i] = self.__next__()
         return X
 
-sp = StochasticProcess(1, lambda x,y: x+1, past_min_len=0, past=[0,0,0])
-print(sp.past)
-print(next(sp))
-print(sp.past)
+
+if __name__ == "__main__":
+    sp = StochasticProcess(1, lambda x,y: x+1, past_min_len=0, past=[0,0,0])
+    print(sp.past)
+    print(next(sp))
+    print(sp.past)
