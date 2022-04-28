@@ -1,6 +1,6 @@
 """Utilities for MCMC methods"""
-from collections import deque
-from typing import TypeVar, Callable, Optional, Deque, Any
+
+from typing import TypeVar, Callable, Optional, Deque
 
 State = TypeVar('State')
 
@@ -31,10 +31,10 @@ def modify_past(next_state: Callable[[State, Optional[Deque[State]]], State],
         return next_state
     else:
         def modified_next_state(current: State, past: Deque[State]) -> State:
-            next = next_state(current, past)
+            next_ = next_state(current, past)
             if past_max_len <= len(past):
                 past.pop()
             past.appendleft(current)
-            return next
+            return next_
 
         return modified_next_state

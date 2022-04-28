@@ -42,11 +42,13 @@ class StochasticProcess(Generic[State]):
 
     Methods
     -------
-    says(sound=None)
-        Prints the animals name and what sound it makes
+    sample(n: int) -> Sequence[State]:
+        Get sample of length n of the stochastic process
+    move(n_steps: int) -> State
+        Move the stochastic process by n steps
     """
 
-    def __init__(self, current: State, next_state: Callable[[State, Optional[Sequence[State]]], State], num_steps,
+    def __init__(self, current: State, next_state: Callable[[State, Optional[Sequence[State]]], State],
                  past_min_len: Optional[int] = 0, past_max_len: Optional[int] = 0, past: Sequence[State] = None) -> None:
         """
         Parameters
@@ -61,7 +63,7 @@ class StochasticProcess(Generic[State]):
             needed to generate next state.
         past_max_len: int, optional
             Maximal length of the past sequence that one wants to track. If equal to 0, then no past is tracked.
-        past: Iterable[State], optional
+        past: Sequence[State], optional
             Sequence of past states
         """
 
@@ -77,7 +79,6 @@ class StochasticProcess(Generic[State]):
         else:
             raise ValueError('Past min length has to be lower than maximum.')
 
-        self._num_steps = num_steps
         self._step = 0
         self._current = current
         self._next_state = modify_past(next_state, past_min_len, past_max_len)
@@ -121,34 +122,49 @@ class StochasticProcess(Generic[State]):
 
     def __next__(self) -> State:
         """Move the process and return new current state"""
-        if self._step < self._num_steps:
-            self._current = self._next_state(self._current, self._past)
-            self._step += 1
-            return self._current
-        else:
-            raise StopIteration
+        self._current = self._next_state(self._current, self._past)
+        return self._current
 
-    def sample(self, n):
-        X = np.zeros(n)
+    def sample(self, n: int) -> Sequence[State]:
+        """Get sample of length n of the stochastic process
+
+        Parameters
+        ----------
+        n: int
+            Length of the sample
+
+        Returns
+        -------
+        X: Sequence[State]
+            Sample of the stochastic process
+        """
+
+        X = [None] * n
         X[0] = self._current
         for i in range(1, n):
             X[i] = self.__next__()
         return X
 
     def move(self, n_steps: int) -> State:
+        """Move the stochastic process by n steps
+
+        Parameters
+        ----------
+        n_steps: int
+            Number of steps to move stochastic process
+
+        Returns
+        -------
+        _current: State
+            Current state of the stochastic process
+        """
+
         for _ in range(n_steps):
             self.__next__()
         return self._current
 
-    def move_reduce(self, n_steps: int) -> State:
-        self._num_steps = n_steps
-        from functools import reduce
-        def f(x):
-            return self._next_state(x, None)
-        return reduce(f, list(self.__iter__()))
-
-
 
 if __name__ == "__main__":
-    sp = StochasticProcess(1, lambda x, y: x+1, past=[0, 0], past_max_len=3, past_min_len=2, num_steps=10)
-    #print(sp.move_reduce(10))
+    sp = StochasticProcess(np.array([0,0]), lambda x, y: x+y[0], past=np.array([[1, 1], [2, 2]]), past_max_len=3, past_min_len=1)
+    print(sp.sample(100))
+    print(sp.past)
