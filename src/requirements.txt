@@ -1,2 +1,6 @@
 numpy
+matplotlib
 tsplib95
+flake8
+mypy
+nptyping
