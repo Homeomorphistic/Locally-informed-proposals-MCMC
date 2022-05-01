@@ -1,5 +1,7 @@
 # Python
 **/.idea
+**/__pycache__
+**/*mypy*
 
 # TeX
 ## Core latex/pdflatex auxiliary files:
