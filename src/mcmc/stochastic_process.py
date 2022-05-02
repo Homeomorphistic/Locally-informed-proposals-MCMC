@@ -78,6 +78,7 @@ class StochasticProcess(Generic[State]):
             Sequence of past states
         """
         self._past_min_len = past_min_len
+        self._past = past
         if past is not None:
             if len(past) >= self._past_min_len:
                 self._past = deque(past)
