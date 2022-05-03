@@ -55,7 +55,7 @@ def modify_past(next_state: Callable[[State, Optional[Deque[State]]], State],
 
 
 def matrix_to_next_candidate(next_candidate: NDArray[Shape['*, *'], Any]
-                                                    | Callable[[State], State]
+                                             | Callable[[State], State]
                              ) -> Callable[[State], State]:
     """Convert candidate matrix to next_candidate function.
 
