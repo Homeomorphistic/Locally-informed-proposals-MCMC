@@ -54,10 +54,10 @@ def modify_past(next_state: Callable[[State, Optional[Deque[State]]], State],
         return modified_next_state
 
 
-def matrix_to_next(next_candidate: NDArray[Shape['*, *'], Any]
-                                   | Callable[[State], State]
-                   ) -> Callable[[State], State]:
-    """Convert candidate matrix to function.
+def matrix_to_next_candidate(next_candidate: NDArray[Shape['*, *'], Any]
+                                                    | Callable[[State], State]
+                             ) -> Callable[[State], State]:
+    """Convert candidate matrix to next_candidate function.
 
     Parameters
     ----------
@@ -84,9 +84,10 @@ def matrix_to_next(next_candidate: NDArray[Shape['*, *'], Any]
         return next_candidate_
 
 
-def matrix_to_trans(candidate_transition: NDArray[Shape['*, *'], Any]
-                                        | Callable[[State, State], float]
-                    ) -> Callable[[State, State], float]:
+def matrix_to_candidate_transition(
+        candidate_transition: NDArray[Shape['*, *'], Any]
+                              | Callable[[State, State], float]
+        ) -> Callable[[State, State], float]:
     """Convert candidate matrix to transition function.
 
     Parameters
@@ -114,11 +115,12 @@ def matrix_to_trans(candidate_transition: NDArray[Shape['*, *'], Any]
         return candidate_transition_
 
 
-def trans_to_next(candidate_transition: NDArray[Shape['*, *'], Any]
-                                     | Callable[[State, State], float],
-                  num_states: int
-                  ) -> Callable[[State], State]:
-    """Convert transition matrix or function to function of next_candidate.
+def candidate_transition_to_next_candidate(
+        candidate_transition: NDArray[Shape['*, *'], Any]
+                              | Callable[[State, State], float],
+        num_states: int
+        ) -> Callable[[State], State]:
+    """Convert candidate matrix to function of next_candidate.
 
     Parameters
     ----------
