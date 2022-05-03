@@ -115,7 +115,7 @@ class StochasticProcess(Generic[State]):
         return self._past_max_len
 
     @property
-    def past(self) -> Sequence[State]:
+    def past(self) -> Sequence[State] | None:
         """Get past."""
         return self._past
 
