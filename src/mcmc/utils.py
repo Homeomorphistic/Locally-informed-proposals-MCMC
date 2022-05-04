@@ -84,85 +84,8 @@ def matrix_to_next_candidate(next_candidate: NDArray[Shape['*, *'], Any]
         return next_candidate_
 
 
-def matrix_to_candidate_transition(
-        candidate_transition: NDArray[Shape['*, *'], Any]
-                              | Callable[[State, State], float]
-        ) -> Callable[[State, State], float]:
-    """Convert candidate matrix to transition function.
-
-    Parameters
-    ----------
-    candidate_transition: NDArray[Shape['*, *'], Any]
-                        | Callable[[State, State], float]
-        Function or matrix of  probabilities of between transitions:
-        (state_1: State, state_2: State) -> [0,1]
-
-    Returns
-    -------
-    candidate_transition: Callable[[State, State], float]
-        Function of 2 states that returns probabilities of transitions
-        between them:
-        (state_1: State, state_2: State) -> [0,1]
-    """
-    if not isinstance(candidate_transition, np.ndarray):
-        return candidate_transition
-    else:
-        Q = candidate_transition
-
-        def candidate_transition_(state_1: State, state_2: State) -> float:
-            return Q[state_1, state_2]
-
-        return candidate_transition_
-
-
-def candidate_transition_to_next_candidate(
-        candidate_transition: NDArray[Shape['*, *'], Any]
-                              | Callable[[State, State], float],
-        num_states: int
-        ) -> Callable[[State], State]:
-    """Convert candidate matrix to function of next_candidate.
-
-    Parameters
-    ----------
-    candidate_transition: NDArray[Shape['*, *'], Any]
-                         | Callable[[State, State], float]
-        Function of 2 states that returns probabilities of transitions
-        between them:
-        (state_1: State, state_2: State) -> [0,1]
-    num_states: int
-        Number of states.
-
-    Returns
-    -------
-    next_candidate: Callable[[State], State]
-        Function of current state that returns next candidate:
-        (current: State) -> State
-    """
-    states = np.arange(num_states)
-
-    if isinstance(candidate_transition, np.ndarray):
-
-        Q = candidate_transition
-
-        def next_candidate(current_: State) -> State:
-            return np.random.choice(states, p=Q[current_, :])
-
-        return next_candidate
-
-    else:
-        def next_candidate(current_: State) -> State:
-
-            def marginal(x: State) -> float:
-                return candidate_transition(current_, x)
-
-            probs = np.array(list(map(marginal, states)))
-            return np.random.choice(states, p=probs)
-
-        return next_candidate
-
-
 def random_stochastic_matrix(n: int) -> NDArray[Shape['*, *'], Any]:
-    """Get a random stochastic matrix of size n x n"""
+    """Get a random stochastic matrix of size n x n."""
     matrix = np.random.uniform(size=(n, n))
     matrix += matrix.T
     return matrix / matrix.sum(axis=1).reshape(n, 1)
