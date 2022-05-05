@@ -228,23 +228,11 @@ class MetropolisHastings(MonteCarloMarkovChain):
 if __name__ == "__main__":
     n = 5
     metro = MetropolisHastings(current=0,
-                       candidate=np.ones((n, n))/n,
-                       stationary=[0.1, 0.1, 0.4, 0.1, 0.3])
+                               candidate=np.ones((n, n))/n,
+                               stationary=[0.1, 0.1, 0.4, 0.1, 0.3]
+                               )
 
     x = metro.sample(1000)
-    # from utils import random_stochastic_matrix
-    # metro = MetropolisHastings(current=0,
-    #                            candidate_transition=random_stochastic_matrix(n),
-    #                            num_states=n,
-    #                            stationary=[0.35, 0.1, 0.1, 0.1, 0.35])
-    #
-    # from utils import random_stochastic_matrix
-    # metro = MetropolisHastings(current=0,
-    #                            candidate=random_stochastic_matrix(n),
-    #                            stationary=[0.35, 0.1, 0.1, 0.1, 0.35])
-    #
-    # x = metro.sample(10000)
-
     import matplotlib.pyplot as plt
     plt.hist(x, density=True, ec='black', bins=np.arange(n+1))
     plt.show()
