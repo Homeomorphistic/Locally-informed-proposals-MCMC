@@ -10,8 +10,8 @@ MetropolisHastings
 
 from typing import Sequence, Callable, Any
 from nptyping import NDArray, Shape
-from markov_chain import MarkovChain, State
-from utils import matrix_to_next_candidate
+from src.mcmc.markov_chain import MarkovChain, State
+from src.mcmc.utils import matrix_to_next_candidate
 import numpy as np
 
 
@@ -19,7 +19,7 @@ import numpy as np
 # TODO states not as integers, especially when stationary[state_i]
 
 
-class MonteCarloMarkovChain(MarkovChain):
+class MonteCarloMarkovChain(MarkovChain[State]):
     """A class used to represent a markov chain generated using M-H algorithm.
 
     TO DO: longer description?
