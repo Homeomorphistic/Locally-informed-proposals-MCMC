@@ -54,10 +54,10 @@ def modify_past(next_state: Callable[[State, Optional[Deque[State]]], State],
         return modified_next_state
 
 
-def candidate_to_fun(next_candidate: NDArray[Shape['*, *'], Any]
-                     | Callable[[State], State]
-                     ) -> Callable[[State], State]:
-    """Convert candidate matrix to function.
+def matrix_to_next_candidate(next_candidate: NDArray[Shape['*, *'], Any]
+                                             | Callable[[State], State]
+                             ) -> Callable[[State], State]:
+    """Convert candidate matrix to next_candidate function.
 
     Parameters
     ----------
@@ -82,3 +82,32 @@ def candidate_to_fun(next_candidate: NDArray[Shape['*, *'], Any]
             return np.random.choice(states, p=Q[current_, :])
 
         return next_candidate_
+
+
+def random_stochastic_matrix(n: int) -> NDArray[Shape['*, *'], Any]:
+    """Get a random stochastic matrix of size n x n."""
+    matrix = np.random.uniform(size=(n, n))
+    matrix += matrix.T
+    return matrix / matrix.sum(axis=1).reshape(n, 1)
+
+
+def ehrenfest_transition(n: int) -> NDArray[Shape['*, *'], Any]:
+    """Get a ehrenfest model transition matrix."""
+    transition = np.zeros((n, n))
+    transition[0, 1] = 1
+    transition[-1, -2] = 1
+    for i in range(1, n-1):
+        transition[i, i-1] = i/n
+        transition[i, i+1] = (n-i)/n
+    return transition
+
+
+def symmetric_walk_transition(n: int) -> NDArray[Shape['*, *'], Any]:
+    """Get a symmetric walk transition matrix."""
+    transition = np.zeros((n, n))
+    transition[0, 1] = 1
+    transition[-1, -2] = 1
+    for i in range(1, n-1):
+        transition[i, i-1] = 0.5
+        transition[i, i+1] = 0.5
+    return transition

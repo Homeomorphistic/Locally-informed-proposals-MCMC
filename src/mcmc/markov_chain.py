@@ -139,9 +139,7 @@ class HomogeneousMarkovChain(MarkovChain):
         self._states = np.arange(len(initial))
 
         def next_state(current):
-            return np.random.choice(self._states,
-                                    size=1,
-                                    p=transition[current, :])
+            return np.random.choice(self._states, p=transition[current, :])
 
         super().__init__(current=np.random.choice(self._states, p=initial),
                          next_state=next_state,
@@ -164,23 +162,14 @@ class HomogeneousMarkovChain(MarkovChain):
         return self._transition
 
 
-def ehrenfest_transition(n: int) -> NDArray[Shape['n, n'], Any]:
-    """Get a ehrenfest model transition matrix."""
-    transition = np.zeros((n, n))
-    transition[0, 1] = 1
-    transition[-1, -2] = 1
-    for i in range(1, n-1):
-        transition[i, i-1] = i/n
-        transition[i, i+1] = (n-i)/n
-    return transition
-
-
-def symmetric_walk_transition(n: int) -> NDArray[Shape['n, n'], Any]:
-    """Get a symmetric walk transition matrix."""
-    transition = np.zeros((n, n))
-    transition[0, 1] = 1
-    transition[-1, -2] = 1
-    for i in range(1, n-1):
-        transition[i, i-1] = 0.5
-        transition[i, i+1] = 0.5
-    return transition
+if __name__ == '__main__':
+    hmc = HomogeneousMarkovChain(initial=np.ones((20,))/20,
+                                 transition=ehrenfest_transition(20),
+                                 past=[2],
+                                 past_max_len=2)
+    import matplotlib.pyplot as plt
+    from scipy.stats import binom
+    x = np.arange(21)
+    plt.hist(hmc.sample(10000), density=True, ec='black', bins=x)
+    plt.plot(x, binom.pmf(x, 20, 0.5))
+    plt.show()
