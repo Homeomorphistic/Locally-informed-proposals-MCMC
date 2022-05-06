@@ -20,7 +20,7 @@ ehrenfest_transition(n: int) -> NDArray[Shape['n, n'], Any]:
     Move the markov chain by n steps.
 """
 
-from src.mcmc.stochastic_process import StochasticProcess, State
+from stochastic_process import StochasticProcess, State
 from typing import Sequence, Callable, Any
 from nptyping import NDArray, Shape
 import numpy as np

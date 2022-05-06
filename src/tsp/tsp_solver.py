@@ -1,7 +1,7 @@
 import tsplib95
 import numpy as np
 from typing import List
-from src.mcmc.metropolis_hastings import MonteCarloMarkovChain
+from mcmc.metropolis_hastings import MonteCarloMarkovChain
 
 
 class TravelingSalesmenProblemSolver(MonteCarloMarkovChain[List]):
@@ -11,7 +11,6 @@ class TravelingSalesmenProblemSolver(MonteCarloMarkovChain[List]):
                  ) -> None:
         self._problem = tsplib95.load(path)
         self._nodes = list(self._problem.get_nodes())
-        self._path_len = len(self._nodes)
 
     def tsp_next_candidate(self, path: List) -> List:
         # indices to swap in path
