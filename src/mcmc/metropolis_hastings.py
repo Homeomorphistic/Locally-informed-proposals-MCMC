@@ -11,6 +11,7 @@ from typing import Sequence, Callable, Any
 from nptyping import NDArray, Shape
 from markov_chain import MarkovChain, State
 from utils import matrix_to_next_candidate
+from itertools import count
 import numpy as np
 
 
@@ -58,7 +59,8 @@ class MonteCarloMarkovChain(MarkovChain[State]):
                  next_candidate: Callable[[State], State],
                  log_ratio: Callable[[State, State], float],
                  past_max_len: int = 0,
-                 past: Sequence[State] = None
+                 past: Sequence[State] = None,
+                 max_iter: int = 500
                  ) -> None:
         """Initialize MonteCarloMarkovChain class.
 
@@ -80,6 +82,8 @@ class MonteCarloMarkovChain(MarkovChain[State]):
         """
         self._log_ratio = log_ratio
         self._next_candidate = next_candidate
+        self._step_num = count()
+        self._max_iter = max_iter
 
         super().__init__(current=current,
                          next_state=self.metropolis_hastings_general_step(
@@ -119,6 +123,20 @@ class MonteCarloMarkovChain(MarkovChain[State]):
                 return current
 
         return next_step
+
+    def find_optimum(self,
+                     stop_condition: Callable[[State, State], bool]
+                     ) -> State:
+        """TODO docstring"""
+        current_ = self.current
+        next_ = self.__next__()
+
+        while next(self._step_num) < self._max_iter \
+              and stop_condition(current_, next_):
+            current_ = next_
+            next_ = self.__next__()
+
+        return next_
 
 
 class MetropolisHastings(MonteCarloMarkovChain):

@@ -111,3 +111,7 @@ def symmetric_walk_transition(n: int) -> NDArray[Shape['*, *'], Any]:
         transition[i, i-1] = 0.5
         transition[i, i+1] = 0.5
     return transition
+
+
+def relative_change(x: float, y: float) -> float:
+    return abs((x-y) / x)
