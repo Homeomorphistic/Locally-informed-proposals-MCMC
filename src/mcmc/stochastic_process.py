@@ -13,7 +13,7 @@ StochasticProcess
 """
 
 from collections import deque
-from mcmc.utils import modify_past
+from utils import modify_past
 from typing import TypeVar, Generic, Sequence, Deque, Callable, Optional
 import numpy as np
 

@@ -16,9 +16,9 @@ markov_chain
 metropolis_hastings
 """
 
-from mcmc.stochastic_process import StochasticProcess
-from mcmc.markov_chain import MarkovChain, HomogeneousMarkovChain
-from mcmc.metropolis_hastings import MonteCarloMarkovChain, MetropolisHastings
+from stochastic_process import StochasticProcess
+from markov_chain import MarkovChain, HomogeneousMarkovChain
+from metropolis_hastings import MonteCarloMarkovChain, MetropolisHastings
 
 __all__ = ['stochastic_process', 'markov_chain', 'metropolis_hastings']
 
