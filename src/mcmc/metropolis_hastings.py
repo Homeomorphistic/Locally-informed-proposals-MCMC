@@ -58,7 +58,7 @@ class MonteCarloMarkovChain(MarkovChain[State]):
                  current: State,
                  weight: float,
                  next_candidate: Callable[[State], State],
-                 log_ratio: Callable[[State, State], float],
+                 log_ratio: Callable[[State, State, float], float],
                  compute_weight: Callable[[State, State], float],
                  past_max_len: int = 0,
                  past: Sequence[State] = None,
@@ -92,11 +92,6 @@ class MonteCarloMarkovChain(MarkovChain[State]):
                          past_max_len=past_max_len,
                          past=past)
 
-    def _update_weight(self, next_state: State) -> float:
-        next_weight = self._compute_weight(self._current,  next_state)
-        self._weight = next_weight
-        return self._weight
-
     def metropolis_hastings_general_step(self) -> Callable[[State], State]:
         """Produce next_state function according to M-H algorithm.
 
@@ -116,12 +111,16 @@ class MonteCarloMarkovChain(MarkovChain[State]):
         (current: State) -> State
         """
         def next_step(current: State) -> State:
-            Z = self._next_candidate(current)
-            V = np.random.uniform()
-            if np.log(V) <= min(0, self._log_ratio(Z, current)):
-                self._update_weight(Z)
+            candidate = self._next_candidate(current)
+            unif = np.random.uniform()
+            next_weight = self._compute_weight(self.current, candidate)
+
+            if np.log(unif) <= min(0, self._log_ratio(current,
+                                                      candidate,
+                                                      next_weight)):
+                self._weight = next_weight
                 self._stay_counter = 0
-                return Z
+                return candidate
             else:
                 self._stay_counter += 1
                 return current
@@ -238,6 +237,7 @@ class MetropolisHastings(MonteCarloMarkovChain):
                          past_max_len=past_max_len,
                          past=past)
 
+    # TODO rethink order of the states, something not right
     def metropolis_hastings_log_ratio(self,
                                       state_i: State,
                                       state_j: State
