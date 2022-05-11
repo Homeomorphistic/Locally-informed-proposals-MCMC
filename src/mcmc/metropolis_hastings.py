@@ -128,7 +128,7 @@ class MonteCarloMarkovChain(MarkovChain[State]):
         return next_step
 
     def find_optimum(self,
-                     tolerance: float = 0.05,
+                     tolerance: float = 0.01,
                      max_iter: int = 500,
                      stay_count: int = 5
                      ) -> State:
@@ -139,15 +139,22 @@ class MonteCarloMarkovChain(MarkovChain[State]):
 
         # stop when relative change is small and the chain is not in the same
         # place or some amount of repeats.
+        '''
         while self._stay_counter < stay_count \
             and (relative_change(prev_weight, self._weight) >= tolerance
                  or self._stay_counter > 0
                  ) \
             and next(step_num) < max_iter:
-
+        '''
+        while (self._stay_counter < stay_count
+               and self._weight <= prev_weight
+               and next(step_num) < max_iter):
             prev_weight = self._weight
             next_ = self.__next__()
 
+        print('Relative change:', relative_change(prev_weight, self._weight))
+        print('Number of steps:', step_num)
+        print('Number of stays:', self._stay_counter)
         return next_
 
 
