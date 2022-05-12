@@ -147,7 +147,7 @@ class MonteCarloMarkovChain(MarkovChain[State]):
             and next(step_num) < max_iter:
         '''
         while (self._stay_counter < stay_count
-               and self._weight <= prev_weight
+               and self._weight <= prev_weight # TODO + some tolerance?
                and next(step_num) < max_iter):
             prev_weight = self._weight
             next_ = self.__next__()
