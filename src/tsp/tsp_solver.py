@@ -1,12 +1,13 @@
 import tsplib95
 import numpy as np
-from scipy.special import comb, softmax
+from scipy.special import softmax
 from itertools import count
 from typing import List
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
+from tsp_path import TravelingSalesmenPath
 
 
-class TravelingSalesmenProblemSolver(MonteCarloMarkovChain[List]):
+class TravelingSalesmenSolver(MonteCarloMarkovChain[List]):
     """TODO docstrings"""
 
     def __init__(self,
@@ -104,7 +105,8 @@ class TravelingSalesmenProblemSolver(MonteCarloMarkovChain[List]):
 
 
 if __name__ == "__main__":
-    berlin = TravelingSalesmenProblemSolver(past_max_len=3)
+    berlin = TravelingSalesmenSolver(past_max_len=3)
     print(berlin.find_optimum(max_iter=10000, stay_count=1000)
     print(berlin._weight)
+
 

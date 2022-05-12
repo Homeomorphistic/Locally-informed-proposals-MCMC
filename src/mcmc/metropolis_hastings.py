@@ -17,6 +17,7 @@ import numpy as np
 
 # TODO docstrings for all new classes
 # TODO states not as integers, especially when stationary[state_i]
+# TODO MonteCarloMarkovChain as ABC!!!!
 
 
 class MonteCarloMarkovChain(MarkovChain[State]):
