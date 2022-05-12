@@ -7,20 +7,21 @@ Classes
 MonteCarloMarkovChain
 MetropolisHastings
 """
+from abc import ABC, abstractmethod
 from typing import Sequence, Callable, Any
 from nptyping import NDArray, Shape
 from markov_chain import MarkovChain, State
-from utils import matrix_to_next_candidate, relative_change
+from utils import matrix_to_next_candidate
 from itertools import count
 import numpy as np
 
 
-# TODO docstrings for all new classes
+# TODO docstrings update, after ABC and more
 # TODO states not as integers, especially when stationary[state_i]
-# TODO MonteCarloMarkovChain as ABC!!!!
+# TODO add getters and setters
 
 
-class MonteCarloMarkovChain(MarkovChain[State]):
+class MonteCarloMarkovChain(ABC, MarkovChain[State]):
     """A class used to represent a markov chain generated using M-H algorithm.
 
     TO DO: longer description?
@@ -57,10 +58,6 @@ class MonteCarloMarkovChain(MarkovChain[State]):
     """
     def __init__(self,
                  current: State,
-                 weight: float,
-                 next_candidate: Callable[[State], State],
-                 log_ratio: Callable[[State, State, float], float],
-                 compute_weight: Callable[[State, State], float],
                  past_max_len: int = 0,
                  past: Sequence[State] = None,
                  ) -> None:
@@ -83,15 +80,25 @@ class MonteCarloMarkovChain(MarkovChain[State]):
             Sequence of past states.
         """
         self._stay_counter = 0
-        self._weight = weight
-        self._next_candidate = next_candidate
-        self._log_ratio = log_ratio
-        self._compute_weight = compute_weight
 
         super().__init__(current=current,
                          next_state=self.metropolis_hastings_general_step(),
                          past_max_len=past_max_len,
                          past=past)
+
+    @abstractmethod
+    def next_candidate(self, current: State) -> State:
+        """TODO docstring"""
+        pass
+
+    @abstractmethod
+    def log_ratio(self, current: State, candidate: State) -> float:
+        """TODO docstring"""
+        pass
+
+    @abstractmethod
+    def stop_condition(self, current: State, candidate: State) -> bool:
+        pass
 
     def metropolis_hastings_general_step(self) -> Callable[[State], State]:
         """Produce next_state function according to M-H algorithm.
@@ -112,14 +119,10 @@ class MonteCarloMarkovChain(MarkovChain[State]):
         (current: State) -> State
         """
         def next_step(current: State) -> State:
-            candidate = self._next_candidate(current)
+            candidate = self.next_candidate(current)
             unif = np.random.uniform()
-            next_weight = self._compute_weight(self.current, candidate)
 
-            if np.log(unif) <= min(0, self._log_ratio(current,
-                                                      candidate,
-                                                      next_weight)):
-                self._weight = next_weight
+            if np.log(unif) <= min(0, self.log_ratio(current, candidate)):
                 self._stay_counter = 0
                 return candidate
             else:
@@ -135,7 +138,6 @@ class MonteCarloMarkovChain(MarkovChain[State]):
                      ) -> State:
         """TODO docstring"""
         step_num = count()
-        prev_weight = self._weight
         next_ = self.__next__()
 
         # stop when relative change is small and the chain is not in the same
@@ -148,18 +150,16 @@ class MonteCarloMarkovChain(MarkovChain[State]):
             and next(step_num) < max_iter:
         '''
         while (self._stay_counter < stay_count
-               and self._weight <= prev_weight # TODO + some tolerance?
+               and self.stop_condition(self.current, self.__next__())
                and next(step_num) < max_iter):
-            prev_weight = self._weight
-            next_ = self.__next__()
+            pass
 
-        print('Relative change:', relative_change(prev_weight, self._weight))
         print('Number of steps:', step_num)
         print('Number of stays:', self._stay_counter)
         return next_
 
 
-class MetropolisHastings(MonteCarloMarkovChain):
+class MetropolisHastings(MonteCarloMarkovChain[int]):
     """A class used to represent a markov chain generated using M-H algorithm.
 
     TO DO: longer description?
@@ -228,55 +228,60 @@ class MetropolisHastings(MonteCarloMarkovChain):
         """
         self._stationary = stationary
         self._candidate = candidate
+        self._candidate_fun = matrix_to_next_candidate(candidate)
 
         if np.all(candidate == candidate.T):  # if candidate matrix is
             # symmetric
-            ratio = self.metropolis_log_ratio
+            self._ratio = self.metropolis_log_ratio
         else:
-            ratio = self.metropolis_hastings_log_ratio
+            self._ratio = self.metropolis_hastings_log_ratio
 
         super().__init__(current=current,
-                         weight=1,
-                         next_candidate=matrix_to_next_candidate(candidate),
-                         log_ratio=ratio,
-                         compute_weight=lambda s_i, s_j: abs(stationary[s_i]
-                                                             - stationary[s_j]
-                                                             + 1e-10),
                          past_max_len=past_max_len,
                          past=past)
 
-    # TODO rethink order of the states, something not right
+    def next_candidate(self, current: State) -> State:
+        """TODO docstring"""
+        return self._candidate_fun(current)
+
+    def log_ratio(self, current: State, candidate: State) -> float:
+        """TODO docstring"""
+        return self._ratio(current, candidate)
+
+    def stop_condition(self, current: State, candidate: State) -> bool:
+        return True
+
     def metropolis_hastings_log_ratio(self,
-                                      state_i: State,
-                                      state_j: State
+                                      current: State,
+                                      candidate: State
                                       ) -> float:
         """Calculate classic metropolis-hastings log ratio"""
-        return np.log(self._stationary[state_i]) \
-               + np.log(self._candidate[state_i, state_j]) \
-               - np.log(self._stationary[state_j]) \
-               - np.log(self._candidate[state_j, state_i])
+        return (np.log(self._stationary[candidate])
+                + np.log(self._candidate[current, candidate])
+                - np.log(self._stationary[current])
+                - np.log(self._candidate[candidate, current]))
 
     def metropolis_log_ratio(self,
-                             state_i: State,
-                             state_j: State
+                             current: State,
+                             candidate: State
                              ) -> float:
         """Calculate classic metropolis log ratio"""
-        return np.log(self._stationary[state_i]) \
-               - np.log(self._stationary[state_j])
+        return (np.log(self._stationary[candidate])
+                - np.log(self._stationary[current]))
 
 
 if __name__ == "__main__":
     n = 5
     metro = MetropolisHastings(current=0,
                                candidate=np.ones((n, n))/n,
-                               stationary=[0.1, 0.1, 0.4, 0.1, 0.3]
+                               stationary=np.array([0.1, 0.1, 0.4, 0.1, 0.3])
                                )
-    '''
+
     x = metro.sample(1000)
     import matplotlib.pyplot as plt
     plt.hist(x, density=True, ec='black', bins=np.arange(n+1))
     plt.show()
-    '''
-    print(metro.find_optimum())
-    print(metro._stay_counter)
+
+    #print(metro.find_optimum(max_iter=100))
+    #print(metro._stay_counter)
 

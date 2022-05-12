@@ -10,11 +10,11 @@ class TravelingSalesmenPath:
     """TODO class description"""
 
     def __init__(self,
-                problem: Problem,
-                path: List,
-                weight: float = None,
-                locally: bool = False
-                ) -> None:
+                 problem: Problem,
+                 path: List,
+                 weight: float = None,
+                 locally: bool = False
+                 ) -> None:
         """Initialize TravelingSalesmenPath class
         
         TODO description

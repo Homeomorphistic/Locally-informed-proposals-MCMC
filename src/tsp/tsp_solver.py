@@ -106,7 +106,7 @@ class TravelingSalesmenSolver(MonteCarloMarkovChain[List]):
 
 if __name__ == "__main__":
     berlin = TravelingSalesmenSolver(past_max_len=3)
-    print(berlin.find_optimum(max_iter=10000, stay_count=1000)
+    print(berlin.find_optimum(max_iter=10000, stay_count=1000))
     print(berlin._weight)
 
 
