@@ -76,6 +76,8 @@ class TravelingSalesmenPath:
         # Compute local distribution using softmax.
         return softmax(-local_dist)
 
+    def __str__(self):
+        return str(self._path)
 
 if __name__ == "__main__":
     from tsp_solver import TravelingSalesmenSolver

@@ -87,17 +87,17 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                          past=past)
 
     @abstractmethod
-    def next_candidate(self, current: State) -> State:
+    def next_candidate(self) -> State:
         """TODO docstring"""
         pass
 
     @abstractmethod
-    def log_ratio(self, current: State, candidate: State) -> float:
+    def log_ratio(self, candidate: State) -> float:
         """TODO docstring"""
         pass
 
     @abstractmethod
-    def stop_condition(self, current: State, candidate: State) -> bool:
+    def stop_condition(self, previous: State, current: State) -> bool:
         pass
 
     def metropolis_hastings_general_step(self) -> Callable[[State], State]:
@@ -119,10 +119,10 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         (current: State) -> State
         """
         def next_step(current: State) -> State:
-            candidate = self.next_candidate(current)
+            candidate = self.next_candidate()
             unif = np.random.uniform()
 
-            if np.log(unif) <= min(0, self.log_ratio(current, candidate)):
+            if np.log(unif) <= min(0, self.log_ratio(candidate)):
                 self._stay_counter = 0
                 return candidate
             else:
@@ -138,7 +138,6 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                      ) -> State:
         """TODO docstring"""
         step_num = count()
-        next_ = self.__next__()
 
         # stop when relative change is small and the chain is not in the same
         # place or some amount of repeats.
@@ -150,13 +149,13 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
             and next(step_num) < max_iter:
         '''
         while (self._stay_counter < stay_count
-               and self.stop_condition(self.current, self.__next__())
+               and self.stop_condition(self._current, self.__next__())
                and next(step_num) < max_iter):
             pass
 
         print('Number of steps:', step_num)
         print('Number of stays:', self._stay_counter)
-        return next_
+        return self._current
 
 
 class MetropolisHastings(MonteCarloMarkovChain[int]):
@@ -240,34 +239,28 @@ class MetropolisHastings(MonteCarloMarkovChain[int]):
                          past_max_len=past_max_len,
                          past=past)
 
-    def next_candidate(self, current: State) -> State:
+    def next_candidate(self) -> State:
         """TODO docstring"""
-        return self._candidate_fun(current)
+        return self._candidate_fun(self._current)
 
-    def log_ratio(self, current: State, candidate: State) -> float:
+    def log_ratio(self, candidate: State) -> float:
         """TODO docstring"""
-        return self._ratio(current, candidate)
+        return self._ratio(candidate)
 
-    def stop_condition(self, current: State, candidate: State) -> bool:
+    def stop_condition(self, previous: State, current: State) -> bool:
         return True
 
-    def metropolis_hastings_log_ratio(self,
-                                      current: State,
-                                      candidate: State
-                                      ) -> float:
+    def metropolis_hastings_log_ratio(self, candidate: State) -> float:
         """Calculate classic metropolis-hastings log ratio"""
         return (np.log(self._stationary[candidate])
-                + np.log(self._candidate[current, candidate])
-                - np.log(self._stationary[current])
-                - np.log(self._candidate[candidate, current]))
+                + np.log(self._candidate[self._current, candidate])
+                - np.log(self._stationary[self._current])
+                - np.log(self._candidate[candidate, self._current]))
 
-    def metropolis_log_ratio(self,
-                             current: State,
-                             candidate: State
-                             ) -> float:
+    def metropolis_log_ratio(self, candidate: State) -> float:
         """Calculate classic metropolis log ratio"""
         return (np.log(self._stationary[candidate])
-                - np.log(self._stationary[current]))
+                - np.log(self._stationary[self._current]))
 
 
 if __name__ == "__main__":
