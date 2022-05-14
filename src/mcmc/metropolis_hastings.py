@@ -97,7 +97,10 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         pass
 
     @abstractmethod
-    def stop_condition(self, previous: State, current: State) -> bool:
+    def stop_condition(self, previous: State,
+                       current: State,
+                       tolerance: float
+                       ) -> bool:
         pass
 
     def metropolis_hastings_general_step(self) -> Callable[[State], State]:
@@ -154,8 +157,12 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
             pass
 
         print('Number of steps:', step_num)
-        print('Number of stays:', self._stay_counter)
+        print('Number of stays:', self.stay_counter)
         return self._current
+
+    @property
+    def stay_counter(self):
+        return int(self._stay_counter)
 
 
 class MetropolisHastings(MonteCarloMarkovChain[int]):

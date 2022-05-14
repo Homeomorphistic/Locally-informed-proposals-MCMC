@@ -31,9 +31,9 @@ class TravelingSalesmenSolver(MonteCarloMarkovChain[TSPath]):
         # Random indices to swap in path.
         i, j = np.random.choice(self._num_nodes, size=2, replace=False)
         neighbour_weight = self._current.compute_neighbour_weight(i, j)
-        neighbour_path = self.current._path
+        neighbour_path = self.current._path.copy()
         # Swap random vertices.
-        neighbour_path[i], neighbour_path[j] = neighbour_path[i], neighbour_path[j]
+        neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
         return TSPath(path=neighbour_path,
                       problem=self._problem,
                       weight=neighbour_weight,
@@ -43,14 +43,19 @@ class TravelingSalesmenSolver(MonteCarloMarkovChain[TSPath]):
         """TODO docstrings"""
         return self._current._weight - candidate._weight
 
-    def stop_condition(self, previous: TSPath, current: TSPath) -> bool:
-        return current._weight <= previous._weight
+    def stop_condition(self,
+                       previous: TSPath,
+                       current: TSPath,
+                       tolerance: float = 0.01
+                       ) -> bool:
+        return current._weight <= previous._weight * (1 + tolerance)
 
 
 if __name__ == "__main__":
     berlin = TravelingSalesmenSolver()
-    #print(berlin.find_optimum(max_iter=10000, stay_count=1000))
-    print(berlin.move(10))
-    print(berlin._current._weight)
+    print(berlin.find_optimum(max_iter=100000, stay_count=10000,
+                              tolerance=0.01))
+    print(berlin.current._weight)
+
 
 
