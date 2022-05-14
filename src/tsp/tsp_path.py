@@ -95,8 +95,8 @@ class TravelingSalesmenPath:
         return str(self._path)
 
 if __name__ == "__main__":
-    from tsp_solver import TravelingSalesmenSolver
-    berlin = TravelingSalesmenSolver(past_max_len=3)
+    from tsp_mcmc import TravelingSalesmenMCMC
+    berlin = TravelingSalesmenMCMC(past_max_len=3)
     berlin_path = TravelingSalesmenPath(problem=berlin._problem,
                                                path=berlin._current._path,
                                                locally=True)
