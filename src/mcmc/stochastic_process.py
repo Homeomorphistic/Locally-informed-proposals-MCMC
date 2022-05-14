@@ -79,6 +79,8 @@ class StochasticProcess(Generic[State]):
         """
         self._past_min_len = past_min_len
         self._past = past
+        self._step_num = 0
+
         if past is not None:
             if len(past) >= self._past_min_len:
                 self._past = deque(past)
@@ -128,12 +130,17 @@ class StochasticProcess(Generic[State]):
         else:
             raise ValueError(f"Past cannot be less than {self._past_min_len}")
 
+    @property
+    def step_num(self) -> int:
+        return self._step_num
+
     def __iter__(self):
         """Get iterator."""
         return self
 
     def __next__(self) -> State:
         """Move the process and return new current state."""
+        self._step_num += 1
         self._current = self._next_state(self._current, self._past)
         return self._current
 

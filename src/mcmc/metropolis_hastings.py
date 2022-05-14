@@ -8,11 +8,11 @@ MonteCarloMarkovChain
 MetropolisHastings
 """
 from abc import ABC, abstractmethod
-from typing import Sequence, Callable, Any
+from typing import Sequence, Callable, Any, Dict
 from nptyping import NDArray, Shape
 from markov_chain import MarkovChain, State
 from utils import matrix_to_next_candidate
-from itertools import count
+from time import perf_counter
 import numpy as np
 
 
@@ -134,35 +134,46 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
 
         return next_step
 
+    def save_optimum(self, time: float, name: str) -> Dict:
+        """TODO desripttion"""
+        # TODO save to pickle, so there is a way to obtain attributes of curr.
+        from json import dump
+        optimum_dict = {'num_steps': self.step_num,
+                        'num_stays': self.stay_counter,
+                        'time': time,
+                        'path': str(self.current)}
+
+        file = open(f'data/{name}.json', "w")
+        dump(optimum_dict, file)
+        file.close()
+
+        return optimum_dict
+
     def find_optimum(self,
                      tolerance: float = 0.01,
                      max_iter: int = 500,
                      stay_count: int = 5
                      ) -> State:
         """TODO docstring"""
-        step_num = count()
-
-        # stop when relative change is small and the chain is not in the same
-        # place or some amount of repeats.
-        '''
-        while self._stay_counter < stay_count \
-            and (relative_change(prev_weight, self._weight) >= tolerance
-                 or self._stay_counter > 0
-                 ) \
-            and next(step_num) < max_iter:
-        '''
+        # Stop when chain stays at the same state for too long or some stop
+        # condition is achieved or too many iterations.
+        start = perf_counter()
         while (self._stay_counter < stay_count
-               and self.stop_condition(self._current, self.__next__())
-               and next(step_num) < max_iter):
+               and self.stop_condition(self._current, self.__next__(), tolerance)
+               and self._step_num < max_iter):
             pass
+        stop = perf_counter()
 
-        print('Number of steps:', step_num)
-        print('Number of stays:', self.stay_counter)
+        print(f'Time elapsed: {stop-start:0.2f}')
+        print(f'Number of steps: {self.step_num}')
+        print(f'Number of stays: {self.stay_counter}')
+        self.save_optimum(time=stop-start, name=self.__str__())
+
         return self._current
 
     @property
-    def stay_counter(self):
-        return int(self._stay_counter)
+    def stay_counter(self) -> int:
+        return self._stay_counter
 
 
 class MetropolisHastings(MonteCarloMarkovChain[int]):

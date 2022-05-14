@@ -12,7 +12,7 @@ class TravelingSalesmenPath:
 
     def __init__(self,
                  problem: Problem,
-                 path: List,
+                 path: NDArray[Shape['*'], Any],
                  weight: float = None,
                  locally: bool = False,
                  neighbours_dict: Dict[Tuple[int, int], int] = None
@@ -92,7 +92,7 @@ class TravelingSalesmenPath:
         return softmax(-local_dist)
 
     def __str__(self):
-        return str(self._path)
+        return f'Path:\n{str(self._path)}\nDistance: {self._weight}'
 
 if __name__ == "__main__":
     from tsp_mcmc import TravelingSalesmenMCMC

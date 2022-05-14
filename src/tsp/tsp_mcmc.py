@@ -14,7 +14,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                  ) -> None:
         """TODO docstrings"""
         self._problem = tsplib95.load('data/' + name + '.tsp')
-        self._nodes = list(self._problem.get_nodes())
+        self._nodes = np.array(list(self._problem.get_nodes()))
         self._num_nodes = len(self._nodes)
         if locally:
             self._next_candidate = self.next_candidate_locally
@@ -71,16 +71,17 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                        ) -> bool:
         return current._weight <= previous._weight * (1 + tolerance)
 
+    def __repr__(self):
+        return self._problem.name
+
 
 if __name__ == "__main__":
-    berlin_uni = TravelingSalesmenMCMC(name='kroA150')
-    berlin_loc = TravelingSalesmenMCMC(name='kroA150', locally=True)
-    print(berlin_uni.find_optimum(max_iter=10000, stay_count=10000,
+    berlin_uni = TravelingSalesmenMCMC()
+    # berlin_loc = TravelingSalesmenMCMC(name='kroA150', locally=True)
+    print(berlin_uni.find_optimum(max_iter=1000, stay_count=1000,
                                   tolerance=0.01))
-    print(berlin_uni.current._weight)
-    print(berlin_loc.find_optimum(max_iter=10000, stay_count=1000,
-                              tolerance=0.01))
-    print(berlin_loc.current._weight)
+    # print(berlin_loc.find_optimum(max_iter=10000, stay_count=1000,
+    #                           tolerance=0.01))
 
 
 
