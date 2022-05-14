@@ -143,7 +143,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                         'time': time,
                         'path': str(self.current)}
 
-        file = open(f'data/{name}.json', "w")
+        file = open(f'data/{name}_MCMC.json', "w")
         dump(optimum_dict, file)
         file.close()
 
@@ -151,8 +151,8 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
 
     def find_optimum(self,
                      tolerance: float = 0.01,
-                     max_iter: int = 500,
-                     stay_count: int = 5
+                     max_iter: int = 1000,
+                     stay_count: int = 100
                      ) -> State:
         """TODO docstring"""
         # Stop when chain stays at the same state for too long or some stop

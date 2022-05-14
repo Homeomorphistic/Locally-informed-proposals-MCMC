@@ -10,12 +10,13 @@ import numpy as np
 class TravelingSalesmenPath:
     """TODO class description"""
 
+    _neighbours_dict = {}
+
     def __init__(self,
                  problem: Problem,
                  path: NDArray[Shape['*'], Any],
                  weight: float = None,
-                 locally: bool = False,
-                 neighbours_dict: Dict[Tuple[int, int], int] = None
+                 locally: bool = False
                  ) -> None:
         """Initialize TravelingSalesmenPath class
         
@@ -25,7 +26,8 @@ class TravelingSalesmenPath:
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
         self._local_dist = locally and self.compute_local_distribution()
-        self._neighbours_dict = neighbours_dict or self.get_neighbours_dict()
+        self._neighbours_dict = (TravelingSalesmenPath._neighbours_dict or
+                                 self.get_neighbours_dict())
 
     def compute_neighbour_weight(self, i: int, j: int) -> float:
         """TODO docstrings indices to swap"""

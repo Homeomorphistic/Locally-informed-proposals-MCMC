@@ -54,12 +54,12 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         return TSPath(path=neighbour_path,
                       problem=self._problem,
                       weight=neighbour_weight,
-                      locally=True,
-                      neighbours_dict=neighbours_dict)
+                      locally=True)
 
     def next_candidate(self) -> TSPath:
         return self._next_candidate()
 
+    # TODO rethink log ratio for locally
     def log_ratio(self, candidate: TSPath) -> float:
         """TODO docstrings"""
         return self._current._weight - candidate._weight
@@ -78,7 +78,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC()
     # berlin_loc = TravelingSalesmenMCMC(name='kroA150', locally=True)
-    print(berlin_uni.find_optimum(max_iter=1000, stay_count=1000,
+    print(berlin_uni.find_optimum(max_iter=1000, stay_count=100,
                                   tolerance=0.01))
     # print(berlin_loc.find_optimum(max_iter=10000, stay_count=1000,
     #                           tolerance=0.01))
