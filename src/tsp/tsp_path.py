@@ -1,6 +1,7 @@
 """TODO module description"""
 
-from typing import List
+from typing import List, Dict, Tuple, Any
+from nptyping import NDArray, Shape
 from tsplib95.models import Problem
 from scipy.special import softmax
 import numpy as np
@@ -13,7 +14,8 @@ class TravelingSalesmenPath:
                  problem: Problem,
                  path: List,
                  weight: float = None,
-                 locally: bool = False
+                 locally: bool = False,
+                 neighbours_dict: Dict[Tuple[int, int], int] = None
                  ) -> None:
         """Initialize TravelingSalesmenPath class
         
@@ -23,6 +25,7 @@ class TravelingSalesmenPath:
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
         self._local_dist = locally and self.compute_local_distribution()
+        self._neighbours_dict = neighbours_dict or self.get_neighbours_dict()
 
     def compute_neighbour_weight(self, i: int, j: int) -> float:
         """TODO docstrings indices to swap"""
@@ -62,7 +65,19 @@ class TravelingSalesmenPath:
 
         return neighbour_weight
 
-    def compute_local_distribution(self):
+    def get_neighbours_dict(self) -> Dict[Tuple[int, int], int]:
+        n = len(self._path)
+        neighbour_id = 0
+        neighbours_dict = {}
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                neighbours_dict[(i, j)] = neighbour_id
+                neighbour_id += 1
+
+        return neighbours_dict
+
+    def compute_local_distribution(self) -> NDArray[Shape['*'], Any]:
         """TODO docstrings"""
         n = len(self._path)
         local_dist = np.zeros(n * (n - 1) // 2)
@@ -83,15 +98,7 @@ if __name__ == "__main__":
     from tsp_solver import TravelingSalesmenSolver
     berlin = TravelingSalesmenSolver(past_max_len=3)
     berlin_path = TravelingSalesmenPath(problem=berlin._problem,
-                                               path=berlin._current,
+                                               path=berlin._current._path,
                                                locally=True)
 
-    path2 = berlin._current.copy()
-    path2[0], path2[1] = path2[1], path2[0]
-    berlin_path2 = TravelingSalesmenPath(problem=berlin._problem,
-                                                path=path2,
-                                                locally=True)
-    dist = berlin_path._local_dist
-    print(np.random.choice(len(dist), p=dist))
-    dist2 = berlin_path2._local_dist
-    print(np.random.choice(len(dist), p=dist2))
+    print(berlin_path._neighbours_dict)
