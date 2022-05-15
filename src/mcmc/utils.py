@@ -1,7 +1,7 @@
 """Utilities for MCMC methods."""
 
 from collections import deque
-from typing import TypeVar, Callable, Optional, Deque, Any
+from typing import TypeVar, Callable, Optional, Deque, Any, Union
 from nptyping import NDArray, Shape
 import numpy as np
 
@@ -54,8 +54,8 @@ def modify_past(next_state: Callable[[State, Optional[Deque[State]]], State],
         return modified_next_state
 
 
-def matrix_to_next_candidate(next_candidate: NDArray[Shape['*, *'], Any]
-                                             | Callable[[State], State]
+def matrix_to_next_candidate(next_candidate: Union[NDArray[Shape['*, *'], Any],
+                                                   Callable[[State], State]]
                              ) -> Callable[[State], State]:
     """Convert candidate matrix to next_candidate function.
 

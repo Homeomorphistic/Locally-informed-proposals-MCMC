@@ -3,7 +3,15 @@
 import argparse
 from tsp_mcmc import TravelingSalesmenMCMC
 
+
 def parse_arguments():
+    """Parse arguments from terminal.
+
+    Returns
+    -------
+    X: Tuple[str, bool, float, int, int]
+        Tuple of arguments parsed from terminal.
+    """
     parser = argparse.ArgumentParser(description="Locally informed MCMC")
     parser.add_argument('--data', default='berlin52',
                         help='Traveling salesmen problem name in data folder, '
@@ -21,10 +29,9 @@ def parse_arguments():
     return (args.data, bool(args.locally), float(args.tolerance),
             int(args.max_iter), int(args.stay_count))
 
-
+# Get arguments for running TSP solver.
 data, locally, tolerance, max_iter, stay_count = parse_arguments()
-print(type(max_iter))
-
+# Run TSP solver and find optimum.
 tsp_solver = TravelingSalesmenMCMC(name=data, locally=locally)
 optimum = tsp_solver.find_optimum(tolerance=tolerance,
                                   max_iter=max_iter,
