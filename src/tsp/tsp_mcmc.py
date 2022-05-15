@@ -2,6 +2,7 @@
 
 import tsplib95
 import numpy as np
+from typing import Dict
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
 from tsp_path import TravelingSalesmenPath as TSPath
 
@@ -29,7 +30,6 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         super().__init__(current=TSPath(problem=self._problem,
                                         path=self._nodes,
                                         locally=locally),
-                         locally=locally,
                          past_max_len=past_max_len)
 
     def next_candidate_uniform(self) -> TSPath:
@@ -91,6 +91,32 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                        tolerance: float = 0.01
                        ) -> bool:
         return current._weight <= previous._weight * (1 + tolerance)
+
+    def save_optimum(self,
+                     time: float,
+                     max_iter: int,
+                     tolerance: float,
+                     ) -> Dict:
+        """TODO desripttion"""
+        # TODO save to pickle, so there is a way to obtain attributes of curr.
+        from json import dump
+        optimum_dict = {'num_steps': self.step_num,
+                        'num_stays': self.stay_counter,
+                        'time': time,
+                        'iter': max_iter,
+                        'tol': tolerance,
+                        'locally': self.current._locally,
+                        'distance': self.current._weight,
+                        'path': self.current._path.tolist()}
+
+        file = open(f'results/{self.current._problem.name}_iter='
+                    f'{max_iter}'f'_tol={tolerance}_loc='
+                    f'{self.current._locally}.json',
+                    "w")
+        dump(optimum_dict, file)
+        file.close()
+
+        return optimum_dict
 
     def __repr__(self):
         return self._problem.name

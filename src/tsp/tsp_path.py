@@ -25,6 +25,7 @@ class TravelingSalesmenPath:
         TODO description
         """
         self._problem = problem
+        self._locally = locally
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
         self._neighbours_weights = locally and self.compute_neighbours_weights()
@@ -100,7 +101,6 @@ class TravelingSalesmenPath:
 
     def compute_local_distribution(self) -> NDArray[Shape['*'], Any]:
         return softmax(-normalize(self._neighbours_weights))
-
 
     def __str__(self):
         return f'Path:\n{str(self._path)}\nDistance: {self._weight}'

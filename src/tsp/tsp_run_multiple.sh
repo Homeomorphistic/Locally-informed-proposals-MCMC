@@ -11,6 +11,6 @@ for PROBLEM in $PROBLEMS_LIST
   do
     echo "=================================================="
     echo "============== RUNNING $PROBLEM =================="
-    echo "============== MAX_ITER=$MAX_ITER ================"
+    echo "============== MAX_ITER=$MAX_ITER ================\n"
     python3 tsp_solver.py --data "$PROBLEM" --locally "$LOCALLY" --tolerance "$TOLERANCE" --max_iter "$MAX_ITER" --stay_count "$STAY_LIMIT"
   done
