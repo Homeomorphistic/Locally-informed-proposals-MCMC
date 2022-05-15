@@ -59,6 +59,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
     def __init__(self,
                  current: State,
                  past_max_len: int = 0,
+                 locally: bool = False,
                  past: Sequence[State] = None,
                  ) -> None:
         """Initialize MonteCarloMarkovChain class.
@@ -79,6 +80,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         past: Sequence[State], optional
             Sequence of past states.
         """
+        self._locally = locally  # TODO as abstract property
         self._stay_counter = 0
 
         super().__init__(current=current,
@@ -134,16 +136,27 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
 
         return next_step
 
-    def save_optimum(self, time: float, name: str) -> Dict:
+    def save_optimum(self,
+                     time: float,
+                     name: str,
+                     max_iter: int,
+                     tolerance: float,
+                     locally: bool
+                     ) -> Dict:
         """TODO desripttion"""
         # TODO save to pickle, so there is a way to obtain attributes of curr.
         from json import dump
         optimum_dict = {'num_steps': self.step_num,
                         'num_stays': self.stay_counter,
                         'time': time,
+                        'iter': max_iter,
+                        'tol': tolerance,
+                        'locally': locally,
                         'path': str(self.current)}
 
-        file = open(f'data/{name}_MCMC.json', "w")
+        file = open(f'data/{name}_MCMC_iter={max_iter}_tol={tolerance}_loc'
+                    f'={locally}.json',
+                    "w")
         dump(optimum_dict, file)
         file.close()
 
@@ -167,7 +180,11 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         print(f'Time elapsed: {stop-start:0.2f}')
         print(f'Number of steps: {self.step_num}')
         print(f'Number of stays: {self.stay_counter}')
-        self.save_optimum(time=stop-start, name=self.__str__())
+        self.save_optimum(time=stop-start,
+                          name=self.__str__(),
+                          max_iter=max_iter,
+                          tolerance=tolerance,
+                          locally=self._locally)
 
         return self._current
 
@@ -265,7 +282,10 @@ class MetropolisHastings(MonteCarloMarkovChain[int]):
         """TODO docstring"""
         return self._ratio(candidate)
 
-    def stop_condition(self, previous: State, current: State) -> bool:
+    def stop_condition(self, previous: State,
+                       current: State,
+                       tolerance: float = 0.01
+                       ) -> bool:
         return True
 
     def metropolis_hastings_log_ratio(self, candidate: State) -> float:

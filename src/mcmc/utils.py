@@ -115,3 +115,8 @@ def symmetric_walk_transition(n: int) -> NDArray[Shape['*, *'], Any]:
 
 def relative_change(x: float, y: float) -> float:
     return abs((x-y) / x)
+
+
+def normalize(x: NDArray[Shape['*, *'], Any]) -> float:
+    min_x = x.min()
+    return (x - min_x) / (x.max() - min_x)

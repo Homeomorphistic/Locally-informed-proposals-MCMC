@@ -1,16 +1,18 @@
 """TODO module description"""
 
-from typing import List, Dict, Tuple, Any
+from typing import Dict, Tuple, Any
 from nptyping import NDArray, Shape
 from tsplib95.models import Problem
 from scipy.special import softmax
+from mcmc.utils import normalize
 import numpy as np
 
 
 class TravelingSalesmenPath:
     """TODO class description"""
 
-    _neighbours_dict = {}
+    _last_swap: Tuple[int, int] = ()
+    _neighbours_dict: Dict[Tuple[int, int], int] = {}
 
     def __init__(self,
                  problem: Problem,
@@ -25,9 +27,12 @@ class TravelingSalesmenPath:
         self._problem = problem
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
+        self._neighbours_weights = locally and self.compute_neighbours_weights()
         self._local_dist = locally and self.compute_local_distribution()
+        self._norm_const = None
         self._neighbours_dict = (TravelingSalesmenPath._neighbours_dict or
                                  self.get_neighbours_dict())
+        # TODO list instead of dict?
 
     def compute_neighbour_weight(self, i: int, j: int) -> float:
         """TODO docstrings indices to swap"""
@@ -77,30 +82,33 @@ class TravelingSalesmenPath:
                 neighbours_dict[(i, j)] = neighbour_id
                 neighbour_id += 1
 
+        TravelingSalesmenPath._neighbours_dict = neighbours_dict
         return neighbours_dict
 
-    def compute_local_distribution(self) -> NDArray[Shape['*'], Any]:
+    def compute_neighbours_weights(self) -> NDArray[Shape['*'], Any]:
         """TODO docstrings"""
         n = len(self._path)
-        local_dist = np.zeros(n * (n - 1) // 2)
+        weights = np.zeros(n * (n - 1) // 2)
         neighbour_id = 0
 
         for i in range(n):
             for j in range(i + 1, n):
-                local_dist[neighbour_id] = self.compute_neighbour_weight(i, j)
+                weights[neighbour_id] = self.compute_neighbour_weight(i, j)
                 neighbour_id += 1
 
-        # Compute local distribution using softmax.
-        return softmax(-local_dist)
+        return weights
+
+    def compute_local_distribution(self) -> NDArray[Shape['*'], Any]:
+        return softmax(-normalize(self._neighbours_weights))
+
 
     def __str__(self):
         return f'Path:\n{str(self._path)}\nDistance: {self._weight}'
 
 if __name__ == "__main__":
     from tsp_mcmc import TravelingSalesmenMCMC
-    berlin = TravelingSalesmenMCMC(past_max_len=3)
+    berlin = TravelingSalesmenMCMC(locally=True)
     berlin_path = TravelingSalesmenPath(problem=berlin._problem,
                                                path=berlin._current._path,
                                                locally=True)
 
-    print(berlin_path._neighbours_dict)

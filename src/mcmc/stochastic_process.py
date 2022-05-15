@@ -86,6 +86,8 @@ class StochasticProcess(Generic[State]):
                 self._past = deque(past)
             else:
                 raise ValueError(f"Past cannot be less than {past_min_len}.")
+        else:
+            self._past = deque()
 
         if past_min_len <= past_max_len:
             self._past_max_len = past_max_len
