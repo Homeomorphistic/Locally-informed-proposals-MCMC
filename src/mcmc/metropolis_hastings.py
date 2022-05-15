@@ -136,6 +136,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
 
         return next_step
 
+    # TODO abstract method?
     def save_optimum(self,
                      time: float,
                      name: str,
@@ -154,7 +155,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                         'locally': locally,
                         'path': str(self.current)}
 
-        file = open(f'data/{name}_MCMC_iter={max_iter}_tol={tolerance}_loc'
+        file = open(f'results/{name}_iter={max_iter}_tol={tolerance}_loc'
                     f'={locally}.json',
                     "w")
         dump(optimum_dict, file)

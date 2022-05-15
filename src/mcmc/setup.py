@@ -1,6 +1,6 @@
 """
 From the same dir as setup.py run:
-$> python setup.py develop
+$> python3 setup.py develop
 """
 
 from setuptools import find_packages, setup
