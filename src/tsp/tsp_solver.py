@@ -25,15 +25,18 @@ def parse_arguments():
                         help='Maximum iteration count: int = 1000')
     parser.add_argument('--stay_count', default=100,
                         help='Maximum number of stays in the same state: int = 10')
+    parser.add_argument('--save', default=False,
+                        help='Save flag: bool = False')
     args = parser.parse_args()
     args.locally = True if args.locally == 'True' else False
+    args.save = True if args.save == 'True' else False
 
     return (args.data, args.locally, float(args.tolerance),
-            int(args.max_iter), int(args.stay_count))
+            int(args.max_iter), int(args.stay_count), args.save)
 
 
 # Get arguments for running TSP solver.
-data, locally, tolerance, max_iter, stay_count = parse_arguments()
+data, locally, tolerance, max_iter, stay_count, save = parse_arguments()
 # Run TSP solver and find optimum.
 tsp_solver = TravelingSalesmenMCMC(name=data, locally=locally)
 print(f'Running TSP solver for {data} with parameters: \nlocally={locally},'
@@ -42,6 +45,7 @@ print(f'Running TSP solver for {data} with parameters: \nlocally={locally},'
 print('Solution found: \n')
 optimum = tsp_solver.find_optimum(tolerance=tolerance,
                                   max_iter=max_iter,
-                                  stay_count=stay_count)
+                                  stay_count=stay_count,
+                                  save=save)
 print(optimum, '\n')
 

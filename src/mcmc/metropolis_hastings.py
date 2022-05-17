@@ -145,7 +145,8 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
     def find_optimum(self,
                      tolerance: float = 0.01,
                      max_iter: int = 1000,
-                     stay_count: int = 100
+                     stay_count: int = 100,
+                     save: bool = False
                      ) -> State:
         """TODO docstring"""
         # Stop when chain stays at the same state for too long or some stop
@@ -160,9 +161,11 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         print(f'Time elapsed: {stop-start:0.2f}')
         print(f'Number of steps: {self.step_num}')
         print(f'Number of stays: {self.stay_counter}')
-        self.save_optimum(time=stop-start,
-                          max_iter=max_iter,
-                          tolerance=tolerance)
+
+        if save:
+            self.save_optimum(time=stop-start,
+                              max_iter=max_iter,
+                              tolerance=tolerance)
 
         return self._current
 

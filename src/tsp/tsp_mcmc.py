@@ -6,7 +6,6 @@ from typing import Dict
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
 from tsp_path import TravelingSalesmenPath as TSPath
 
-log2 = np.log(2)
 
 class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     """TODO docstrings"""
@@ -36,7 +35,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         """TODO docstrings, deep copy for path"""
         # Random indices to swap in path.
         i, j = np.random.choice(self._num_nodes, size=2, replace=False)
-        neighbour_weight = self._current.compute_neighbour_weight(i, j)
+        neighbour_weight = self._current.get_neighbour_weight(i, j)
         neighbour_path = self.current._path.copy()
         # Swap random vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
@@ -57,7 +56,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         # Get indices to swap.
         i, j = list(neighbours_dict.keys())[neighbour]
         TSPath._last_swap = i, j
-        neighbour_weight = self._current.compute_neighbour_weight(i, j)
+        neighbour_weight = self._current.get_neighbour_weight(i, j)
         # Swap vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
         return TSPath(path=neighbour_path,
@@ -124,11 +123,11 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC()
-    berlin_loc = TravelingSalesmenMCMC(locally=True)
-    print(berlin_uni.find_optimum(max_iter=1000, stay_count=100,
+    # berlin_loc = TravelingSalesmenMCMC(locally=True)
+    print(berlin_uni.find_optimum(max_iter=10000, stay_count=10000,
                                   tolerance=0.01))
-    print(berlin_loc.find_optimum(max_iter=1000, stay_count=100,
-                                  tolerance=0.01))
+    # print(berlin_loc.find_optimum(max_iter=1000, stay_count=100,
+    #                               tolerance=0.01))
 
 
 
