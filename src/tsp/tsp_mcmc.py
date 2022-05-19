@@ -4,7 +4,7 @@ import tsplib95
 import numpy as np
 from typing import Dict
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
-from tsp_path import TravelingSalesmenPath as TSPath
+from tsp_path import TSPath
 
 
 class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
@@ -26,8 +26,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
             self._next_candidate = self.next_candidate_uniform
             self._log_ratio = self.log_ratio_uniform
 
-        super().__init__(current=TSPath(problem=self._problem,
-                                        path=self._nodes,
+        super().__init__(current=TSPath(path=self._nodes,
+                                        problem=self._problem,
                                         locally=locally),
                          past_max_len=past_max_len)
 
@@ -40,15 +40,13 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         # Swap random vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
         return TSPath(path=neighbour_path,
-                      problem=self._problem,
                       weight=neighbour_weight)
 
     def next_candidate_locally(self) -> TSPath:
         """TODO docstrings, deep copy for path"""
         local_dist = self.current._local_dist
-        norm_const = self.current._norm_const
         num_neighbours = len(local_dist)
-        neighbours_dict = self.current._neighbours_dict
+        neighbours_dict = TSPath._neighbours_dict
         neighbour_path = self.current._path.copy()
         # Choose neighbour from local distribution.
         neighbour = np.random.choice(num_neighbours,
@@ -57,11 +55,12 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         i, j = list(neighbours_dict.keys())[neighbour]
         TSPath._last_swap = i, j
         neighbour_weight = self._current.get_neighbour_weight(i, j)
+        next_neighbour_weights = self.current.next_neighbours_weights(i, j)
         # Swap vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
         return TSPath(path=neighbour_path,
-                      problem=self._problem,
                       weight=neighbour_weight,
+                      neighbour_weights=next_neighbour_weights,
                       locally=True)
 
     def log_ratio_uniform(self, candidate: TSPath) -> float:
@@ -123,11 +122,11 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC()
-    # berlin_loc = TravelingSalesmenMCMC(locally=True)
-    print(berlin_uni.find_optimum(max_iter=10000, stay_count=10000,
+    berlin_loc = TravelingSalesmenMCMC(locally=True)
+    print(berlin_uni.find_optimum(max_iter=5000, stay_count=10000,
                                   tolerance=0.01))
-    # print(berlin_loc.find_optimum(max_iter=1000, stay_count=100,
-    #                               tolerance=0.01))
+    print(berlin_loc.find_optimum(max_iter=5000, stay_count=10000,
+                                  tolerance=0.01))
 
 
 
