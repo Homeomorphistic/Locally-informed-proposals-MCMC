@@ -1,9 +1,10 @@
 #!/bin/bash
 # Script used to run all the traveling salesmen problems with all combinations of parameters.
 
-LOCALLY_LIST="False True"
+SAVE=${1:-"False"}
+LOCALLY_LIST="False" #"False True"
 TOLERANCE_LIST="0.01"
-MAX_ITER_LIST="2000 5000"
+MAX_ITER_LIST="5" #"2000 5000"
 
 for MAX_ITER in $MAX_ITER_LIST
   do
@@ -11,7 +12,7 @@ for MAX_ITER in $MAX_ITER_LIST
       do
         for LOCALLY in $LOCALLY_LIST
           do
-            sh tsp_run_multiple.sh $LOCALLY "$TOLERANCE" $MAX_ITER $MAX_ITER
+            sh tsp_run_multiple.sh $MAX_ITER $LOCALLY $SAVE "$TOLERANCE" $MAX_ITER
           done
       done
   done
