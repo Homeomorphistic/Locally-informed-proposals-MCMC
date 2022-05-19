@@ -39,7 +39,7 @@ def parse_arguments():
 data, locally, tolerance, max_iter, stay_count, save = parse_arguments()
 # Run TSP solver and find optimum.
 tsp_solver = TravelingSalesmenMCMC(name=data, locally=locally)
-print(f'Running TSP solver for {data} with parameters: \nlocally={locally},'
+print(f'Running TSP solver for {data} with parameters: \nlocally={locally}, '
       f'tol={tolerance}, iter={max_iter}, stay_limit={stay_count} \n')
 
 print('Solution found: \n')
