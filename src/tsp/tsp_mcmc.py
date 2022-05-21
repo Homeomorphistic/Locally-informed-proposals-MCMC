@@ -2,7 +2,7 @@
 
 import tsplib95
 import numpy as np
-from typing import Dict
+from typing import Dict, Optional
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
 from tsp_path import TSPath
 
@@ -13,12 +13,17 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     def __init__(self,
                  name: str = 'berlin52',
                  locally: bool = False,
+                 cooling: float = None,
                  past_max_len: int = 0,
                  ) -> None:
         """TODO docstrings"""
         self._problem = tsplib95.load('data/' + name + '.tsp')
         self._nodes = np.array(list(self._problem.get_nodes()))
         self._num_nodes = len(self._nodes)
+
+        init_weight = self._problem.trace_tours([self._nodes])[0]
+        self._cooling = cooling or init_weight
+
         if locally:
             self._next_candidate = self.next_candidate_locally
             self._log_ratio = self.log_ratio_locally
@@ -27,8 +32,10 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
             self._log_ratio = self.log_ratio_uniform
 
         super().__init__(current=TSPath(path=self._nodes,
+                                        weight=init_weight,
                                         problem=self._problem,
-                                        locally=locally),
+                                        locally=locally,
+                                        cooling=cooling),
                          past_max_len=past_max_len)
 
     def next_candidate_uniform(self) -> TSPath:
@@ -65,15 +72,15 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
     def log_ratio_uniform(self, candidate: TSPath) -> float:
         """TODO docstrings"""
-        return self._current._weight - candidate._weight
+        return (self._current._weight - candidate._weight) / self.cooling
 
     def log_ratio_locally(self, candidate: TSPath) -> float:
         """TODO docstrings"""
         i, j = TSPath._last_swap
         current_id = TSPath._neighbours_dict.get((i,j))
         neighour_id = current_id
-        return (self._current._weight
-                - candidate._weight
+        return ((self._current._weight
+                - candidate._weight) / self.cooling
                 + np.log(self.current._local_dist[neighour_id])
                 - np.log(candidate._local_dist[current_id]))
 
@@ -116,17 +123,25 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
         return optimum_dict
 
+    @property
+    def cooling(self) -> Optional[float]:
+        return self._cooling
+
     def __repr__(self):
         return self._problem.name
 
 
 if __name__ == "__main__":
-    berlin_uni = TravelingSalesmenMCMC()
-    berlin_loc = TravelingSalesmenMCMC(locally=True)
-    print(berlin_uni.find_optimum(max_iter=5000, stay_count=10000,
-                                  tolerance=0.01))
-    print(berlin_loc.find_optimum(max_iter=5000, stay_count=10000,
-                                  tolerance=0.01))
+    berlin_uni = TravelingSalesmenMCMC(cooling=20000)
+    berlin_loc = TravelingSalesmenMCMC(locally=True, cooling=20000)
+    opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
+                                       tolerance=0.01))
+    print(opt_uni)
+    opt_loc = (berlin_loc.find_optimum(max_iter=100, stay_count=10000,
+                                       tolerance=0.01))
+    print(opt_loc)
+    print(opt_loc._neighbours_weights)
+    print(opt_loc.local_dist)
 
 
 

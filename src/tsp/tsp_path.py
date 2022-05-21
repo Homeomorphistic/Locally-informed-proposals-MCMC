@@ -1,10 +1,9 @@
 """TODO module description"""
 
-from typing import Dict, Tuple, Any, Callable
+from typing import Dict, Tuple, Any, Optional
 from nptyping import NDArray, Shape
 from tsplib95.models import Problem
 from scipy.special import softmax
-from mcmc.utils import normalize
 import numpy as np
 
 
@@ -15,13 +14,15 @@ class TSPath:
     _neighbours_dict: Dict[Tuple[int, int], int] = {}
     _num_nodes: int = None
     _problem: Problem = None
+    _cooling: float = None
 
     def __init__(self,
                  path: NDArray[Shape['*'], Any],
                  problem: Problem = None,
                  weight: float = None,
                  locally: bool = False,
-                 neighbour_weights: NDArray[Shape['*'], Any] = None
+                 neighbour_weights: NDArray[Shape['*'], Any] = None,
+                 cooling: float = None
                  ) -> None:
         """Initialize TravelingSalesmenPath class
         
@@ -45,6 +46,9 @@ class TSPath:
             self._neighbours_weights = self.get_neighbours_weights()
         else:
             self._neighbours_weights = neighbour_weights
+
+        if TSPath._cooling is None:  # if not set, set it to be initial weight.
+            TSPath._cooling = cooling or self._weight
 
         self._local_dist = locally and self.get_local_distribution()
 
@@ -129,7 +133,7 @@ class TSPath:
         return weights
 
     def get_local_distribution(self) -> NDArray[Shape['*'], Any]:
-        return softmax(-normalize(self._neighbours_weights))
+        return softmax(- self._neighbours_weights / self.cooling)
 
     def next_neighbours_weights(self,
                                 i: int,
@@ -169,6 +173,18 @@ class TSPath:
                 neighbour_id += 1
 
         return weights
+
+    @property
+    def path(self) -> NDArray[Shape['*'], Any]:
+        return self._path
+
+    @property
+    def local_dist(self) -> NDArray[Shape['*'], Any]:
+        return self._local_dist
+
+    @property
+    def cooling(self) -> Optional[float]:
+        return self._cooling
 
     def __str__(self):
         return f'Path:\n{str(self._path)}\nDistance: {self._weight}'
