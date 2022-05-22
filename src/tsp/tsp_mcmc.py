@@ -22,7 +22,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         self._num_nodes = len(self._nodes)
 
         init_weight = self._problem.trace_tours([self._nodes])[0]
-        self._cooling = cooling or init_weight
+        self._cooling = cooling or init_weight * 0.01
 
         if locally:
             self._next_candidate = self.next_candidate_locally
@@ -77,7 +77,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     def log_ratio_locally(self, candidate: TSPath) -> float:
         """TODO docstrings"""
         i, j = TSPath._last_swap
-        current_id = TSPath._neighbours_dict.get((i,j))
+        current_id = TSPath._neighbours_dict.get((i, j))
         neighour_id = current_id
         return ((self._current._weight
                 - candidate._weight) / self.cooling
@@ -95,7 +95,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                        current: TSPath,
                        tolerance: float = 0.01
                        ) -> bool:
-        return current._weight <= previous._weight * (1 + tolerance)
+        return True#return current._weight <= previous._weight * (1 + tolerance)
 
     def save_optimum(self,
                      time: float,
@@ -132,16 +132,14 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 
 if __name__ == "__main__":
-    berlin_uni = TravelingSalesmenMCMC(cooling=20000)
-    berlin_loc = TravelingSalesmenMCMC(locally=True, cooling=20000)
-    opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
-                                       tolerance=0.01))
-    print(opt_uni)
-    opt_loc = (berlin_loc.find_optimum(max_iter=100, stay_count=10000,
-                                       tolerance=0.01))
+    # berlin_uni = TravelingSalesmenMCMC(cooling=10)
+    # opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
+    #                                    tolerance=0.00))
+    # print(opt_uni)
+    berlin_loc = TravelingSalesmenMCMC(locally=True, cooling=10)
+    opt_loc = (berlin_loc.find_optimum(max_iter=1000, stay_count=10000,
+                                       tolerance=0.00))
     print(opt_loc)
-    print(opt_loc._neighbours_weights)
-    print(opt_loc.local_dist)
 
 
 

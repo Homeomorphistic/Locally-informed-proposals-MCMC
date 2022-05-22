@@ -162,11 +162,14 @@ class TSPath:
         for k in range(n):
             for l in range(k + 1, n):
                 if (k in exception_set) or (l in exception_set):
-                    weights_to_rmv = (sum(self.get_adjacent_weights(k))
-                                      + sum(self.get_adjacent_weights(l)))
-                    weights_to_add = (
-                                sum(self.path_adjacent_weights(neighbour, k))
-                                + sum(self.path_adjacent_weights(neighbour, l)))
+                    path_kl = self._path.copy()
+                    path_kl[i], path_kl[j] = path_kl[j], path_kl[i]
+                    nghbr_kl = neighbour.copy()
+                    nghbr_kl[i], nghbr_kl[j] = nghbr_kl[j], nghbr_kl[i]
+                    weights_to_rmv = (sum(self.path_adjacent_weights(path_kl, k))
+                                    + sum(self.path_adjacent_weights(path_kl, l)))
+                    weights_to_add = (sum(self.path_adjacent_weights(nghbr_kl, k))
+                                    + sum(self.path_adjacent_weights(nghbr_kl, l)))
                     weights[neighbour_id] += (weights_to_add - weights_to_rmv
                                               - common_update)
 
