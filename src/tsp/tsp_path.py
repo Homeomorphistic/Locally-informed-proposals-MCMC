@@ -84,26 +84,22 @@ class TSPath:
 
     @staticmethod
     def path_neighbour_weight(path: NDArray[Shape['*'], Any],
-                              weight: float,
                               i: int,
                               j: int) -> float:
         """TODO docstrings indices to swap"""
         neighbour = path.copy()
         neighbour[i], neighbour[j] = neighbour[j], neighbour[i]
-        neighbour_weight = weight
 
         weights_to_rmv = (sum(TSPath.path_adjacent_weights(path, i))
                           + sum(TSPath.path_adjacent_weights(path, j)))
         weights_to_add = (sum(TSPath.path_adjacent_weights(neighbour, i))
                           + sum(TSPath.path_adjacent_weights(neighbour, j)))
 
-        return neighbour_weight - weights_to_rmv + weights_to_add
+        return weights_to_add - weights_to_rmv
 
     def get_neighbour_weight(self, i: int, j: int) -> float:
         """TODO docstrings"""
-        return self.path_neighbour_weight(path=self._path,
-                                          weight=self._weight,
-                                          i=i, j=j)
+        return self.path_neighbour_weight(path=self._path, i=i, j=j)
 
     @staticmethod
     def get_neighbours_dict() -> Dict[Tuple[int, int], int]:
@@ -133,7 +129,7 @@ class TSPath:
         return weights
 
     def get_local_distribution(self) -> NDArray[Shape['*'], Any]:
-        return softmax(- self._neighbours_weights / self.cooling)
+        return softmax(-0.01 * self._neighbours_weights / self.cooling)
 
     def next_neighbours_weights(self,
                                 i: int,
@@ -143,15 +139,8 @@ class TSPath:
         n = self._num_nodes
         neighbour = self._path.copy()
         neighbour[i], neighbour[j] = neighbour[j], neighbour[i]
+        # Most of the vertices have the same weight difference.
         weights = self._neighbours_weights.copy()
-
-        # Most of the vertices need to be updated by the same amount.
-        weights_to_rmv = (sum(self.get_adjacent_weights(i))
-                          + sum(self.get_adjacent_weights(j)))
-        weights_to_add = (sum(self.path_adjacent_weights(neighbour, i))
-                          + sum(self.path_adjacent_weights(neighbour, j)))
-        common_update = weights_to_add - weights_to_rmv
-        weights += common_update
 
         # EXCEPTIONS
         i_l, i_r = (i - 1) % n, (i + 1) % n
@@ -162,16 +151,8 @@ class TSPath:
         for k in range(n):
             for l in range(k + 1, n):
                 if (k in exception_set) or (l in exception_set):
-                    path_kl = self._path.copy()
-                    path_kl[i], path_kl[j] = path_kl[j], path_kl[i]
-                    nghbr_kl = neighbour.copy()
-                    nghbr_kl[i], nghbr_kl[j] = nghbr_kl[j], nghbr_kl[i]
-                    weights_to_rmv = (sum(self.path_adjacent_weights(path_kl, k))
-                                    + sum(self.path_adjacent_weights(path_kl, l)))
-                    weights_to_add = (sum(self.path_adjacent_weights(nghbr_kl, k))
-                                    + sum(self.path_adjacent_weights(nghbr_kl, l)))
-                    weights[neighbour_id] += (weights_to_add - weights_to_rmv
-                                              - common_update)
+                    weights[neighbour_id] = self.path_neighbour_weight(
+                        path=neighbour, i=k, j=l)
 
                 neighbour_id += 1
 

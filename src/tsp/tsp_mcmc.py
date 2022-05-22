@@ -42,7 +42,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         """TODO docstrings, deep copy for path"""
         # Random indices to swap in path.
         i, j = np.random.choice(self._num_nodes, size=2, replace=False)
-        neighbour_weight = self._current.get_neighbour_weight(i, j)
+        neighbour_weight = (self._current.get_neighbour_weight(i, j)
+                            + self.current._weight)
         neighbour_path = self.current._path.copy()
         # Swap random vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
@@ -61,7 +62,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         # Get indices to swap.
         i, j = list(neighbours_dict.keys())[neighbour]
         TSPath._last_swap = i, j
-        neighbour_weight = self._current.get_neighbour_weight(i, j)
+        neighbour_weight = (self._current.get_neighbour_weight(i, j)
+                            + self.current._weight)
         next_neighbour_weights = self.current.next_neighbours_weights(i, j)
         # Swap vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
@@ -79,7 +81,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         i, j = TSPath._last_swap
         current_id = TSPath._neighbours_dict.get((i, j))
         neighour_id = current_id
-        return ((self._current._weight
+        return (0.01*(self._current._weight
                 - candidate._weight) / self.cooling
                 + np.log(self.current._local_dist[neighour_id])
                 - np.log(candidate._local_dist[current_id]))
@@ -132,14 +134,15 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 
 if __name__ == "__main__":
-    # berlin_uni = TravelingSalesmenMCMC(cooling=10)
-    # opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
-    #                                    tolerance=0.00))
-    # print(opt_uni)
-    berlin_loc = TravelingSalesmenMCMC(locally=True, cooling=10)
-    opt_loc = (berlin_loc.find_optimum(max_iter=1000, stay_count=10000,
+    berlin_uni = TravelingSalesmenMCMC(name='berlin52', cooling=1)
+    opt_uni = (berlin_uni.find_optimum(max_iter=100, stay_count=10000,
+                                       tolerance=0.00))
+    print(opt_uni)
+    berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True, cooling=1)
+    opt_loc = (berlin_loc.find_optimum(max_iter=100, stay_count=10000,
                                        tolerance=0.00))
     print(opt_loc)
+    print(max(opt_loc.local_dist))
 
 
 
