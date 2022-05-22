@@ -13,7 +13,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     def __init__(self,
                  name: str = 'berlin52',
                  locally: bool = False,
-                 cooling: float = None,
+                 cooling: float = 1.0,
                  past_max_len: int = 0,
                  ) -> None:
         """TODO docstrings"""
@@ -135,11 +135,11 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC(name='berlin52', cooling=1)
-    opt_uni = (berlin_uni.find_optimum(max_iter=100, stay_count=10000,
+    opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
                                        tolerance=0.00))
     print(opt_uni)
     berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True, cooling=1)
-    opt_loc = (berlin_loc.find_optimum(max_iter=100, stay_count=10000,
+    opt_loc = (berlin_loc.find_optimum(max_iter=1000, stay_count=10000,
                                        tolerance=0.00))
     print(opt_loc)
     print(max(opt_loc.local_dist))
