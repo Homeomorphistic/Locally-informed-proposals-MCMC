@@ -68,6 +68,7 @@ class TSPath:
         return left_edge, right_edge
 
     def get_adjacent_edges(self, i: int) -> Tuple:
+        """TODO docstrings"""
         return self.path_adjacent_edges(path=self._path, i=i)
 
     @staticmethod
