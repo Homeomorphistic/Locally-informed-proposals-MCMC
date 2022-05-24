@@ -6,7 +6,7 @@ SAVE=${1:-"False"}
 
 for PROBLEM in $PROBLEMS_LIST
   do
-    SCALING_LIST=$(ls "results/sprint-3-test/${PROBLEM}")
+    SCALING_LIST=$(ls "results/sprint-3/${PROBLEM}")
 
     for SCALING in $SCALING_LIST
       do

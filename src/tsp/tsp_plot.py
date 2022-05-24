@@ -34,8 +34,8 @@ def parse_arguments():
 # Get arguments for running TSP solver.
 data, scaling, save = parse_arguments()
 # Prepare paths for reading.
-path_nonlocal = f'results/sprint-3-test/{data}/scaling={scaling}/locally=False'
-path_local = f'results/sprint-3-test/{data}/scaling={scaling}/locally=True'
+path_nonlocal = f'results/sprint-3/{data}/scaling={scaling}/locally=False'
+path_local = f'results/sprint-3/{data}/scaling={scaling}/locally=True'
 
 # Read nonlocal results.
 result_dict, num_steps, time, distances = {}, [], [], []
@@ -80,7 +80,7 @@ plt.legend(['Nonlocal', 'Local', 'optimum'], loc='center right')
 
 # Saving figure or printing depending on --save param.
 if save:
-    filename = f'results/sprint-3-test/charts/{data}/{data}_scaling={scaling}.png'
+    filename = f'results/sprint-3/charts/{data}/{data}_scaling={scaling}.png'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     plt.savefig(filename)
 else:
