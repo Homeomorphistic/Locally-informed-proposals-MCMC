@@ -18,8 +18,8 @@ def parse_arguments():
                              '(omit .csv): str = berlin52')
     parser.add_argument('--locally', default=False,
                         help='Use local distribution: bool = False')
-    parser.add_argument('--tolerance', default=0.01,
-                        help='How big the difference between steps can get: '
+    parser.add_argument('--scaling', default=0.01,
+                        help='How to scale the difference between weights: '
                              'float = 0.01')
     parser.add_argument('--max_iter', default=1000,
                         help='Maximum iteration count: int = 1000')
@@ -31,20 +31,19 @@ def parse_arguments():
     args.locally = True if args.locally == 'True' else False
     args.save = True if args.save == 'True' else False
 
-    return (args.data, args.locally, float(args.tolerance),
+    return (args.data, args.locally, float(args.scaling),
             int(args.max_iter), int(args.stay_count), args.save)
 
 
 # Get arguments for running TSP solver.
-data, locally, tolerance, max_iter, stay_count, save = parse_arguments()
+data, locally, scaling, max_iter, stay_count, save = parse_arguments()
 # Run TSP solver and find optimum.
-tsp_solver = TravelingSalesmenMCMC(name=data, locally=locally)
+tsp_solver = TravelingSalesmenMCMC(name=data, locally=locally, scaling=scaling)
 print(f'Running TSP solver for {data} with parameters: \nlocally={locally}, '
-      f'tol={tolerance}, iter={max_iter}, stay_limit={stay_count} \n')
+      f'scale={scaling}, iter={max_iter}, stay_limit={stay_count} \n')
 
 print('Solution found: \n')
-optimum = tsp_solver.find_optimum(tolerance=tolerance,
-                                  max_iter=max_iter,
+optimum = tsp_solver.find_optimum(max_iter=max_iter,
                                   stay_count=stay_count,
                                   save=save)
 print(optimum, '\n')

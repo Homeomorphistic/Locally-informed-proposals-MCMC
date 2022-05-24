@@ -4,16 +4,16 @@
 SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
 LOCALLY_LIST="False True"
-TOLERANCE_LIST="0.01"
-MAX_ITER_LIST="20000 50000"
+SCALING_LIST="1 0.01 0.001"
+MAX_ITER_LIST="5 6"
 
 for MAX_ITER in $MAX_ITER_LIST
   do
-    for TOLERANCE in $TOLERANCE_LIST
+    for SCALING in $SCALING_LIST
       do
         for LOCALLY in $LOCALLY_LIST
           do
-            sh tsp_run_multiple.sh $MAX_ITER $LOCALLY $SAVE "$TOLERANCE" $MAX_ITER
+            sh tsp_run_multiple.sh $MAX_ITER $LOCALLY $SAVE "$SCALING" $MAX_ITER
           done
       done
   done

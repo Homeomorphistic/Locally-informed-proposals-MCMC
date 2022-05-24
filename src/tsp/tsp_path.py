@@ -22,7 +22,8 @@ class TSPath:
                  weight: float = None,
                  locally: bool = False,
                  neighbour_weights: NDArray[Shape['*'], Any] = None,
-                 cooling: float = None
+                 cooling: float = 1.0,
+                 scaling: float = 0.1
                  ) -> None:
         """Initialize TravelingSalesmenPath class
         
@@ -31,6 +32,7 @@ class TSPath:
         self._locally = locally
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
+        self._scaling = scaling
 
         # Static attributes:
         if (problem is not None) and (TSPath._problem is None):
@@ -48,7 +50,7 @@ class TSPath:
             self._neighbours_weights = neighbour_weights
 
         if TSPath._cooling is None:  # if not set, set it to be initial weight.
-            TSPath._cooling = cooling or self._weight
+            TSPath._cooling = cooling
 
         self._local_dist = locally and self.get_local_distribution()
 
@@ -129,7 +131,7 @@ class TSPath:
         return weights
 
     def get_local_distribution(self) -> NDArray[Shape['*'], Any]:
-        return softmax(-0.01 * self._neighbours_weights / self.cooling)
+        return softmax(-self._scaling * self._neighbours_weights / self.cooling)
 
     def next_neighbours_weights(self,
                                 i: int,

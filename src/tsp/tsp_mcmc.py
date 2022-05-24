@@ -3,6 +3,9 @@
 import tsplib95
 import numpy as np
 from typing import Dict, Optional
+from json import dump
+import os
+
 from mcmc.metropolis_hastings import MonteCarloMarkovChain
 from tsp_path import TSPath
 
@@ -14,6 +17,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                  name: str = 'berlin52',
                  locally: bool = False,
                  cooling: float = 1.0,
+                 scaling: float = 0.1,
                  past_max_len: int = 0,
                  ) -> None:
         """TODO docstrings"""
@@ -22,7 +26,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         self._num_nodes = len(self._nodes)
 
         init_weight = self._problem.trace_tours([self._nodes])[0]
-        self._cooling = cooling or init_weight * 0.01
+        self._cooling = cooling
+        self._scaling = scaling
 
         if locally:
             self._next_candidate = self.next_candidate_locally
@@ -35,7 +40,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                                         weight=init_weight,
                                         problem=self._problem,
                                         locally=locally,
-                                        cooling=cooling),
+                                        cooling=cooling,
+                                        scaling=scaling),
                          past_max_len=past_max_len)
 
     def next_candidate_uniform(self) -> TSPath:
@@ -74,14 +80,15 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
     def log_ratio_uniform(self, candidate: TSPath) -> float:
         """TODO docstrings"""
-        return (self._current._weight - candidate._weight) / self.cooling
+        return (self._scaling*(self._current._weight - candidate._weight) /
+               self.cooling)
 
     def log_ratio_locally(self, candidate: TSPath) -> float:
         """TODO docstrings"""
         i, j = TSPath._last_swap
         current_id = TSPath._neighbours_dict.get((i, j))
         neighour_id = current_id
-        return (0.01*(self._current._weight
+        return (self._scaling*(self._current._weight
                 - candidate._weight) / self.cooling
                 + np.log(self.current._local_dist[neighour_id])
                 - np.log(candidate._local_dist[current_id]))
@@ -102,24 +109,26 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     def save_optimum(self,
                      time: float,
                      max_iter: int,
-                     tolerance: float,
+                     tolerance: float
                      ) -> Dict:
         """TODO desripttion"""
         # TODO save to pickle, so there is a way to obtain attributes of curr.
-        from json import dump
+
         optimum_dict = {'num_steps': self.step_num,
                         'num_stays': self.stay_counter,
                         'time': time,
                         'iter': max_iter,
-                        'tol': tolerance,
+                        'scale': self._scaling,
                         'locally': self.current._locally,
                         'distance': self.current._weight,
                         'path': self.current._path.tolist()}
 
-        file = open(f'results/{self.current._problem.name}_iter='
-                    f'{max_iter}'f'_tol={tolerance}_loc='
-                    f'{self.current._locally}.json',
-                    "w")
+        filename = f'results/{self.current._problem.name}' \
+                   f'/{self._scaling}/{self.current._locally}' \
+                   f'/{self.current._problem.name}_iter={max_iter}.json'
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        file = open(filename, "w")
         dump(optimum_dict, file)
         file.close()
 
