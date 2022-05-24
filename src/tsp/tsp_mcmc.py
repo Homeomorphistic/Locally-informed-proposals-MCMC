@@ -124,7 +124,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                         'path': self.current._path.tolist()}
 
         filename = f'results/{self.current._problem.name}' \
-                   f'/{self._scaling}/{self.current._locally}' \
+                   f'/scaling={self._scaling}/locally=' \
+                   f'{self.current._locally}' \
                    f'/{self.current._problem.name}_iter={max_iter}.json'
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 

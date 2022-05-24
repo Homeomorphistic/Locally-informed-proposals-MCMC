@@ -5,7 +5,7 @@ SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
 LOCALLY_LIST="False True"
 SCALING_LIST="1 0.01 0.001"
-MAX_ITER_LIST="5 6"
+MAX_ITER_LIST="6 7"
 
 for MAX_ITER in $MAX_ITER_LIST
   do
