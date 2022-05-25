@@ -4,3 +4,4 @@ tsplib95
 mypy
 nptyping
 scipy
+pandas

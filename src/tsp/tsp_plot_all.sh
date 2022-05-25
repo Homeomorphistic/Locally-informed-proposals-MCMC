@@ -11,7 +11,7 @@ for PROBLEM in $PROBLEMS_LIST
     for SCALING in $SCALING_LIST
       do
         SCALING=${SCALING/"scaling="/}
-        echo "Plotting ${PROBLEM}, ${SCALING}"
+        echo "Plotting ${PROBLEM}, scaling=${SCALING}"
         python tsp_plot.py --data "$PROBLEM" --scaling "$SCALING" --save "$SAVE"
       done
   done

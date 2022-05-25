@@ -4,6 +4,8 @@ import argparse
 import os
 from json import load
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 from tsp_mcmc import TravelingSalesmenMCMC
 
@@ -40,32 +42,42 @@ path_local = f'results/sprint-3/{data}/scaling={scaling}/locally=True'
 # Read nonlocal results.
 result_dict, num_steps, time, distances = {}, [], [], []
 result_files = os.listdir(path_nonlocal)
-result_files.sort()
 for file in result_files:
     file = os.path.join(path_nonlocal, file)
     result_dict = load(open(file, 'r'))
-    num_steps.append(result_dict['num_steps'])
-    time.append(result_dict['time'])
-    distances.append(result_dict['distance'])
+    num_steps.append(int(result_dict['num_steps']))
+    time.append(float(result_dict['time']))
+    distances.append(float(result_dict['distance']))
 else:
     scale = result_dict['scale']
 
 # Plot results for nonlocal.
+order = np.argsort(num_steps)
+num_steps = np.array(num_steps)[order]
+time = np.array(time)[order]
+distances = np.array(distances)[order]
 plt.plot(num_steps, distances)
 
+# Add columns to table.
+results_table = pd.DataFrame({'Num_steps': num_steps, 'Time_non': time,
+                              'Distance_non': distances})
+
 # Read local results.
-result_dict, num_steps, time, distances = {}, [], [], []
+result_dict, time, distances = {}, [], []
 result_files = os.listdir(path_local)
-result_files.sort()
 for file in result_files:
     file = os.path.join(path_local, file)
     result_dict = load(open(file, 'r'))
-    num_steps.append(result_dict['num_steps'])
     time.append(result_dict['time'])
     distances.append(result_dict['distance'])
 
 # Plot results for local.
+time = np.array(time)[order]
+distances = np.array(distances)[order]
 plt.plot(num_steps, distances)
+# Add columns to table.
+results_table['Time_loc'] = time
+results_table['Distance_loc'] = distances
 
 # Reading the true optimum.
 opt_dict = load(open('data/tsp_optimal.json', 'r'))
@@ -83,5 +95,7 @@ if save:
     filename = f'results/sprint-3/charts/{data}/{data}_scaling={scaling}.png'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     plt.savefig(filename)
+    results_table.to_csv(filename[:-3]+"csv")
 else:
+    print(results_table)
     plt.show()
