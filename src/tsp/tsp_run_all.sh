@@ -5,8 +5,12 @@ SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
 LOCALLY_LIST="False True"
 SCALING_LIST="1 0.1 0.01 0.001"
-MAX_ITER_LIST="10000 20000"
+MAX_ITER_LIST="20000"
 
+echo -e "\n=================================================="
+echo -e "============== RUNNING ALL TSP PROBLEMS\n"
+
+START=$(date +%s)
 for MAX_ITER in $MAX_ITER_LIST
   do
     for SCALING in $SCALING_LIST
@@ -17,6 +21,12 @@ for MAX_ITER in $MAX_ITER_LIST
           done
       done
   done
+END=$(date +%s)
+
+TIME_ELAPSED=$((END-START))
+echo -e "\n============== FINISHED ALL TSP PROBLEMS."
+echo -e "============== It took $(((TIME_ELAPSED)/60)) minutes, $(((TIME_ELAPSED)%60)) seconds."
+echo -e "==================================================\n"
 
 # Shutdown if finished at night.
 if [ "$TURNOFF" = "True" ];

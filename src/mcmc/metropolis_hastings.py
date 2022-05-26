@@ -149,13 +149,20 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                      save: bool = False
                      ) -> State:
         """TODO docstring"""
+        self.save_optimum(time=0.0,
+                          max_iter=0,
+                          tolerance=tolerance)
         # Stop when chain stays at the same state for too long or some stop
         # condition is achieved or too many iterations.
         start = perf_counter()
         while (self._stay_counter < stay_count
                and self.stop_condition(self._current, self.__next__(), tolerance)
                and self._step_num < max_iter):
-            pass
+            if save and (self.step_num in {5,1000, 2000, 5000, 10000, 20000, 50000}):
+                stop = perf_counter()
+                self.save_optimum(time=stop - start,
+                                  max_iter=self.step_num,
+                                  tolerance=tolerance)
         stop = perf_counter()
 
         print(f'Time elapsed: {stop-start:0.2f}')

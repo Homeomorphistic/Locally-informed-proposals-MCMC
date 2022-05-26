@@ -46,5 +46,5 @@ print('Solution found: \n')
 optimum = tsp_solver.find_optimum(max_iter=max_iter,
                                   stay_count=stay_count,
                                   save=save)
-print(optimum, '\n')
+
 
