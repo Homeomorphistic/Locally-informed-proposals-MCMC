@@ -163,6 +163,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                 self.save_optimum(time=stop - start,
                                   max_iter=self.step_num,
                                   tolerance=tolerance)
+                print(f'tsp_solver at {self.step_num} step.')
         stop = perf_counter()
 
         print(f'Time elapsed: {stop-start:0.2f}')
