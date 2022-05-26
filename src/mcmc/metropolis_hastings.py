@@ -158,7 +158,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         while (self._stay_counter < stay_count
                and self.stop_condition(self._current, self.__next__(), tolerance)
                and self._step_num < max_iter):
-            if save and (self.step_num in {5,1000, 2000, 5000, 10000, 20000, 50000}):
+            if save and (self.step_num in {1000, 2000, 5000, 10000, 20000, 50000}):
                 stop = perf_counter()
                 self.save_optimum(time=stop - start,
                                   max_iter=self.step_num,
