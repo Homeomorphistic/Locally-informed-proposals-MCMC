@@ -1,0 +1,51 @@
+\input{setup/packages}
+\input{setup/macros}
+
+
+
+
+\begin{document}
+	\input{other/title_page}
+	\newpage
+	
+	\input{other/abstract}
+	\newpage
+	
+	\tableofcontents
+	\listoftables
+	\listoffigures
+	\clearpage
+	
+	\section{Introduction}
+		\input{sections/introduction}
+	
+	\section{Markov chains}
+		\input{sections/markov_chains}
+	
+	\section{Markov chain Monte Carlo methods}
+		\input{sections/mcmc}
+	
+	\section{Traveling salesman problem}
+	
+	\section{Decoding encrypted text}
+	
+	\section{Code description?}
+	
+	\section{Conclusions}
+	
+	\clearpage
+	\addcontentsline{toc}{section}{References}
+	\nocite{*}
+	\bibliographystyle{abbrv}
+	\bibliography{references/references}
+	
+	
+	
+	\appendix
+	\clearpage
+	\section{Source code} \label{apsec:code}
+		%\lstinputlisting[firstline=13, lastline=192]{genomeTesting.R}
+	\clearpage
+	
+	
+\end{document}

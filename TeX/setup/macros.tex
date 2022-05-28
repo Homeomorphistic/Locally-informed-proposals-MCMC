@@ -1,0 +1,199 @@
+% !TEX root = ../main.tex
+%------------------------Custom Commands----------------------%
+
+\usepackage{dsfont}
+\newcommand{\indic}[0]{\mathds{1}}
+
+% = = = Latin Short-forms (ie, eg, etc, et al)
+\usepackage{xspace}
+\newcommand{\etal}{\textit{et al.}\xspace}
+\newcommand{\etc}{\textit{etc.}\xspace}
+\newcommand{\ie}{\textit{i.e.,}\xspace}
+\newcommand{\eg}{\textit{e.g.,}\xspace}
+\newcommand{\cf}{\textit{cf.}\xspace}
+\newcommand{\supra}{\textit{Supra}\xspace}
+\newcommand*\xor{\mathbin{\oplus}}
+\newcommand{\Ent}{\mathrm{Ent}\xspace}
+
+\renewcommand{\thealgorithm}{}
+
+% \SetKwInOut{Parameter}{parameter}
+% = = = Arrow -> (\lt)
+\newcommand{\lt}{$\rightarrow$\xspace}
+
+% = = = Keywords (kw)
+\newcommand{\kw}[1]{\textsf{#1}}
+\newcommand{\rcc}{\textsf{RC4}\xspace}
+\newcommand{\ksa}{\textsf{KSA}\xspace}
+\newcommand{\ksai}{\textsf{KSA$^*$}\xspace}
+\newcommand{\prga}{\textsf{PRGA}\xspace}
+\newcommand{\sst}{\textsf{SST}\xspace}
+\newcommand{\ctrt}{\textsl{Cyclic-to-Random Transpositions}\xspace}
+\newcommand{\rtrt}{\textsl{Random-to-Random Transpositions}\xspace}
+\newcommand{\riffle}{\textsl{Riffle Shuffle}\xspace}
+\newcommand{\rsst}{\texttt{RiffleSST}\xspace}
+
+
+
+
+\newcommand*{\QEDA}{\hfill\ensuremath{\blacksquare}}%
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}%
+
+
+% = = = Colored text (textblue)
+\newcommand{\textblue}[1]{\textcolor{blue}{#1}}
+
+% = = = Compact Lists (compactlist, compactlistn)
+\newenvironment{compactlist}
+  {\begin{itemize} 
+  \setlength{\itemsep}{0pt} 
+  \setlength{\parskip}{0pt}} 
+  {\end{itemize}}
+  
+\newenvironment{compactlistn}
+  {\begin{enumerate} 
+  \setlength{\itemsep}{0pt} 
+  \setlength{\parskip}{0pt}} 
+  {\end{enumerate}}
+  
+\renewcommand{\labelitemi}{$\bullet$}
+  
+
+%------------------------Crypto----------------------%  
+
+% = = = Zp, Gq and Zq
+\newcommand{\Zp}{\mathbb{Z}^{*}_{p}}
+\newcommand{\Zq}{\mathbb{Z}_{q}}
+\newcommand{\Gq}{\mathbb{G}_{q}}
+\newcommand{\PP}[0]{\mathbf{P}}
+\newcommand{\E}[0]{\mathbb{E}}
+\newcommand{\e}[0]{\mathbf{e}}
+
+\newcommand{\Z}[0]{\mathbf{Z}}
+ 
+\newcommand{\p}[0]{\mathbf{p}}
+\newcommand{\q}[0]{\mathbf{q}}
+\newcommand{\C}[0]{\mathbf{C}}
+\newcommand{\X}[0]{\mathbf{X}}
+\newcommand{\Y}[0]{\mathbf{Y}}
+
+\newcommand{\es}[0]{\mathbf{s}}
+\newcommand{\trev}[0]{\overleftarrow}
+
+\renewcommand{\E}[0]{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\x}[0]{\mathbf{x}}
+
+\usepackage{bm}
+\renewcommand{\x}[0]{\bm{x}}
+\newcommand{\y}[0]{\bm{y}}
+\newcommand{\bfu}[0]{\bm{u}}
+\newcommand{\bfv}[0]{\mathbf{v}}
+\newcommand{\bfw}[0]{\bm{w}}
+\newcommand{\w}[0]{\bm{w}}
+\newcommand{\ww}[0]{\bm{w}}
+\newcommand{\bfs}[0]{\bm{s}}
+\newcommand{\bfh}[0]{\bm{h}}
+\newcommand{\bfz}[0]{\bm{z}}
+\renewcommand{\bfw}[0]{\bm{w}}
+
+%imaginary i
+\newcommand{\iu}{\mathrm{\mathbf{i}}}
+
+\newcommand{\bfy}[0]{\bm{y}}
+\newcommand{\bfA}[0]{\mathbf{A}}
+\newcommand{\bfS}[0]{\mathbf{S}}
+\newcommand{\bfW}[0]{\mathbf{W}}
+\newcommand{\bfl}[0]{\bm{l}}
+\newcommand{\bff}[0]{\bm{f}}
+\newcommand{\bfg}[0]{\bm{g}}
+\newcommand{\bfmu}[0]{\bm{\mu}}
+\newcommand{\bfpi}[0]{\boldsymbol{\pi}}
+
+\newcommand{\pl}[1]{\textcolor{red}{PL: #1}}
+
+
+
+\newcommand{\s}[0]{\mathbf{s}}
+ 
+ 
+\newcommand{\WW}[0]{\mathbf{W}}
+\newcommand{\HH}[0]{\mathbf{H}}
+\newcommand{\LLambda}[0]{{\bf \Lambda}}
+ 
+\newcommand{\bfU}[0]{\mathbf{U}}
+\newcommand{\bfV}[0]{\mathbf{V}}
+\newcommand{\bfI}[0]{\mathbf{I}}
+\newcommand{\F}[0]{\mathbf{F}}
+\newcommand{\LL}[0]{\mathbf{L}}
+\newcommand{\bfSigma}[0]{\boldsymbol{\Sigma}}
+
+
+\newcommand{\diag}{\mathbf{diag}}
+\newcommand{\monD}[0]{\downarrow}
+\newcommand{\monU}[0]{\uparrow}
+
+% = = = Encryption, etc.
+\newcommand{\Enc}[1]{\mathsf{Enc}(#1)}
+\newcommand{\EncK}[2]{\mathsf{Enc}_{#1}(#2)}
+\newcommand{\DecK}[2]{\mathsf{Dec}_{#1}(#2)}
+\newcommand{\EncSST}[2]{\mathsf{Enc}^{SST}_{#1}(#2)}
+\newcommand{\EncB}[1]{\llbracket #1 \rrbracket}
+\newcommand{\ReRand}[1]{\mathsf{ReRand}(#1)}
+\newcommand{\Hash}[1]{\mathcal{H}(#1)}
+\newcommand{\Sign}[1]{\mathsf{Sig}(#1)}
+\newcommand{\Comm}[1]{\mathsf{Comm}(#1)}
+\newcommand{\Open}[1]{\mathsf{Open}(#1)}
+\newcommand{\PRG}[1]{\mathsf{PRG}(#1)}
+
+% = = = Tuples
+\newcommand{\tuple}[1]{\left \langle #1 \right \rangle}
+
+
+\usepackage{mathtools}
+\DeclarePairedDelimiterX{\dotp}[2]{\langle}{\rangle}{#1, #2}
+
+%-------------------Custom for Paper----------------------%
+
+% = = = Name
+\newcommand{\ballotid}{\textsf{VoteSerial}\xspace}
+\newcommand{\code}{\textsf{VoteCode}\xspace}
+
+\newcommand{\serial}{\textsf{AuthSerial}\xspace}
+\newcommand{\auth}{\textsf{AuthCode}\xspace}
+\newcommand{\ack}{\textsf{AckCode}\xspace}
+\newcommand{\sig}{\textsf{Sig}(\%)\xspace}
+\newcommand{\lock}{\textsf{LockCode}\xspace}
+
+
+\def\lc{\left\lceil}   
+\def\rc{\right\rceil}
+
+
+\renewcommand{\thealgorithm}{\arabic{algorithm}} 
+
+
+
+\usepackage{stackengine}
+\stackMath
+\newlength\matfield
+\newlength\tmplength
+\def\matscale{1.}
+\newcommand\dimbox[3]{%
+  \setlength\matfield{\matscale\baselineskip}%
+  \setbox0=\hbox{\vphantom{X}\smash{#3}}%
+  \setlength{\tmplength}{#1\matfield-\ht0-\dp0}%
+  \fboxrule=1pt\fboxsep=-\fboxrule\relax%
+  \fbox{\makebox[#2\matfield]{\addstackgap[.5\tmplength]{\box0}}}%
+}
+\newcommand\raiserows[2]{%
+   \setlength\matfield{\matscale\baselineskip}%
+   \raisebox{#1\matfield}{#2}%
+}
+\newcommand\matbox[5]{
+  \stackunder{\dimbox{#1}{#2}{$#5$}}{\scriptstyle(#3\times #4)}%
+}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+ 
