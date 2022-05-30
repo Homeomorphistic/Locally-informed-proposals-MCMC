@@ -110,6 +110,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 		\begin{equation*}
 			\bfpi = \bfpi \PP.
 		\end{equation*}
+		This equation is often described as the balance equation.
 	\end{definition}
 	From this definition it is easy to see that if a MC gets to stationary distribution it will not leave it. 
 	
@@ -128,7 +129,48 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 			\lim_{n \rightarrow \infty} p_ij(n) = \pi_j.
 		\end{equation*}
 	\end{theorem}
-	Proof?
+	\begin{proof}
+		content...
+	\end{proof}
 	
 	Those theorems tell us for some MC we are able to predict their behaviors after enough time passes. It also gives us a tool to sample from a given distribution $\bfpi$ using Markov chains.
+	
+\subsection{Reversibility}
+	A reversible MC has a property of having the same distribution in the past and in the future.
+	\begin{definition}[Reversibility]
+		A Markov chain $(X_n)$ is reversible if random vectors
+		\begin{equation*}
+			(X_{i_1}, X_{i_2}, \ldots, X_{i_k}) \; \mathrm{and} \; (X_{m-i_1}, X_{m-i_2}, \ldots, X_{m-i_k}),
+		\end{equation*}
+		have the same distribution for all $m$ and $i_j, m-i_j \in T$.
+	\end{definition}
+	
+	This condition is just a mathematical representation of the previous statement and it is not practical, so we need another way of describing it.
+	\begin{definition}[Detailed balance]
+		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)^T$ satisfies detailed balance for a Markov chain with transition matrix $\PP$ if
+		\begin{equation*}
+			\forall \; i,j \in S \; \pi_i p_{i,j} = \pi_j p_{j,i}
+		\end{equation*}
+	\end{definition}
+	
+	\begin{definition}
+		A Markov chain is said to be reversible if there exists a reversible distribution for it.
+	\end{definition}
+
+	This definition is much more practical, because the condition can be calculated for each proposed distribution.
+	
+	\begin{theorem}
+		If a probability distribution $\bfpi$ satisfies detailed balance for a Markov chain with transition matrix $\PP$, then $\bfpi$ is a stationary distribution for this chain.
+	\end{theorem}
+	\begin{proof}
+		Summing over all $i \in S$ we get
+		\begin{equation*}
+			\sum_{i \in S} \pi_i p_{i,j} = \pi_j \sum_{i \in S} p_{j,i} = \pi_j,
+		\end{equation*}
+		which is a balance equation.
+	\end{proof}
+
+	The detailed balance will be often used in as it is somewhat easier to check than balance equation.
+	
+	
 	
