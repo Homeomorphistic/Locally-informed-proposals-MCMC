@@ -45,6 +45,38 @@ Now that we have a target distribution we can try sampling using a MC produced b
 			\sigma: \quad (e_{\sigma(1), \sigma(2)}, e_{\sigma(2), \sigma(3)} \ldots, e_{\sigma(k-1), \sigma(k)}, e_{\sigma(k), \sigma(k+1)}, \ldots, e_{\sigma(l-1), \sigma(l)}, e_{\sigma(l), \sigma(l+1)}, \ldots) \\
 			\sigma': \quad(e_{\sigma(1), \sigma(2)}, e_{\sigma(2), \sigma(3)} \ldots, e_{\sigma(k-1), \sigma(l)}, e_{\sigma(l), \sigma(k+1)}, \ldots, e_{\sigma(l-1), \sigma(k)}, e_{\sigma(k), \sigma(l+1)}, \ldots)
 		\end{align*}
-		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove weights $w_{k-1, k}, w_{k, k+1}, w_{l-1, l}, w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost.
+		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{k-1, k}, w_{k, k+1}, w_{l-1, l}, w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost.
+		
+	\subsubsection{Algorithm}
+		To sum up all the information we present the algorithm for this method (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
+		
+		\begin{algorithm}
+			\caption{Random neighbours algorithm}\label{alg:rnd_neigh}
+			\begin{algorithmic}[1]
+				\State{Choose a tour $\sigma \in S_n$.}
+				\State{$X_0 \gets \sigma$}
+				\State{Compute $w_\sigma$.}
+				\For{$i = 1,2, \ldots$}
+				\State{Sample $k, l \sim Unif\left\{1, 2, \ldots, n\right\}$ without replacement.}
+				\State{Sample $U \sim Unif(0,1)$.}
+				\State{$w_{\sigma'} \gets w_\sigma - (w_{k-1, k} + w_{k, k+1} + w_{l-1, l} + w_{l, l+1}) + (w_{k-1, l} + w_{l, k+1} + w_{l-1, k} + w_{k, l+1})$}
+				
+				\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) \right)$}
+				\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
+				\Else
+				\State $X_{i+1} \gets X_i$
+				\EndIf
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
 
 \subsection{Locally-informed proposals}
+	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. 
+	
+	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its around 1 million neighbours).
+	
+	The observation here is similar to the previous one -- when we have weights for all neighbours of a starting tour, we can update them by a common factor, only some of them change in a different way.
+	
+	\subsubsection{Computational considerations}
+	
+	\subsubsection{Algorithm}
