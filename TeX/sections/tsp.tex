@@ -38,6 +38,19 @@ TSP asks to find a shortest (the least costly) path between the vertices of a gi
 	It definition exactly states the Traveling salesman problem: visit all cities once, with the least distance covered.
 	
 \subsection{Complexity}
-	Think of all possible permutations.
+	At first glance, one might not think of this as a hard problem, but to understand complexity of that, it is enough to think of all the permutation of vertices. The set of $n$ vertices $S_n$ has $n!$ elements, a number which grows rapidly. It means that if we want to check all possible salesman tours, we need to compute distances at most $n!$ times, which becomes infeasible with only $20$ cities. 
+	
+	Depending on a method of calculating the distance we obtain complexity of $O(n! \cdot d(n))$ where $d(n)$ is a number of steps needed to calculate distance of one path. If one just adds all weights then the complexity will be of $O(n! \cdot n)$, which is a lot more than a polynomial complexity and quickly becomes impossible to compute.
+	
+	There are other methods like dynamic programming -- Held-Karp algorithm, but the complexity of $O(n^2 \cdot 2^n)$ is still a lot. The problem has been shown to be $NP$-hard even with removing some of the contradicts or using easier metrics.
 
 \subsection{Dataset}
+	To test our methods we have obtained data from \textit{TSPLIB}(\cite{TSPLIB8:online}) a site, which is a library of sample instances for TSP (not only that) from various sources and types. All the files there are of the extension \textit{.tsp} (or alternatively \textit{.xml}) and of following structure: \textit{nameN.tsp}. \textit{name} defines where does the data come from and \textit{N} defines how many vertices there are. For handling this extension we use \textit{tsplib95} package in \textit{Python3}
+	
+	All of the datasets there have an optimal solution, so we are able to compere our solutions. We have chosen only some of them:
+	\begin{itemize}
+		\item \textit{berlin52} 52 locations in Berlin, with an optimal solution: 7542,
+		\item \textit{kroA150} 150-city problem A, with an optimal solution: 26524,
+		\item \textit{att532} 532 AT\&T switch locations in the USA, with an optimal solution: 27686,
+		\item \textit{dsj1000} clustered random problem, with an optimal solution: 18659688.
+	\end{itemize}
