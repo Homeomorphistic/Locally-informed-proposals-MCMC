@@ -36,7 +36,7 @@ def parse_arguments():
 # Get arguments for running TSP solver.
 data, scaling, save = parse_arguments()
 # Prepare paths for reading.
-path_nonlocal = f'results/sprint-3/{data}/scaling={scaling}/locally=False'
+path_nonlocal = f'results/sprint-3/{data}/scaling=1.0/locally=False'
 path_local = f'results/sprint-3/{data}/scaling={scaling}/locally=True'
 
 # Read nonlocal results.
@@ -70,6 +70,8 @@ for file in result_files:
     result_dict = load(open(file, 'r'))
     time.append(result_dict['time'])
     distances.append(result_dict['distance'])
+else:
+    scale = result_dict['scale']
 
 # Plot results for local.
 time = np.array(time)[order]
