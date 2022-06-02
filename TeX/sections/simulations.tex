@@ -1,10 +1,11 @@
 In the precious section we have seen that a deterministic approach of computing salesman tours is infeasible, so we can turn now to probabilistic methods of MCMC. Instead of checking all possible tours, now we want sample from this space, so the question is, how do we define a distribution there? It is usually done with a \textit{softmax}, a transformation of our target function, which is in this case a distance of a tour.
 
 \begin{definition}
-	For a given vector $\x = (x_1, x_2, \ldots, x_p)^T \in \R^p$ a softmax function $s: \R^p \rightarrow \left[0, 1\right]^p$ is defined as
-	\begin{equation*}
-		s(\x)_i = \frac{e^{x_i}}{\sum_{j=1}^{p} e^{x_j}}.
-	\end{equation*}
+	For a given vector $\x = (x_1, x_2, \ldots, x_d)^T \in \R^d$ a softmax function $s: \R^d \rightarrow \left[0, 1\right]^d$ is defined as
+	\begin{align*}
+		s(\x)_i &= \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
+		s(\x) &= \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
+	\end{align*}
 \end{definition}
 Such defined function is a probability distribution and it does not change the order of a given vector. This is important for us, because we can apply a softmax to the distances (weights) of the tours, so that we change them into distribution, but we will not change the relation between tours -- ones with longer distances will have greater probability. As we are interested in shortest distances, we can add a minus sign to give them the greatest probability.
 
@@ -37,7 +38,7 @@ Now that we have a target distribution we can try sampling using a MC produced b
 	\subsubsection{Computational considerations}
 		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma_i$ we need to calculate a sum:
 		\begin{equation*}
-			w_i = \sum_{i=1}^{n} w_{\sigma(i), \sigma(j)}.
+			w_i = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(j)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
 		
 		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have paths:

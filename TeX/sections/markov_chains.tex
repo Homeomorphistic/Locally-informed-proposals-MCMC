@@ -20,14 +20,13 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	\begin{definition}
 		A probability space is a triplet $\left( \Omega, \mathcal{F}, P \right)$, where $\Omega$ is some abstract sample space, $\mathcal{F}$ is a $\sigma$-algebra (event space) and $P$ is a probability measure.
 	\end{definition}
-	In case of Markov chain sample space is a space of all possible Markov chains and an event space is a space of all events with Markov chains(?). Probability measure is not explicitly given, because it is often not possible to find a probability of a chain.
+	In our case the sample space is a common space for random variables $X_k, \; k=0,1,\ldots$ and is a space of all possible states. The event space is a space of all possible events given our states. Probability measure is not explicitly given, because it is often not easy to find a probability of a random variable.
 	
 	Most of the time a Markov chain will be associated with a stochastic transition matrix $\PP$, that represents probabilities of transitions between states.
 	\begin{definition}
-		A stochastic matrix $\PP$ is a matrix, which rows sum to $1$.
+		A stochastic matrix $\PP$ is a matrix with non-negative entries, which rows sum to $1$.
 	\end{definition}
-	
-	Now with the notation and the background we are able to define a Markov chain.
+	The number of entries of a transition matrix grows quadratically with number of states, so it quickly becomes a large object, not possible to fit into the memory of a computer. Now with the notation and the background we are able to define a Markov chain.
 	
 \subsection{Definition and basic properties}
 	In this subsection we will formally define a Markov chain and list some of its basic properties.
@@ -55,25 +54,28 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	
 	The probabilities $p_{i,j}(n)$ give us a probability of transition between states $i$ and $j$ in $n$  steps. We can use them to form a special matrix that will be linked with a MC.
 	\begin{definition}
-		A transition matrix in $n$ steps $\PP(n)$ for a HMC is a stochastic matrix constructed using transition probabilities:
+		A transition matrix in $n$ steps $\PP(n)$ for a MC is a stochastic matrix constructed using transition probabilities:
 		\begin{equation*}
 			\PP_{i,j}(n) = p_{i,j}(n), \; \PP_{i,j}(0) = \mathds{I}, \; \PP \overset{df}{=} \PP_{i,j}(1).
 		\end{equation*}
 	\end{definition}
 	
 	\begin{definition}
-		A initial distribution of a Markov chain is a vector $\bfmu = (\mu_1, \ldots, \mu_N) \in \R^N$ such that $\sum_{i=1}^{N} \mu_i = 1$. This is a distribution of a random variable $X_0$, which is an initial state of a Markov chain.
+		A initial distribution of a Markov chain is a vector $\bfmu = (\mu_1, \ldots, \mu_N)^T \in \R^N$ such that $\sum_{i=1}^{N} \mu_i = 1$. This is a distribution of a random variable $X_0$, which is an initial state of a Markov chain.
 	\end{definition}
 
-	A transition matrix together with initial distribution define a HMC, so these are the only objects that need to be analyzed if one wants to study those chains.
+	A transition matrix together with initial distribution define a MC, so these are the only objects that need to be analyzed if one wants to study those chains.
 	
 	\begin{theorem}
-		Let $\bfmu^{(n)}$ be a distribution of a HMC at $n$-th step, then for all $n$:
+		Let $\bfmu^{(n)} \in \R^N$ be a distribution of a MC at $n$-th step and $\bfmu \in \R^N$ the initial distribution, then for all $n$:
 		\begin{equation*}
-			\bfmu^{(n)} = P(X_n = j) =  \bfmu \PP^n.
+			\bfmu^{(n)} = \bfmu \PP^n.
 		\end{equation*}
 	\end{theorem}
-	Proof of this theorem involves unfolding vectorized equation and using basic induction so it will be left. It also shows that given some knowledge of matrix $\PP$ one can easily work with HMC.
+	\begin{proof}
+		content...?
+	\end{proof}
+	Proof of this theorem involves unfolding vectorized equation and using basic induction so it will be left. It also shows that given some knowledge of matrix $\PP$ one can easily work with a MC.
 	
 	\subsubsection{Irreducibility}
 		Irreducibility guarantees that all states of a MC have the same properties, so that we do not need to analyze every state separately. Moreover an irreducible MC cannot be split into more chains.
@@ -102,7 +104,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 \subsection{Stationarity and ergodicity}
 	In this subsection we will cover asymptotics for the long-term behavior of a MC.
 	\begin{definition}[Stationarity]
-		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)^T$ is called stationary if it satisfies
+		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)$ is called stationary if it satisfies
 		\begin{equation*}
 			\pi_j = \sum_{i \in S} \pi_i p_{ij},
 		\end{equation*}
@@ -115,18 +117,18 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	From this definition it is easy to see that if a MC gets to stationary distribution it will not leave it. 
 	
 	\begin{definition}[Ergodicity]
-		When a MC is ergodic?
+		A Markov chain is ergodic when it is irreducible and aperiodic.
 	\end{definition}
 	
 	\begin{theorem} \label{thm:existance_stationary}
-		For any irreducible and aperiodic Markov chain, there exist at least one stationary distribution.
+		For any ergodic Markov chain, there exist at least one stationary distribution.
 	\end{theorem}
 	The proof of the theorem \ref{thm:existance_stationary} can be found in \cite{haggstrom2002finite}.
 	
 	\begin{theorem}
-		Let $(X_n)$ be a irreducible and aperiodic HMC, then: ergodic???
+		Let $(X_n)$ be a ergodic Markov chain, then:
 		\begin{equation*}
-			\lim_{n \rightarrow \infty} p_ij(n) = \pi_j.
+			\lim_{n \rightarrow \infty} p_{ij}(n) = \pi_j.
 		\end{equation*}
 	\end{theorem}
 	\begin{proof}
@@ -147,7 +149,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	
 	This condition is just a mathematical representation of the previous statement and it is not practical, so we need another way of describing it.
 	\begin{definition}[Detailed balance]
-		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)^T$ satisfies detailed balance for a Markov chain with transition matrix $\PP$ if
+		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)$ satisfies detailed balance for a Markov chain with transition matrix $\PP$ if
 		\begin{equation*}
 			\forall \; i,j \in S \; \pi_i p_{i,j} = \pi_j p_{j,i}
 		\end{equation*}
