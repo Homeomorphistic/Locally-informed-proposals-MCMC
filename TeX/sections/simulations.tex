@@ -41,12 +41,12 @@ Now that we have a target distribution we can try sampling using a MC produced b
 			w_i = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(j)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
 		
-		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have paths:
+		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have tours (permutations of vertices):
 		\begin{align*}
-			\sigma: \quad (e_{\sigma(1), \sigma(2)}, e_{\sigma(2), \sigma(3)} \ldots, e_{\sigma(k-1), \sigma(k)}, e_{\sigma(k), \sigma(k+1)}, \ldots, e_{\sigma(l-1), \sigma(l)}, e_{\sigma(l), \sigma(l+1)}, \ldots) \\
-			\sigma': \quad(e_{\sigma(1), \sigma(2)}, e_{\sigma(2), \sigma(3)} \ldots, e_{\sigma(k-1), \sigma(l)}, e_{\sigma(l), \sigma(k+1)}, \ldots, e_{\sigma(l-1), \sigma(k)}, e_{\sigma(k), \sigma(l+1)}, \ldots)
+			\sigma = (1, 2, 3, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots, N) \\
+			\sigma' = (1, 2, 3, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots, N)
 		\end{align*}
-		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{k-1, k}, w_{k, k+1}, w_{l-1, l}, w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost.
+		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
 		
 	\subsubsection{Algorithm}
 		To sum up all the information we present the algorithm for this method (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
@@ -77,6 +77,24 @@ Now that we have a target distribution we can try sampling using a MC produced b
 	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its around 1 million neighbours).
 	
 	The observation here is similar to the previous one -- when we have weights for all neighbours of a starting tour, we can update them by a common factor, only some of them change in a different way.
+	
+	Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
+	\begin{align*}
+		\sigma = (1, 2, 3, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots, N) \\
+		\sigma' = (1, 2, 3, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots, N)
+	\end{align*}
+	Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $m$ and $n$. When $m$ and $n$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{mn}$, $\sigma'_{mn}$ of $\sigma$ and $\sigma'$ respectively look like: 
+	\begin{align*}
+		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
+		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, k-1, l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
+	\end{align*}
+	Again like before, assuming we know the weight of $\sigma_{mn}$ we can remove weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This case covers most of the neighbours. 
+	
+	Let us think now about the case, when swap of $m$ and $n$ indices happen somewhere close to $k$ and $l$, for example $k-1 = m$:
+	\begin{align*}
+		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
+		\sigma'_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
+	\end{align*}
 	
 	\subsubsection{Computational considerations}
 	
