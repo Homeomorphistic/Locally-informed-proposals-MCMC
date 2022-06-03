@@ -30,7 +30,7 @@ Now that we have a target distribution we can try sampling using a MC produced b
 	\begin{definition}
 		A neighbour $\sigma'$ of a permutation $\sigma$ is a permutation, that for some $k, l$ it satisfies $\sigma'(k) = \sigma(l)$, $\sigma'(l) = \sigma(k)$ and $\sigma'(i) = \sigma(i)$ for the rest of indices.
 	\end{definition}
-	These neighbours are the original tour with two swaped indices. This let's us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2}$ neighbours if the number of vertices is $n$.
+	These neighbours are the original tour with two swaped indices. This let's us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
 \subsection{Random neighbours}
 	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing a random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
@@ -48,7 +48,7 @@ Now that we have a target distribution we can try sampling using a MC produced b
 		\end{align*}
 		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
 		
-	\subsubsection{Algorithm}
+	\subsubsection{Implementation}
 		To sum up all the information we present the algorithm for this method (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
 		
 		\begin{algorithm}
@@ -56,7 +56,7 @@ Now that we have a target distribution we can try sampling using a MC produced b
 			\begin{algorithmic}[1]
 				\State{Choose a tour $\sigma \in S_n$.}
 				\State{$X_0 \gets \sigma$}
-				\State{Compute $w_\sigma$.}
+				\State{Compute weight $w_\sigma$.}
 				\For{$i = 1,2, \ldots$}
 				\State{Sample $k, l \sim Unif\left\{1, 2, \ldots, n\right\}$ without replacement.}
 				\State{Sample $U \sim Unif(0,1)$.}
@@ -64,6 +64,7 @@ Now that we have a target distribution we can try sampling using a MC produced b
 				
 				\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) \right)$}
 				\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
+				\State{$w_{\sigma} \gets w_{\sigma'}$}
 				\Else
 				\State $X_{i+1} \gets X_i$
 				\EndIf
@@ -76,26 +77,123 @@ Now that we have a target distribution we can try sampling using a MC produced b
 	
 	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its around 1 million neighbours).
 	
-	The observation here is similar to the previous one -- when we have weights for all neighbours of a starting tour, we can update them by a common factor, only some of them change in a different way.
-	
-	Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
-	\begin{align*}
-		\sigma = (1, 2, 3, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots, N) \\
-		\sigma' = (1, 2, 3, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots, N)
-	\end{align*}
-	Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $m$ and $n$. When $m$ and $n$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{mn}$, $\sigma'_{mn}$ of $\sigma$ and $\sigma'$ respectively look like: 
-	\begin{align*}
-		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
-		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, k-1, l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
-	\end{align*}
-	Again like before, assuming we know the weight of $\sigma_{mn}$ we can remove weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This case covers most of the neighbours. 
-	
-	Let us think now about the case, when swap of $m$ and $n$ indices happen somewhere close to $k$ and $l$, for example $k-1 = m$:
-	\begin{align*}
-		\sigma_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
-		\sigma'_{mn} = (\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
-	\end{align*}
-	
 	\subsubsection{Computational considerations}
+		The observation here is similar to the previous one -- when we have weights for all neighbours of a starting tour, we can update them by a common factor, only some of them change in a different way. Then we can calculate softmax on neighbour weights. One might notice now, that this procedure is not symmetrical, because softmax can be different and the sums dividing exponent of weights will be different each time. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, as it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
+		
+		Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
+		\begin{align*}
+			\sigma = (1, 2, 3, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots, N) \\
+			\sigma' = (1, 2, 3, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots, N)
+		\end{align*}
+		Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $m$ and $n$. When $m$ and $n$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{mn}$, $\sigma'_{mn}$ of $\sigma$ and $\sigma'$ respectively look like: 
+		\begin{align*}
+			\sigma_{mn} = &(\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, \\
+			&\ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
+			\sigma'_{mn} = &(\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, \\
+			&\ldots (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
+		\end{align*}
+		Again like before, assuming we know the weight of $\sigma_{mn}$ we can remove weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This case covers most of the neighbours. 
+		
+		Let us think now about the case, when swap of $m$ and $n$ indices happen somewhere close to $k$ and $l$, for example $k = m-1$:
+		\begin{align*}
+			\sigma_{mn} = &(\ldots, (k-1), k, n, (m+1), \ldots, \\
+			&\ldots, (n-1), m,( n+1), \ldots, (l-1), l, (l+1), \ldots) \\
+			\sigma'_{mn} = &(\ldots, (k-1), l, n, (m+1), \ldots, \\
+			& \ldots, (n-1), m, (n+1), \ldots, (l-1), k, (l+1), \ldots)
+		\end{align*}
+		This time we have more edges to remove and add. We need to remove: $w_{k-1, k}$, $w_{k, n}$, $w_{l-1, l}$, $w_{l, l+1}$ and add: $w_{k-1, l}, w_{l, n}, w_{l-1, k}, w_{k, l+1}$. One might notice that these are not the same weights as in a previous paragraph. It means, that some neighbours (swaps) have to be considered separately. These are the scenarios when $m$ or $n$ are elements of $\left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$.
 	
-	\subsubsection{Algorithm}
+	\subsubsection{Implementation}
+		To sum up all the information we present the algorithm for this method (\ref{alg:loc_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
+		
+		\begin{algorithm}
+			\caption{Locally-informed proposals algorithm}\label{alg:loc_neigh}
+			\begin{algorithmic}[1]
+				\State{Choose a tour $\sigma \in S_n$.}
+				\State{$X_0 \gets \sigma$}
+				\State{Compute weight $w_\sigma$.}
+				\State{Compute all neighbour weights $\bfw_\sigma$.}
+				
+				\For{$i = 1,2, \ldots$}
+					\State{$s(\bfw_\sigma) = \mathrm{softmax}(\bfw_\sigma)$}
+					\State{Sample $\sigma' \sim s(\bfw_\sigma)$.}
+					\State{Find $k, l$ connected with swapping.}
+					
+					\State{$C \gets - (w_{k-1, k} + w_{k, k+1} + w_{l-1, l} + w_{l, l+1}) + (w_{k-1, l} + w_{l, k+1} + w_{l-1, k} + w_{k, l+1})$}
+					
+					\State{$w_{\sigma'} \gets w_\sigma + C$}
+					\State{$\bfw_{\sigma'} \gets \bfw_\sigma + C$}
+					
+					\For{$m = 1, 2, \ldots, N$}
+						\For{$n = m+1, \ldots, N$}
+							\If{$m \vee n \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
+								\State{$\bfw_{\sigma'}[(m,n)] \gets \bfw_{\sigma'}[(m,n)] - C$} \Comment{neighbour with a swap of $m,n$.}
+								\State{$\bfw_{\sigma'}[(m,n)] \gets \bfw_{\sigma'}[(m,n)] +$ difference in weights}
+							\EndIf
+						\EndFor
+					\EndFor
+					
+					\State{$s(\bfw_{\sigma'}) = \mathrm{softmax}(\bfw_{\sigma'})$}
+					\State{Sample $U \sim Unif(0,1)$.}
+					\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) + \log(s(\bfw_{\sigma'})[(k.l)]) - \log(s(\bfw_\sigma)[(k,l)]) \right)$}
+						\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
+						\State{$w_{\sigma} \gets w_{\sigma'}$}
+						\State $\bfw_{\sigma} \gets \bfw_{\sigma'}$
+					\Else
+						\State $X_{i+1} \gets X_i$
+					\EndIf
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
+		The core of this algorithm is still the same, but we need to add more complicated part with computing neighbour weights and updating them after each step of a main loop. To not blur the algorithm we have used a term \textit{difference in weights} which would be a sub-algorithm, that would compute all the weights to remove and add.
+		
+		Unfortunately, there are more practical things to consider this time. In this algorithm we are actually calculating softmax function, nothing is vanishing here. Computing exponents of large numbers ends up with $\infty$ or $-\infty$ on a computer. Also, for datasets like \textit{dsj1000} there are around 1 million neighbours, and we need to keep probabilities with higher precision, that is a lot of memory to use.
+		
+		We can alleviate this problem (for some cases) by working on differences in weights, not weights themselves, as they can be large as well. Let's say we know weight of our current tour $w_\sigma$ and its neighbours weights vector $\bfw_\sigma$. We can think of every weight in this vector as a difference between it and current tour weight: $\bfw_{\sigma}[i] = w_\sigma + d_i$. Computing softmax then
+		\begin{equation*}
+			s(\x)_i = \frac{e^{\bfw_{\sigma}[i]}}{\sum_{j=1}^{n(n-1)/2} e^{\bfw_{\sigma}[j]}} =\frac{e^{w_\sigma + d_i}}{\sum_{j=1}^{n(n-1)/2} e^{w_\sigma + d_j}} = \frac{e^{d_i}}{\sum_{j=1}^{n(n-1)/2} e^{d_j}}.
+		\end{equation*}
+		So the probabilities are the same when working on differences, which are smaller than distances and require less memory. The problem is now, that updating neighbours weights vector has to be different. That algorithm is presented in \ref{alg:loc2_neigh}.
+		\begin{algorithm}
+			\caption{Locally-informed proposals algorithm 2}\label{alg:loc2_neigh}
+			\begin{algorithmic}[1]
+				\State{Choose a tour $\sigma \in S_n$.}
+				\State{$X_0 \gets \sigma$}
+				\State{Compute weight $w_\sigma$.}
+				\State{Compute all neighbour weight differences $\bfd_\sigma$.}
+				
+				\For{$i = 1,2, \ldots$}
+					\State{$s(\bfd_\sigma) = \mathrm{softmax}(\bfd_\sigma)$}
+					\State{Sample $\sigma' \sim s(\bfd_\sigma)$.}
+					\State{Find $k, l$ connected with swapping.}
+					\State{Find index $j$ of the neighbour $\sigma'$.}
+					
+					\State{$w_{\sigma'} \gets w_\sigma + \bfd_\sigma[j]$}
+					\State{$\bfd_{\sigma'} \gets \bfd_\sigma$}
+					
+					\For{$m = 1, 2, \ldots, N$}
+						\For{$n = m+1, \ldots, N$}
+							\If{$m \vee n \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
+								\State{$\bfd_{\sigma'}[(m,n)] \gets$ update difference} \Comment{neighbour with a swap of $m,n$.} 
+							\EndIf
+						\EndFor
+					\EndFor
+					
+					\State{$s(\bfd_{\sigma'}) = \mathrm{softmax}(\bfd_{\sigma'})$}
+					\State{Sample $U \sim Unif(0,1)$.}
+					\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) + \log(s(\bfd_{\sigma'})[(k.l)]) - \log(s(\bfd_\sigma)[(k,l)]) \right)$}
+						\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
+						\State{$w_{\sigma} \gets w_{\sigma'}$}
+						\State $\bfd_{\sigma} \gets \bfd_{\sigma'}$
+					\Else
+						\State $X_{i+1} \gets X_i$
+					\EndIf
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
+		For this algorithm we do not need to update differences by a common factor. Here we use a term \textit{update difference} to not blur the algorithm anymore. It means that a sub-algorithm is getting differences for the pair of indices.
+		
+\subsection{Simulated annealing}
+	There is one important parameter that can be used with locally-informed proposals and is associated with temperature.
+	
+	TO DO
