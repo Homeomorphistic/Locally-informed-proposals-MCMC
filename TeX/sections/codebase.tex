@@ -1,1 +1,21 @@
-In this section we will briefly cover the codebase of our simulations and will walk a reader through, so that he can have a basic understanding of code and will be able to use it by him/herself.
+In this section we will briefly cover the codebase of our simulations and will walk a reader through, so that he can have a basic understanding of code and will be able to use it by him/herself. The codebase can be found on github \cite{Homeomor72:online}. 
+
+The project has two packages: \textit{mcmc} and \textit{tsp}. The \textit{mcmc} package is a backbone of whole project, as it contains probability constructs like MC and M-H algorithm. The package \textit{tsp} contains classes representing traveling salesman problem.
+
+\subsection{mcmc}
+	The most important modules of this package contain classes representing some probabilistic constructs:
+	\begin{itemize}
+		\item \textit{StochasticProcess} -- represents stochastic processes, it is a building block of other classes, as they inherit from it. It needs a function of \textit{next\_state}, that tells a process how to move in time. It has ability to remember its past and sample from this process.
+		\item \textit{MarkovChain} -- it is derived from \textit{StochasticProcess} and represents a Markov chain. It implements the function \textit{next\_state} as a function that does not need to know the past, only the current state.
+		\item \textit{MonteCarloMarkovChain} -- it is derived from \textit{MarkovChain} and represents a Markov chain constructed with Metropolis-Hastings algorithm. It is an abstract class which needs to implement \textit{next\_candidate} and \textit{log\_ratio} among many others. These are different depending on a procedure one is following, one does not need to specify a candidate matrix, because it is cumbersome, rather a procedure of selecting a candidate. Depending on that \textit{log\_ratio} will be a different function too.
+	\end{itemize}
+
+Besides those classes there are some that are toy examples like \textit{HomogenousMarkovChain} and \textit{MetropolisHastings} that were used for testing. There are also some helpful functions that are used throughout the package.
+
+\subsection{tsp}
+	This package contains classes that are required to represent traveling salesman problem and its solution using MCMC methods. There are two important classes:
+	\begin{itemize}
+		\item \textit{TSPath} -- represents a salesman tour and is mostly used as a container for attributes of that tour (so problem information, weight, neighbours \etc). It has functions that are finding edges, its weights and computing neighbour weights.
+		\item \textit{TravelingSalesmenMCMC} -- represents a Markov chain that is traveling through tour space. It is derived from \textit{MonteCarloMarkovChain} so it implements all needed functions. It can be used both with random candidates or with locally-informed proposals methods.
+	\end{itemize}
+	There is also whole dataset used for simulations and all results obtained while working on this thesis. The package of course contains many more modules or scripts that are used for results exploration.
