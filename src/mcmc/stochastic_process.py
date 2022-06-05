@@ -79,7 +79,7 @@ class StochasticProcess(Generic[State]):
         """
         self._past_min_len = past_min_len
         self._past = past
-        self._step_num = 0
+        self._step_num = 1
 
         if past is not None:
             if len(past) >= self._past_min_len:
@@ -94,7 +94,6 @@ class StochasticProcess(Generic[State]):
         else:
             raise ValueError('Past min length has to be lower than maximum.')
 
-        self._step = 0
         self._current = current
         self._next_state = modify_past(next_state, past_min_len, past_max_len)
 

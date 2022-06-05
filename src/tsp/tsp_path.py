@@ -1,6 +1,6 @@
 """TODO module description"""
 
-from typing import Dict, Tuple, Any, Optional
+from typing import Dict, Tuple, Any, Optional, Callable
 from nptyping import NDArray, Shape
 from tsplib95.models import Problem
 from scipy.special import softmax
@@ -18,12 +18,11 @@ class TSPath:
 
     def __init__(self,
                  path: NDArray[Shape['*'], Any],
+                 temperature: float,
                  problem: Problem = None,
                  weight: float = None,
                  locally: bool = False,
-                 neighbour_weights: NDArray[Shape['*'], Any] = None,
-                 cooling: float = 1.0,
-                 scaling: float = 0.1
+                 neighbour_weights: NDArray[Shape['*'], Any] = None
                  ) -> None:
         """Initialize TravelingSalesmenPath class
         
@@ -32,7 +31,7 @@ class TSPath:
         self._locally = locally
         self._path = path
         self._weight = weight or problem.trace_tours([path])[0]
-        self._scaling = scaling
+        self._temperature = temperature
 
         # Static attributes:
         if (problem is not None) and (TSPath._problem is None):
@@ -48,9 +47,6 @@ class TSPath:
             self._neighbours_weights = self.get_neighbours_weights()
         else:
             self._neighbours_weights = neighbour_weights
-
-        if TSPath._cooling is None:  # if not set, set it to be initial weight.
-            TSPath._cooling = cooling
 
         self._local_dist = locally and self.get_local_distribution()
 
@@ -131,7 +127,7 @@ class TSPath:
         return weights
 
     def get_local_distribution(self) -> NDArray[Shape['*'], Any]:
-        return softmax(-self._scaling * self._neighbours_weights / self.cooling)
+        return softmax(-self._neighbours_weights / self._temperature)
 
     def next_neighbours_weights(self,
                                 i: int,
@@ -169,8 +165,12 @@ class TSPath:
         return self._local_dist
 
     @property
-    def cooling(self) -> Optional[float]:
-        return self._cooling
+    def temperature(self) -> Optional[float]:
+        return self._temperature
+
+    @temperature.setter
+    def temperature(self, temp: float) -> None:
+        self._temperature = temp
 
     def __str__(self):
         return f'Path:\n{str(self._path)}\nDistance: {self._weight}'

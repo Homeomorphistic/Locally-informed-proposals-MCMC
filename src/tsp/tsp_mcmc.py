@@ -2,7 +2,7 @@
 
 import tsplib95
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
 from json import dump
 import os
 
@@ -16,8 +16,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
     def __init__(self,
                  name: str = 'berlin52',
                  locally: bool = False,
-                 cooling: float = 1.0,
-                 scaling: float = 0.1,
+                 temperature: Callable[[int], float] = lambda n: 2,
+                 cooling: Callable[[int], float] = lambda n: 3/np.log(n+2),
                  past_max_len: int = 0,
                  ) -> None:
         """TODO docstrings"""
@@ -26,8 +26,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         self._num_nodes = len(self._nodes)
 
         init_weight = self._problem.trace_tours([self._nodes])[0]
+        self._temperature = temperature
         self._cooling = cooling
-        self._scaling = scaling
 
         if locally:
             self._next_candidate = self.next_candidate_locally
@@ -40,8 +40,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                                         weight=init_weight,
                                         problem=self._problem,
                                         locally=locally,
-                                        cooling=cooling,
-                                        scaling=scaling),
+                                        temperature=self._temperature(1)),
                          past_max_len=past_max_len)
 
     def next_candidate_uniform(self) -> TSPath:
@@ -54,7 +53,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         # Swap random vertices.
         neighbour_path[i], neighbour_path[j] = neighbour_path[j], neighbour_path[i]
         return TSPath(path=neighbour_path,
-                      weight=neighbour_weight)
+                      weight=neighbour_weight,
+                      temperature=self.temperature)
 
     def next_candidate_locally(self) -> TSPath:
         """TODO docstrings, deep copy for path"""
@@ -76,20 +76,20 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         return TSPath(path=neighbour_path,
                       weight=neighbour_weight,
                       neighbour_weights=next_neighbour_weights,
-                      locally=True)
+                      locally=True,
+                      temperature=self.temperature)
 
     def log_ratio_uniform(self, candidate: TSPath) -> float:
         """TODO docstrings"""
-        return (self._scaling*(self._current._weight - candidate._weight) /
-               self.cooling)
+        return (self._current._weight - candidate._weight) / self.cooling
 
     def log_ratio_locally(self, candidate: TSPath) -> float:
         """TODO docstrings"""
         i, j = TSPath._last_swap
         current_id = TSPath._neighbours_dict.get((i, j))
         neighour_id = current_id
-        return (self._scaling*(self._current._weight
-                - candidate._weight) / self.cooling
+        return ((self._current._weight - candidate._weight)
+                / self.cooling
                 + np.log(self.current._local_dist[neighour_id])
                 - np.log(candidate._local_dist[current_id]))
 
@@ -118,14 +118,16 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                         'num_stays': self.stay_counter,
                         'time': time,
                         'iter': max_iter,
-                        'scale': self._scaling,
                         'locally': self.current._locally,
+                        'temperature': self.temperature,
+                        'cooling': self.cooling,
                         'distance': self.current._weight,
                         'path': self.current._path.tolist()}
 
         filename = f'results/{self.current._problem.name}' \
-                   f'/scaling={self._scaling}/locally=' \
-                   f'{self.current._locally}' \
+                   f'/locally={self.current._locally}' \
+                   f'/temp={self._temperature(1):0.2f}' \
+                   f'/cool={self._cooling(1):0.2f}' \
                    f'/{self.current._problem.name}_iter={max_iter}.json'
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
@@ -136,23 +138,24 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         return optimum_dict
 
     @property
-    def cooling(self) -> Optional[float]:
-        return self._cooling
+    def temperature(self) -> float:
+        return self._temperature(self.step_num)
+
+    @property
+    def cooling(self):
+        return self._cooling(self.step_num)
 
     def __repr__(self):
         return self._problem.name
 
 
 if __name__ == "__main__":
-    berlin_uni = TravelingSalesmenMCMC(name='berlin52', cooling=1)
-    opt_uni = (berlin_uni.find_optimum(max_iter=1000, stay_count=10000,
-                                       tolerance=0.00))
+    berlin_uni = TravelingSalesmenMCMC(name='berlin52')
+    opt_uni = (berlin_uni.find_optimum(max_iter=5000, stay_count=10000))
     print(opt_uni)
-    berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True, cooling=1)
-    opt_loc = (berlin_loc.find_optimum(max_iter=1000, stay_count=10000,
-                                       tolerance=0.00))
+    berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True)
+    opt_loc = berlin_loc.find_optimum(max_iter=5000, stay_count=10000)
     print(opt_loc)
-    print(max(opt_loc.local_dist))
 
 
 
