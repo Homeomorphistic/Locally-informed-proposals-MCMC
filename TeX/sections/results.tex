@@ -2,35 +2,24 @@ In this section we will present the results of simulations and compare them with
 
 \subsection{Initial condition}
 	First we have to check if changing the initial state makes any difference to the output of an algorithm. This is achieved via setting a different seed and repeating algorithms for the same number of iterations. Seeds guarantee us the different ``randomness'' with each seed. It is because the generators are only generating \textit{pseudo-random numbers} which we can control. Both algorithms will have the same seeds and in our case these are $1,2,3,4$. We use default parameters of temperature $\tau=2$ and cooling schedule $t_n=1$.
-	\begin{figure}[!htb]
-		\centering
-		\begin{subfigure}{0.45\textwidth}
-			\includegraphics[width=\textwidth]{plots/berlin52_seeds_locally=False}
-			\subcaption{Random candidates.}
-		\end{subfigure}
-		\begin{subfigure}{0.45\textwidth}
-			\includegraphics[width=\textwidth]{plots/berlin52_seeds_locally=True}
-			\subcaption{Locally-informed proposals.}
-		\end{subfigure}
-		\caption{Distances over number of steps for \textit{berlin52} dataset.}
-		\label{fig:berlin52_seeds}
-	\end{figure}
-	
-	\begin{figure}[!htb]
-		\centering
-		\begin{subfigure}{0.45\textwidth}
-			\includegraphics[width=\textwidth]{plots/kroA150_seeds_locally=False}
-			\subcaption{Random candidates.}
-		\end{subfigure}
-		\begin{subfigure}{0.45\textwidth}
-			\includegraphics[width=\textwidth]{plots/kroA150_seeds_locally=True}
-			\subcaption{Locally-informed proposals.}
-		\end{subfigure}
-		\caption{Distances over number of steps for \textit{kroA150} dataset.}
-		\label{fig:kroA150_seeds}
-	\end{figure}
+	\input{plots/seed_plots}
 
 	Both plots \ref{fig:berlin52_seeds} and \ref{fig:kroA150_seeds} suggest that initial state matters for finding a better tour, but it is not changing the behavior of algorithms.
 	
 \subsection{Simulated annealing}
 	Before we proceed with comparing algorithms we need to find out if simulated annealing is improving them. We will compare parameters $t_n=1$ and $t_n= \frac{3}{\log(n+2)}$ where $n$ is a number of step. The temperature parameter for locally-informed proposals will stay at default $\tau=2$ and seed $1$.
+	
+	\input{plots/annealing_plots}
+	
+	This time to see the difference between cooling parameters we had to extend number of iterations to 1 million. This number of steps is not viable for locally-informed proposals, so only random candidates were used. We can see slight the improvement at the end of iterations, which has potential when the distances are huge. 
+	
+\subsection{Algorithms comparison}
+	Now we are able to present all the results, we will be using $\tau=2$, two different cooling schedules $t_n=1, \, t_n=\frac{3}{\log(n+2)}$ and two different methods: random candidates and locally-informed proposals and the number of iterations is $5000$.
+	
+	\input{plots/comparison_plots}
+	
+	The plots \ref{fig:berlin52_comp}, \ref{fig:kroA150_comp}, \ref{fig:att532_comp}, \ref{fig:dsj1000_comp} present distance of a solution as a function of number of steps. Both algorithms start at the same state and have the same seed. We can se how quickly they diverge. First steps of locally-informed proposals algorithm is taking the best neighbours it can and stays there or makes small improvements. Prolonged stays happen in smaller datasets as there is less deviation at each step and it is harder to choose a better neighbour. At the beginning it has obviously better results in all cases. 
+	
+	\input{tables/comparison_tables}
+	
+	The tables \ref{tab:results_comp} present comparison of those two methods

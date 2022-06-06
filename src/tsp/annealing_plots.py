@@ -19,7 +19,7 @@ def parse_arguments():
         Tuple of arguments parsed from terminal.
     """
     parser = argparse.ArgumentParser(description="Locally informed MCMC")
-    parser.add_argument('--sprint', default='7-seed',
+    parser.add_argument('--sprint', default='7-annealing',
                         help='Sprint with results: str = 6')
     parser.add_argument('--data', default='berlin52',
                         help='Traveling salesmen problem name in results '
@@ -28,32 +28,25 @@ def parse_arguments():
                         help='Use local distribution: bool = False')
     parser.add_argument('--temperature', default=2.00,
                         help='Temperature of first step: float =  2.00')
-    parser.add_argument('--cooling', default=1.00,
-                        help='Cooling of first step: float =  1.00')
     parser.add_argument('--save', default=False,
                         help='Save flag: bool = False')
     args = parser.parse_args()
     args.save = True if args.save == 'True' else False
 
-    return (args.data, args.locally, args.sprint, float(args.temperature),
-            float(args.cooling), args.save)
+    return (args.data, args.locally, args.sprint, float(args.temperature), args.save)
 
 
 # Get arguments for running TSP solver.
-data, locally, sprint, temperature, cooling, save = parse_arguments()
+data, locally, sprint, temperature, save = parse_arguments()
 # Prepare paths for reading.
-
-path_local = f'results/sprint-{sprint}/{data}/locally=True/temp={temperature:0.2f}/' \
-             f'cool={cooling:0.2f}'
-
-for seed in {1, 2, 3, 4}:
-    path_nonlocal = f'results/sprint-{sprint}/seed={seed}/{data}/' \
-                    f'locally={locally}/temp={temperature:0.2f}/cool={cooling:0.2f}'
+for cooling in [1.0, 2.73]:
+    path = f'results/sprint-{sprint}/{data}/locally={locally}/' \
+           f'temp={temperature:0.2f}/cool={cooling:0.2f}'
     # Read nonlocal results.
     result_dict, num_steps, time, distances = {}, [], [], []
-    result_files = os.listdir(path_nonlocal)
+    result_files = os.listdir(path)
     for file in result_files:
-        file = os.path.join(path_nonlocal, file)
+        file = os.path.join(path, file)
         result_dict = load(open(file, 'r'))
         num_steps.append(int(result_dict['num_steps']))
         time.append(float(result_dict['time']))
@@ -71,13 +64,13 @@ for seed in {1, 2, 3, 4}:
 plt.title(f'{data}, locally={locally}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend([1, 2, 3, 4], loc='center right', title='Seeds')
+plt.legend(['t_n=1', 't_n=3/log(n+2)'], loc='center right', title='Cooling')
 
 # Saving figure or printing depending on --save param.
 if save:
-    filename = f'results/sprint-{sprint}/charts/{data}/' \
-               f'{data}_seed_locally={locally}.png'
+    filename = f'results/sprint-{sprint}/charts/' \
+               f'{data}_annealing_locally={locally}.png'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    plt.savefig(filename, dpi=1200)
+    plt.savefig(filename, dpi=1000)
 else:
     plt.show()
