@@ -2,16 +2,23 @@
 # Script used to plot all results of traveling salesmen problem.
 
 PROBLEMS_LIST="berlin52 kroA150 att532 dsj1000"
-SAVE=${1:-"False"}
+SPRINT=${1:-"6"}
+SAVE=${2:-"False"}
 
 for PROBLEM in $PROBLEMS_LIST
   do
-    SCALING_LIST=$(ls "results/sprint-3/${PROBLEM}")
+    TEMPERATURE_LIST=$(ls "results/sprint-${SPRINT}/${PROBLEM}/locally=False")
 
-    for SCALING in $SCALING_LIST
+    for TEMPERATURE in $TEMPERATURE_LIST
       do
-        SCALING=${SCALING/"scaling="/}
-        echo "Plotting ${PROBLEM}, scaling=${SCALING}"
-        python tsp_plot.py --data "$PROBLEM" --scaling "$SCALING" --save "$SAVE"
+        COOLING_LIST=$(ls "results/sprint-${SPRINT}/${PROBLEM}/locally=False/${TEMPERATURE}")
+        TEMPERATURE=${TEMPERATURE/"temp="/}
+        for COOLING in $COOLING_LIST
+          do
+            COOLING=${COOLING/"cool="/}
+            echo "Plotting ${PROBLEM}, temp=${TEMPERATURE}, cool=${COOLING}"
+            python tsp_plot.py --data "$PROBLEM" --temperature "$TEMPERATURE" --cooling "$COOLING" --save "$SAVE"
+          done
+
       done
   done
