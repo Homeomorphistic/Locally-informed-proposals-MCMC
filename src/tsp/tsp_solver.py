@@ -17,6 +17,8 @@ def parse_arguments():
     parser.add_argument('--data', default='berlin52',
                         help='Traveling salesmen problem name in data folder, '
                              '(omit .csv): str = berlin52')
+    parser.add_argument('--seed', default=1,
+                        help='Seed for PRNG: int = 1')
     parser.add_argument('--locally', default=False,
                         help='Use local distribution: bool = False')
     parser.add_argument('--temperature', default=lambda n: 2,
@@ -38,12 +40,14 @@ def parse_arguments():
     if type(args.cooling) is str:
         args.cooling = eval(args.cooling)
 
-    return (args.data, args.locally, args.temperature, args.cooling,
-            int(args.max_iter), args.save)
+    return (args.data, int(args.seed), args.locally, args.temperature,
+            args.cooling, int(args.max_iter), args.save)
 
 
 # Get arguments for running TSP solver.
-data, locally, temperature, cooling, max_iter, save = parse_arguments()
+data, seed, locally, temperature, cooling, max_iter, save = parse_arguments()
+# Set seed.
+np.random.seed(seed)
 # Run TSP solver and find optimum.
 tsp_solver = TravelingSalesmenMCMC(name=data,
                                    locally=locally,

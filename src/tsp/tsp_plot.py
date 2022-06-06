@@ -99,7 +99,7 @@ if save:
     filename = f'results/sprint-{sprint}/charts/{data}/' \
                f'{data}_temp={temperature}_cool={cooling}.png'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    plt.savefig(filename)
+    plt.savefig(filename, dpi=1200)
     results_table.to_csv(filename[:-3]+"csv")
 else:
     print(results_table)

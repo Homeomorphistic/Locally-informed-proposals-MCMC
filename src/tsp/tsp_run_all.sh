@@ -3,10 +3,10 @@
 
 SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
-PROBLEMS_LIST="berlin52 kroA150 att532 dsj1000"
+PROBLEMS_LIST="berlin52 kroA150" # berlin52 kroA150 att532 dsj1000
 LOCALLY_LIST="False True"
-TEMPERATURE_LIST=("lambda n: 2" "lambda n: 3/np.log(n+2)")
-COOLING_LIST=("lambda n: 1" "lambda n: 3/np.log(n+2)")
+TEMPERATURE_LIST=("lambda n: 2")
+COOLING_LIST=("lambda n: 1") # "lambda n: 3/np.log(n+2)"
 MAX_ITER_LIST="5000"
 
 echo -e "\n=================================================="
@@ -30,7 +30,7 @@ for PROBLEM in $PROBLEMS_LIST
                     echo -e "============== COOLING=$COOLING"
                     echo -e "============== LOCALLY=$LOCALLY"
                     echo -e "============== Started at $(date +%H:%M).\n"
-                    python3 tsp_solver.py --data "$PROBLEM" --locally "$LOCALLY" --temperature "$TEMPERATURE" --cooling "$COOLING" --max_iter "$MAX_ITER" --save "$SAVE" 2>&1
+                    python3 tsp_solver.py --data "$PROBLEM" --seed 4 --locally "$LOCALLY" --temperature "$TEMPERATURE" --cooling "$COOLING" --max_iter "$MAX_ITER" --save "$SAVE" 2>&1
                     echo -e "============== Finished at $(date +%H:%M)."
                     echo -e "==================================================\n"
                   done

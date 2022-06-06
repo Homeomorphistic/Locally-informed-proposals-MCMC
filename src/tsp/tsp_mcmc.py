@@ -25,7 +25,8 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
         self._nodes = np.array(list(self._problem.get_nodes()))
         self._num_nodes = len(self._nodes)
 
-        init_weight = self._problem.trace_tours([self._nodes])[0]
+        init_path = np.random.permutation(self._num_nodes) + 1
+        init_weight = self._problem.trace_tours([init_path])[0]# self._problem.trace_tours([self._nodes])[0]
         self._temperature = temperature
         self._cooling = cooling
 
@@ -36,7 +37,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
             self._next_candidate = self.next_candidate_uniform
             self._log_ratio = self.log_ratio_uniform
 
-        super().__init__(current=TSPath(path=self._nodes,
+        super().__init__(current=TSPath(path=init_path,#self._nodes,
                                         weight=init_weight,
                                         problem=self._problem,
                                         locally=locally,

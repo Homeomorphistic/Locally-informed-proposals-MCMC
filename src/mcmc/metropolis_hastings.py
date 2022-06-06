@@ -152,8 +152,8 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         self.save_optimum(time=0.0,
                           max_iter=0,
                           tolerance=tolerance)
-        save_set = {100, 250, 500, 750, 1000, 1250, 1500, 2000, 5000, 10000,
-                    20000, 50000}
+        save_set = {100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2500,
+                    5000, 7500, 10000, 20000, 50000}
         # Stop when chain stays at the same state for too long or some stop
         # condition is achieved or too many iterations.
         start = perf_counter()
