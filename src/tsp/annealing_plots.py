@@ -20,7 +20,7 @@ def parse_arguments():
     """
     parser = argparse.ArgumentParser(description="Locally informed MCMC")
     parser.add_argument('--sprint', default='7-annealing',
-                        help='Sprint with results: str = 6')
+                        help='Sprint with results: str = 7-annealing')
     parser.add_argument('--data', default='berlin52',
                         help='Traveling salesmen problem name in results '
                              'folder: str = berlin52')
@@ -71,6 +71,6 @@ if save:
     filename = f'results/sprint-{sprint}/charts/' \
                f'{data}_annealing_locally={locally}.png'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    plt.savefig(filename, dpi=1000)
+    plt.savefig(filename)
 else:
     plt.show()
