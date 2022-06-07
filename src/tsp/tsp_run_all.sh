@@ -4,10 +4,10 @@
 SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
 PROBLEMS_LIST="berlin52 kroA150 att532 dsj1000"
-LOCALLY_LIST="False True"
-TEMPERATURE_LIST=("lambda n: 2")
-COOLING_LIST=("lambda n: 1" "lambda n: 3/np.log(n+2)")
-MAX_ITER_LIST="20000"
+LOCALLY_LIST="True" # False
+TEMPERATURE_LIST=("lambda n: 0.01" "lambda n: 0.5" "lambda n: 5" "lambda n: 20")
+COOLING_LIST=("lambda n: 1") # "lambda n: 3/np.log(n+2)"
+MAX_ITER_LIST="10000"
 
 echo -e "\n=================================================="
 echo -e "============== RUNNING ALL TSP PROBLEMS\n"

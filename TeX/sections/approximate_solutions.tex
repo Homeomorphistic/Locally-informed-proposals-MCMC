@@ -85,6 +85,9 @@ In the previous section we have seen that a deterministic approach of computing 
 		\end{algorithm}
 	
 	\subsubsection{Complexity}
+		As mentioned before this algorithm is simple because of uniform distribution. It requires 2 samplings, which in practice both are the same (random sampling) and 8 operations of adding and subtracting which in theory could be instant, but in reality are of linear complexity, because of searching of weights through the list.
+		
+		Space complexity is constant -- we need only two variables to contain current weight and state. In practice we also use a memory for storing weights of the problem.
 
 \subsection{Locally-informed proposals}
 	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. 
@@ -190,8 +193,19 @@ In the previous section we have seen that a deterministic approach of computing 
 		\end{algorithm}
 		
 	\subsubsection{Complexity}
+		This algorithm is more complicated and it significantly lowers the performance. This time for each step of M-H algorithm we need to compute two times softmax to get probabilities, which is already a hard task, because of computing exponents. Besides that we need to sample from (sometimes) long vector. There is also a sub-procedure with two loops.
+		
+		Space complexity is  also constant, but a lot bigger than previously, because we need to keep two  long vectors of probabilities (or weight differences).
 	
 \subsection{Simulated annealing}
-	There is one important parameter that can be used both with random candidates and locally-informed proposals and is associated with temperature.
+	There is one important parameter that can be used both with random candidates and locally-informed proposals and is associated with cooling. It has its roots within physics and is connected to energetic states of particles and Boltzmann distribution. The idea is to describe a probability of state using a temperature parameter (different than $\tau$ in LIP) such that it reminds the cooling of a metal:
+	\begin{equation*}
+		\pi_i = \frac{e^{\frac{-E_i}{t_n}}}{C},
+	\end{equation*}
+	where $C$ is normalizing constant.The quotient of probabilities then is:
+	\begin{equation*}
+		\frac{\pi_j}{\pi_i} = e^{\frac{E_i - E_j}{t_n}}
+	\end{equation*}
+	Setting this parameter high constitutes to all of the states are equally likely and with low value of parameter we have probability concentrated in the state with minimal energy.
 	
-	TO DO
+	Using $t_n$ as a function of step in acceptance criterion will give us a non-homogeneous Markov chain. Setting it to a constant value will produce a homogeneous Markov chain.
