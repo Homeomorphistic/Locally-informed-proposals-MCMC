@@ -2,7 +2,7 @@
 # Script used to plot all results of traveling salesmen problem.
 
 PROBLEMS_LIST="berlin52 kroA150 att532 dsj1000"
-SPRINT=${1:-"6"}
+SPRINT=${1:-"7 "}
 SAVE=${2:-"False"}
 
 for PROBLEM in $PROBLEMS_LIST

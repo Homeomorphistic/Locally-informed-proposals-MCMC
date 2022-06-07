@@ -3,11 +3,11 @@
 
 SAVE=${1:-"False"}
 TURNOFF=${2:-"False"}
-PROBLEMS_LIST="berlin52 kroA150" # berlin52 kroA150 att532 dsj1000
-LOCALLY_LIST="False"
+PROBLEMS_LIST="berlin52 kroA150 att532 dsj1000"
+LOCALLY_LIST="False True"
 TEMPERATURE_LIST=("lambda n: 2")
 COOLING_LIST=("lambda n: 1" "lambda n: 3/np.log(n+2)")
-MAX_ITER_LIST="1000000"
+MAX_ITER_LIST="20000"
 
 echo -e "\n=================================================="
 echo -e "============== RUNNING ALL TSP PROBLEMS\n"
@@ -50,6 +50,6 @@ if [ "$TURNOFF" = "True" ];
 then
   if ! ((8<=$(date +%-H) && $(date +%-H)<23));
   then
-      echo shutdown
+      shutdown
   fi
 fi

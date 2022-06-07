@@ -19,7 +19,7 @@ def parse_arguments():
         Tuple of arguments parsed from terminal.
     """
     parser = argparse.ArgumentParser(description="Locally informed MCMC")
-    parser.add_argument('--sprint', default='6',
+    parser.add_argument('--sprint', default='7',
                         help='Sprint with results: str = 6')
     parser.add_argument('--data', default='berlin52',
                         help='Traveling salesmen problem name in results '
@@ -92,7 +92,7 @@ plt.axhline(y=opt_dict[data], linestyle='dashed', color="red")
 plt.title(f'{data}, temp={temperature}, cool={cooling}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend(['Nonlocal', 'Local', 'optimum'], loc='top right')
+plt.legend(['Nonlocal', 'Local', 'optimum'], loc='upper right')
 
 # Saving figure or printing depending on --save param.
 if save:
