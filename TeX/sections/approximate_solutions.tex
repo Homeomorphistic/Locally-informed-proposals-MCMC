@@ -1,29 +1,41 @@
-In the precious section we have seen that a deterministic approach of computing salesman tours is infeasible, so we can turn now to probabilistic methods of MCMC. Instead of checking all possible tours, now we want sample from this space, so the question is, how do we define a distribution there? It is usually done with a \textit{softmax}, a transformation of our target function, which is in this case a distance of a tour.
+In the previous section we have seen that a deterministic approach of computing salesman tours is infeasible, so we can turn now to probabilistic methods of MCMC. 
 
-\begin{definition}
-	For a given vector $\x = (x_1, x_2, \ldots, x_d)^T \in \R^d$ a softmax function $s: \R^d \rightarrow \left[0, 1\right]^d$ is defined as
-	\begin{align*}
-		s(\x)_i &= \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
-		s(\x) &= \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
-	\end{align*}
-\end{definition}
-Such defined function is a probability distribution and it does not change the order of a given vector. This is important for us, because we can apply a softmax to the distances (weights) of the tours, so that we change them into distribution, but we will not change the relation between tours -- ones with longer distances will have greater probability. As we are interested in shortest distances, we can add a minus sign to give them the greatest probability.
+\subsection{Basic idea}
+	Instead of checking all possible tours, now we want sample from this space, so the question is, how do we define a distribution there? It is usually done with a \textit{softmax}, a transformation of our target function, which is in this case a distance of a tour.
+	\begin{definition}
+		For a given vector $\x = (x_1, x_2, \ldots, x_d)^T \in \R^d$ a softmax function $s: \R^d \rightarrow \left[0, 1\right]^d$ is defined as
+		\begin{align*}
+			s(\x)_i &= \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
+			s(\x) &= \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
+		\end{align*}
+	\end{definition}
+	Such defined function is a probability distribution and it does not change the order of a given vector. This is important for us, because we can apply a softmax to the distances (weights) of the tours, so that we change them into distribution, but we will not change the relation between tours -- ones with longer distances will have greater probability. As we are interested in shortest distances, we can add a minus sign to give them the greatest probability.
+	
+	It is still not clear, how does it help with the traveling salesman problem -- even with fast sampling algorithm. Why are we interested in probabilities instead of weights? It is, because when looking for a maximum of softmax of a vector, we find a maximum of original vector, so in case of our problem:
+	\begin{equation*}
+		\sigma_{\min} = \underset{\sigma \in S_n}{\argmin} \left( w_{\sigma} \right) = \underset{\sigma \in S_n}{\argmax} \frac{e^{-w_{\sigma}}}{\sum_{\sigma' \in S_n} e^{-w_{\sigma'}}},
+	\end{equation*}
+	where $w_{\sigma}$ is distance (weight) of a tour (permutation) $\sigma$. When $\sigma_{\min}$ is maximizing probability it means when we sample from this distribution it will appear most often. This is the core of MCMC methods -- approximate solution with most probable state. 
 
-Let us get back to the notation of weights and use a vector $\bfw = (w_1, w_2, \ldots, w_N)^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_j}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need actually probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
-\begin{equation*}
-	\pi_i \propto e^{-w_i}.
-\end{equation*}
-Using softmax is even more beneficial, because of the properties of exponential function. In each step of M-H algorithm we need to compute:
-\begin{equation*}
-	\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{\bfQ_{j,i}}{\bfQ_{i,j}}.
-\end{equation*}
-If candidate matrix $\bfQ$ is symmetric this equation simplifies further. In practice we will be using logarithms of quotients in M-H algorithm, because multiplying numbers from $(0,1)$ get small quickly, so that they get out of the range of computer abilities. After applying logarithm we have:
-\begin{equation*}
-	\log \left( \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} \right) = -(w_j-w_i) + \log(\bfQ_{j,i}) - \log(\bfQ_{i,j}).
-\end{equation*}
-Again, if candidate matrix $\bfQ$ is symmetric we are left only with evaluating $w_j-w_i$ which is simple and it does not involve computing any other weights.
-
-Now that we have a target distribution we can try sampling using a MC produced by M-H algorithm and after some point we should reach the tour with highest probability, \ie smallest distance covered. To do that we need to define candidate matrix $\bfQ$. The better the candidates, the faster MC can get to the minimum.
+\subsection{Metropolis-Hastings algorithm}
+	Let us get back to the notation of weights and use a vector $\bfw = (w_1, w_2, \ldots, w_N)^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_j}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need actually probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
+	\begin{equation*}
+		\pi_i \propto e^{-w_i}.
+	\end{equation*}
+	
+	
+	
+	Using softmax is even more beneficial, because of the properties of exponential function. In each step of M-H algorithm we need to compute:
+	\begin{equation*}
+		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{\bfQ_{j,i}}{\bfQ_{i,j}}.
+	\end{equation*}
+	If candidate matrix $\bfQ$ is symmetric this equation simplifies further. In practice we will be using logarithms of quotients in M-H algorithm, because multiplying numbers from $(0,1)$ get small quickly, so that they get out of the range of computer abilities. After applying logarithm we have:
+	\begin{equation*}
+		\log \left( \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} \right) = -(w_j-w_i) + \log(\bfQ_{j,i}) - \log(\bfQ_{i,j}).
+	\end{equation*}
+	Again, if candidate matrix $\bfQ$ is symmetric we are left only with evaluating $w_j-w_i$ which is simple and it does not involve computing any other weights.
+	
+	Now that we have a target distribution we can try sampling using a MC produced by M-H algorithm and after some point we should reach the tour with highest probability, \ie smallest distance covered. To do that we need to define candidate matrix $\bfQ$. The better the candidates, the faster MC can get to the minimum.
 
 \subsection{Candidates}
 	Let us start with considering what the candidate is. We know that the space of all possible tours is enormous, so we cannot take every tour into consideration. Instead we focus on, what we will call from now on \textit{neighbours}.

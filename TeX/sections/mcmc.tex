@@ -27,7 +27,7 @@ If we could generate a MC with a stationary distribution proportional to some fu
 		We see that this matrix satisfies detailed balance, co the distribution $\bfpi$ is stationary.
 	\end{proof}
 	
-	The matrix $\bfQ$ is called \textit{candidate matrix} as it will be later proposing candidates for a MC. It is kind of a parameter for our later algorithms -- a well chosen matrix will give better or worse results. We proved more general case, but if matrix $\bfQ$ is symmetric some terms cancel and the proof becomes easier.
+	The matrix $\bfQ$ is called \textit{candidate matrix} or a \textit{proposal distribution} as it will be later proposing candidates for a MC. It is kind of a parameter for our later algorithms -- a well chosen matrix will give better or worse results. We proved more general case, but if matrix $\bfQ$ is symmetric some terms cancel and the proof becomes easier.
 	
 	The \textit{Metropolis-Hastings algorithm} (abbrv. M-H) utilizes this construction to generate irreducible, aperiodic MC with a stationary distribution $\bfpi$. When candidate matrix $\bfQ$ is symmetric we call this a \textit{Metropolis algorithm}.
 	\begin{algorithm}
