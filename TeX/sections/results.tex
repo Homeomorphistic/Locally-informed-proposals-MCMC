@@ -13,6 +13,11 @@ In this section we will present the results of simulations and compare them with
 	
 	This time to see the difference between cooling parameters we had to extend number of iterations to 1 million. This number of steps is not viable for locally-informed proposals, so only random candidates were used. We can see slight the improvement at the end of iterations, which has potential when the distances are huge. 
 	
+\subsection{Temperature}
+	The same needs to be done with temperature parameter $\tau$. It was proven in \cite{zanella2020informed} that $\tau=2$ is optimal for balancing out likelihoods, but maybe for this problem it is worth considering increasing some probability by this parameter.
+	
+	\input{plots/temperature_plots}
+	
 \subsection{Algorithms comparison}
 	Now we are able to present all the results, we will be using $\tau=2$, two different cooling schedules $t_n=1, \, t_n=\frac{3}{\log(n+2)}$ and two different methods: random candidates and locally-informed proposals and the number of iterations is $5000$.
 	
