@@ -1,3 +1,28 @@
 In this section we will share with our conclusions regarding a new approach of locally-informed proposals.
 
+Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the begging it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm. Given more time (iterations) this randomness should reach also the better result.
+
+Only datasets with small number of vertices (52, 150) are have close results, as the number of neighbours is smaller, so random picking is able to reach smaller distances quicker.
+
+This of course, comes at a price of computational complexity. The LIP algorithm is considerably slower. While random algorithm oscillates within $1.5$ seconds for each dataset, LIP algorithm reaches over $1.5$ hour for the biggest dataset.
+
+It may seem that the time here is an obvious drawback and there is no point in further studying this approach. However, there are still many areas to improve, which makes this method promising.
+
 \subsection{Areas to improve}
+	There are some important areas to improve upon, that could significantly speed up the algorithm. There are two significant problems: updating weights and sampling from the softmax of differences in weights. 
+	
+	Updating differences in weights depends on problem, so for some it could be done really efficiently. As we mentioned earlier, getting weights for edges is not a constant complexity, because we need to search through a vector of weights for many edges (there many more than vertices), which grows quadratically with number of vertices. One way to alleviate this problem is to use \textit{interning}, a method in \textit{Python3} language, which saves objects into Python's memory for quick access. Of course, better knowledge of data structures could be helpful, for example, maybe looking through dictionaries is faster than through lists. This is lowering the complexity.
+	
+	The second problem of sampling is actually a close problem to the one that we are trying to solve now -- how to sample efficiently using MCMC methods. Sampling in this thesis is done by sampling exactly from a long vector, but it seems that the locally-informed proposal is a perfect candidate for M-H algorithm. We know that quotient of LIP is:
+	\begin{equation*}
+		\frac{\bfQ_{j,i}}{\bfQ_{i,j}} = \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} =  e^\frac{-2}{\tau}(w_{i} - w_j) \cdot \frac{C_j}{C_i},
+	\end{equation*}
+	and logarithm of that has form:
+	\begin{equation*}
+		\log\left(\frac{\bfQ_{j,i}}{\bfQ_{i,j}}\right)  = \frac{-2}{\tau}(w_{i} - w_j) + \log(C_j) - \log(C_i).
+	\end{equation*}
+	So if we take this as a acceptance criterion in M-H algorithm, we just need 2 weights and updating normalizing sums. The open question is, how to choose a proposal for this algorithm, such that it will be an efficient way of sampling. This has enormous potential in reducing complexity cost.
+	
+	There is also a problem of choosing temperature and cooling parameters. It could be done by cross-validation, but it adds another complexity level on top of already slow algorithm.
+	
+	To summarize, there is plenty of ways to improve the algorithm, not only through mathematical analysis but also through smarter employment of specialized tools and improving quality of code in \textit{Python3}. The LIP algorithm has a potential for finding minima and solving many NP-hard problems with fewer iterations and maybe in the future with less time.
