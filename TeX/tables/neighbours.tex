@@ -1,0 +1,21 @@
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{lllllllllll}
+		& 1                             & 2                             & 3                             & 4                             & 5                             & 6                             & 7                             & 8                             & 9                                &  \\
+		1 & \cellcolor[HTML]{9B9B9B}(1,2) & \cellcolor[HTML]{9B9B9B}(1,3) & \cellcolor[HTML]{C0C0C0}(1,4) & \cellcolor[HTML]{C0C0C0}(1,5) & \cellcolor[HTML]{9B9B9B}(1,6) & \cellcolor[HTML]{9B9B9B}(1,7) & \cellcolor[HTML]{9B9B9B}(1,8) & \cellcolor[HTML]{C0C0C0}(1,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		2 &                               & \cellcolor[HTML]{9B9B9B}(2,3) & \cellcolor[HTML]{C0C0C0}(2,4) & \cellcolor[HTML]{C0C0C0}(2,5) & \cellcolor[HTML]{9B9B9B}(2,6) & \cellcolor[HTML]{9B9B9B}(2,7) & \cellcolor[HTML]{9B9B9B}(2,8) & \cellcolor[HTML]{C0C0C0}(2,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		3 &                               &                               & \cellcolor[HTML]{C0C0C0}(3,4) & \cellcolor[HTML]{C0C0C0}(3,5) & \cellcolor[HTML]{9B9B9B}(3,6) & \cellcolor[HTML]{9B9B9B}(3,7) & \cellcolor[HTML]{9B9B9B}(3,8) & \cellcolor[HTML]{C0C0C0}(3,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		4 &                               &                               &                               & (4,5)                         & \cellcolor[HTML]{C0C0C0}(4,6) & \cellcolor[HTML]{C0C0C0}(4,7) & \cellcolor[HTML]{C0C0C0}(4,8) & (4,9)                         & $\cdots$                         &  \\
+		5 &                               &                               &                               &                               & \cellcolor[HTML]{C0C0C0}(5,6) & \cellcolor[HTML]{C0C0C0}(5,7) & \cellcolor[HTML]{C0C0C0}(5,8) & (5,9)                         & $\cdots$                         &  \\
+		6 &                               &                               &                               &                               &                               & \cellcolor[HTML]{9B9B9B}(6,7) & \cellcolor[HTML]{9B9B9B}(6,8) & \cellcolor[HTML]{C0C0C0}(6,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		7 &                               &                               &                               &                               &                               &                               & \cellcolor[HTML]{9B9B9B}(7,8) & \cellcolor[HTML]{C0C0C0}(7,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		8 &                               &                               &                               &                               &                               &                               &                               & \cellcolor[HTML]{C0C0C0}(8,9) & \cellcolor[HTML]{C0C0C0}$\cdots$ &  \\
+		9 &                               &                               &                               &                               &                               &                               &                               &                               & $\ddots$                         &  \\
+		&                               &                               &                               &                               &                               &                               &                               &                               &                                  & 
+	\end{tabular}
+	\caption{Table of neighbours.}
+	\label{tab:neighbours}
+\end{table}

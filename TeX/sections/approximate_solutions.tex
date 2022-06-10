@@ -63,27 +63,8 @@ In the previous section we have seen that a deterministic approach of computing 
 	\subsubsection{Implementation}
 		To sum up all the information we present the algorithm for this method (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
 		
-		\begin{algorithm}
-			\caption{Random neighbours algorithm}\label{alg:rnd_neigh}
-			\begin{algorithmic}[1]
-				\State{Choose a tour $\sigma \in S_n$.}
-				\State{$X_0 \gets \sigma$}
-				\State{Compute weight $w_\sigma$.}
-				\For{$i = 1,2, \ldots$}
-				\State{Sample $k, l \sim Unif\left\{1, 2, \ldots, n\right\}$ without replacement.}
-				\State{Sample $U \sim Unif(0,1)$.}
-				\State{$w_{\sigma'} \gets w_\sigma - (w_{k-1, k} + w_{k, k+1} + w_{l-1, l} + w_{l, l+1}) + (w_{k-1, l} + w_{l, k+1} + w_{l-1, k} + w_{k, l+1})$}
-				
-				\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) \right)$}
-				\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
-				\State{$w_{\sigma} \gets w_{\sigma'}$}
-				\Else
-				\State $X_{i+1} \gets X_i$
-				\EndIf
-				\EndFor
-			\end{algorithmic}
-		\end{algorithm}
-	
+		\input{algs/rnd_neigh}
+		
 	\subsubsection{Complexity}
 		As mentioned before this algorithm is simple because of uniform distribution. It requires 2 samplings, which in practice both are the same (random sampling) and 8 operations of adding and subtracting which in theory could be instant, but in reality are of linear complexity, because of searching of weights through the list.
 		
@@ -110,12 +91,12 @@ In the previous section we have seen that a deterministic approach of computing 
 		If temperature parameter is too high the proposal may increase the reverse probability, and when it is too low it may increase local probability (??).The temperature parameter that achieve balance is $\tau=2$ and was considered in \cite{zanella2020informed}.
 	
 	\subsubsection{Computational considerations}
-		The observation here is similar to the previous one -- when we have differences in weights for all neighbours of a starting tour, we can update them and only some of them change in a different way. Then we can calculate softmax on neighbour weights differences. One might notice now, that this procedure is not symmetrical, because softmax can be different when the sums dividing exponent of weights differences will be different each time. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, as it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
+		The observation here is similar to the previous one -- when we have differences in weights for all neighbours of a starting tour, we can update them and only some of them change in a significant way. Then we can calculate softmax on neighbour weights differences. One might notice now, that this procedure is not symmetrical, because softmax can be different when the sums dividing exponent of weights differences will be different. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, as it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
 		
 		Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
 		\begin{align*}
-			\sigma = (1, 2, 3, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots) \\
-			\sigma' = (1, 2, 3, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots)
+			\sigma = (1, 2, \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
+			\sigma' = (1, 2, \ldots, (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
 		\end{align*}
 		Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $m$ and $n$. When $m$ and $n$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{mn}$, $\sigma'_{mn}$ of $\sigma$ and $\sigma'$ respectively look like: 
 		\begin{align*}
@@ -134,6 +115,52 @@ In the previous section we have seen that a deterministic approach of computing 
 			& \ldots, (n-1), m, (n+1), \ldots, (l-1), k, (l+1), \ldots)
 		\end{align*}
 		This time the difference in weights $\sigma_{mn}$ and $\sigma'_{mn}$ cannot be the same, because there are different edges connected to $n$. That forces us to manually get weights corresponding to different edges and update the differences in weights. It means, that some neighbours (swaps) have to be considered separately. These are the scenarios when $m$ or $n$ are elements of $\left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$.
+		
+	\subsubsection{Example}
+		To see this problem let us focus on some easier example and then generalize it to get an estimation of number of steps required to update weights.
+		
+		Let us set $k=2$ and $l=7$, then the set of indices to consider is $\left\{ 1,2,3,6,7,8 \right\}$ and the permutations:
+		\begin{align*}
+			\sigma &= (1, 2, 3, 4, 5, 6, 7, 8, 9, \ldots) \\
+			\sigma' &= (1, 7, 3, 4, 5, 6, 2, 8, 9, \ldots).
+		\end{align*}
+		We can represent neighbours as a tuple of integers, which mean the indices to swap. The table \ref{tab:neighbours} represents neighbours. To not repeat elements, we can focus only on the upper triangle of a matrix of those tuples.
+		
+		\input{tables/neighbours}
+		
+		Light gray cells are neighbours with one index swapped close to considered set, and darker gray cells are neighbours with two indices swapped close to considered set. 
+		
+		Unfortunately there is no other way rather than compute manually weight difference for darker gray cells, because their edges close to $k=2$ and $l=7$ are completely different. 
+		
+		We can say something more about light gray ones, where there is only one index close to the considered set. Let us set $m=3$ and $n=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
+		\begin{align*}
+			\sigma_{3,9} &= (1, 2, 9, 4, 5, 6, 7, 8, 3, \ldots) \\
+			\sigma'_{3,9} &= (1, 7, 9, 4, 5, 6, 2, 8, 3, \ldots).
+		\end{align*}
+		
+		Let us denote $d_{3,9} = w_{\sigma} - w_{\sigma_{3,9}}$ as a difference between current permutation and its neighbour connected to swap  $m=3$ and $n=9$. Similarly $d'_{3,9} = w_{\sigma'} - w_{\sigma'_{3,9}}$ is a difference between neighbour of current permutation and its neighbour. Assume we know vector of differences for $\sigma$ and its weight $w_\sigma$. Given that, we also know $w_{\sigma_{3,9}}$, because
+		\begin{equation*}
+			w_{\sigma_{3,9}} = w_\sigma + d_{3,9}.
+		\end{equation*}
+		Consider difference of weight differences here:
+		\begin{equation*}
+			d_{39} - d'_{3,9} = w_{\sigma} - w_{\sigma_{3,9}} - (w_{\sigma'} - w_{\sigma'_{3,9}}),
+		\end{equation*}
+		after rearranging we have:
+		\begin{equation*}
+			d'_{3,9} = d_{3,9} - (w_{\sigma} - w_{\sigma'}) + (w_{\sigma_{3,9}} - w_{\sigma'_{3,9}}).
+		\end{equation*}
+		We are interested in getting $d'_{3,9}$. The only term in this equation not known to us is $w_{\sigma_{3,9}} - w_{\sigma'_{3,9}}$ (we know $(w_{\sigma} - w_{\sigma'})$ because we know differences in weights of $\sigma$). It is easy to see when looking at $\sigma_{3,9}$ and $\sigma'_{3,9}$ that :
+		\begin{equation*}
+			w_{\sigma_{3,9}} - w_{\sigma'_{3,9}} = (w_{1,2} + w_{2,9} + w_{6,7} + w_{7,8}) - (w_{1,7} + w_{7,9} + w_{6,2} + w_{2,8}).
+		\end{equation*}
+		We can generalize that equation for any $p \notin \left\{ 1,2,3,6,7,8 \right\}$:
+		\begin{equation*}
+			w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
+		\end{equation*}
+		This difference is some function of $p$, changing this index will not change values of any other weights. So we can have a general formula for any $m \in \left\{ 1,2,3,6,7,8 \right\}$ and $n \notin \left\{ 1,2,3,6,7,8 \right\}$, constant $C$ and indices $2,7$ will change depending on $k,l$ and their relative position to $m$.
+		
+		Now we know, that for a given row from $\left\{ 1,2,3,6,7,8 \right\}$ we can compute the difference $d'_{3,9}$. We can do it efficiently using vector operations -- we need one vector subtraction and one computation of constant $C$. In reality vector subtraction is just subtracting each number for each other, so for each $m \in \left\{ 1,2,3,6,7,8 \right\}$ we have at most $N$ (number of vertices) operations and we have $6$ distinct choices of $m$, so $6\cdot N$ operations.
 	
 	\subsubsection{Implementation}
 	
@@ -143,57 +170,14 @@ In the previous section we have seen that a deterministic approach of computing 
 		
 		Unfortunately, there are more practical things to consider this time. In this algorithm we are actually calculating softmax function, nothing is vanishing here. Computing exponents of large numbers ends up with $\infty$ or $-\infty$ on a computer. Also, for datasets like \textit{dsj1000} there are around 1 million neighbours, and we need to keep probabilities with higher precision, that is a lot of memory to use.
 		
-		Working on differences can alleviate this problem (for some cases). Let's say we know weight of our current tour $w_\sigma$ and its neighbours weights vector $\bfw_\sigma$. We can think of every weight in this vector as a difference between it and current tour weight: $\bfd_{\sigma}[i] = w_\sigma + d_i$.
+		Working on differences can alleviate this problem (for some cases). Let's say we know weight of our current tour $w_\sigma$ and its neighbours weights vector $\bfw_\sigma$. We can think of every weight in this vector as a difference between it and current tour weight: $\bfd_{\sigma}[i] = w_\sigma + d_i$. By $\bfd_\sigma[(i,j)]$ we mean the index of a swap $i,j$ (it needs to be found).
 		
-		\begin{algorithm}[!htb]
-			\caption{Locally-informed proposals algorithm}\label{alg:loc_neigh}
-			\begin{algorithmic}[1]
-				\State{Choose a tour $\sigma \in S_n$.}
-				\State{$X_0 \gets \sigma$}
-				\State{Compute weight $w_\sigma$.}
-				\State{Compute all neighbour weight differences $\bfd_\sigma$.}
-				
-				\For{$i = 1,2, \ldots$}
-					\State{$s(\bfd_\sigma) = \mathrm{softmax}(\bfd_\sigma)$}
-					\State{Sample $\sigma' \sim s(\bfd_\sigma)$.}
-					\State{Find $k, l$ connected with swapping.}
-					
-					\State{$w_{\sigma'} \gets w_\sigma + \bfd_\sigma[(k.l)]$}
-					\State{$\bfd_{\sigma'} \gets \bfd_\sigma$}
-					
-					\State{$\bfd_{\sigma'} \gets$ \textit{update\_differences}$(\bfd_{\sigma'})$}
-					
-					\State{$s(\bfd_{\sigma'}) = \mathrm{softmax}(\bfd_{\sigma'})$}
-					\State{Sample $U \sim Unif(0,1)$.}
-					\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) + \log(s(\bfd_{\sigma'})[(k.l)]) - \log(s(\bfd_\sigma)[(k,l)]) \right)$}
-						\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
-						\State{$w_{\sigma} \gets w_{\sigma'}$}
-						\State $\bfd_{\sigma} \gets \bfd_{\sigma'}$
-					\Else
-						\State $X_{i+1} \gets X_i$
-					\EndIf
-				\EndFor
-			\end{algorithmic}
-		\end{algorithm}
-		
-		The main algorithm uses a sub-algorithm \ref{alg:update_diff} which updates weights in swaps that we need to consider separately. It uses function \textit{update\_difference}, which is just getting appropriate weights to remove and add. By $\bfd_\sigma[(i,j)]$ we mean the index of a swap $i,j$ (it needs to be found)
-		\begin{algorithm}[!htb]
-			\caption{Update\_differences}\label{alg:update_diff}
-			\begin{algorithmic}[1]
-				\Require $\bfd_{\sigma'}$
-				\Ensure $\bfd_{\sigma'}$
-				\For{$m = 1, 2, \ldots, N$}
-					\For{$n = m+1, \ldots, N$}
-						\If{$m \vee n \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
-							\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{update\_difference}($\bfd_{\sigma'}[(m,n)]$)}
-						\EndIf
-					\EndFor
-				\EndFor
-			\end{algorithmic}
-		\end{algorithm}
+		\input{algs/loc_neigh}
 		
 	\subsubsection{Complexity}
-		This algorithm is more complicated and it significantly lowers the performance. This time for each step of M-H algorithm we need to compute two times softmax to get probabilities, which is already a hard task, because of computing exponents. Besides that we need to sample from (sometimes) long vector. There is also a sub-procedure with two loops.
+		This algorithm is more complicated and it significantly lowers the performance. This time for each step of M-H algorithm we need to compute softmax to get probabilities, which is already a hard task, because of computing exponents. Besides that we need to sample from (sometimes) long vector. There is also a sub-procedure with two loops.
+		
+		The function \textit{get\_difference} is not implemented as in example, because we wanted to avoid working with large matrices and so avoid problems with memory. In practice one would need to keep matrix of weights, which would be of size $N \times N$ and the same for differences. More than a half of its elements would be empty (zeros) so we would waste a lot of memory and also do many unnecessary operations when adding or subtracting vectors from those matrices. Not using large matrices was also our goal when choosing MCMC methods for this problem.
 		
 		Space complexity is  also constant, but a lot bigger than previously, because we need to keep two  long vectors of probabilities (or weight differences).
 	

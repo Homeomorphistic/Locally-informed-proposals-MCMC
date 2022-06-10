@@ -15,10 +15,11 @@ class TSPath:
     _num_nodes: int = None
     _problem: Problem = None
     _cooling: float = None
+    _weight_matrix: NDArray[Shape['*, *'], Any] = None
 
     def __init__(self,
                  path: NDArray[Shape['*'], Any],
-                 temperature: float,
+                 temperature: float = 2.0,
                  problem: Problem = None,
                  weight: float = None,
                  locally: bool = False,
@@ -48,7 +49,19 @@ class TSPath:
         else:
             self._neighbours_weights = neighbour_weights
 
+        if locally and TSPath._weight_matrix is None:
+            TSPath._weight_matrix = self.get_weight_matrix()
+
+
         self._local_dist = locally and self.get_local_distribution()
+
+    def get_weight_matrix(self):
+        n = TSPath._num_nodes
+        weights = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                weights[i, j] = TSPath._problem.get_weight(i+1, j+1)
+        return weights
 
     @staticmethod
     def path_adjacent_edges(path: NDArray[Shape['*'], Any], i: int) -> Tuple:
@@ -137,22 +150,20 @@ class TSPath:
         n = self._num_nodes
         neighbour = self._path.copy()
         neighbour[i], neighbour[j] = neighbour[j], neighbour[i]
+        neighbours_dict = TSPath._neighbours_dict
         # Most of the vertices have the same weight difference.
         weights = self._neighbours_weights.copy()
 
         # EXCEPTIONS
         i_l, i_r = (i - 1) % n, (i + 1) % n
         j_l, j_r = (j - 1) % n, (j + 1) % n
-        exception_set = {i_l, i, i_r, j_l, j, j_r}
-        neighbour_id = 0
+        exception_list = [i_l, i, i_r, j_l, j, j_r]
 
-        for k in range(n):
-            for l in range(k + 1, n):
-                if (k in exception_set) or (l in exception_set):
-                    weights[neighbour_id] = self.path_neighbour_weight(
-                        path=neighbour, i=k, j=l)
-
-                neighbour_id += 1
+        for k in exception_list.copy():
+            exception_list.pop(0)
+            for l in exception_list:
+                weights[neighbours_dict.get((k, l))] = self.path_neighbour_weight(
+                    path=neighbour, i=k, j=l)
 
         return weights
 
@@ -181,5 +192,5 @@ if __name__ == "__main__":
     berlin_path = TSPath(problem=berlin._problem,
                          path=berlin._current._path,
                          locally=True)
-    print(TSPath._neighbours_dict)
+    print(TSPath._weight_matrix)
 

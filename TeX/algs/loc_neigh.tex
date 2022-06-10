@@ -1,0 +1,46 @@
+\begin{algorithm}[!htb]
+			\caption{Locally-informed proposals algorithm}\label{alg:loc_neigh}
+			\begin{algorithmic}[1]
+				\State{Choose a tour $\sigma \in S_n$.}
+				\State{$X_0 \gets \sigma$}
+				\State{Compute weight $w_\sigma$.}
+				\State{Compute all neighbour weight differences $\bfd_\sigma$.}
+				\State{$s(\bfd_\sigma) = \mathrm{softmax}(\bfd_\sigma)$}
+				
+				\For{$i = 1,2, \ldots$}
+					\State{Sample $\sigma' \sim s(\bfd_\sigma)$.}
+					\State{Find $k, l$ connected with swapping.}
+					
+					\State{$w_{\sigma'} \gets w_\sigma + \bfd_\sigma[(k,l)]$}
+					\State{$\bfd_{\sigma'} \gets \bfd_\sigma$}
+					
+					\State{$\bfd_{\sigma'} \gets$ \textit{update\_differences}$(\bfd_{\sigma'})$}
+					
+					\State{$s(\bfd_{\sigma'}) = \mathrm{softmax}(\bfd_{\sigma'})$}
+					\State{Sample $U \sim Unif(0,1)$.}
+					\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) + \log(s(\bfd_{\sigma'})[(k,l)]) - \log(s(\bfd_\sigma)[(k,l)]) \right)$}
+						\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
+						\State{$w_{\sigma} \gets w_{\sigma'}$}
+						\State $\bfd_{\sigma} \gets \bfd_{\sigma'}$
+					\Else
+						\State $X_{i+1} \gets X_i$
+					\EndIf
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
+		
+		The main algorithm uses a sub-algorithm \ref{alg:update_diff} which updates weights in swaps that we need to consider separately. It uses function \textit{get\_difference}, which is just getting appropriate weights to remove and add. 
+		\begin{algorithm}[!htb]
+			\caption{update\_differences}\label{alg:update_diff}
+			\begin{algorithmic}[1]
+				\Require $\bfd_{\sigma'}$
+				\Ensure $\bfd_{\sigma'}$
+				\For{$m = 1, 2, \ldots, N$}
+					\For{$n = m+1, \ldots, N$}
+						\If{$m \; \mathrm{or} \; n \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
+							\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(m,n)]$)}
+						\EndIf
+					\EndFor
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
