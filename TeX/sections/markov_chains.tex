@@ -72,9 +72,6 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 			\bfmu^{(n)} = \bfmu \PP^n.
 		\end{equation*}
 	\end{theorem}
-	\begin{proof}
-		content...?
-	\end{proof}
 	Proof of this theorem involves unfolding vectorized equation and using basic induction so it will be left. It also shows that given some knowledge of matrix $\PP$ one can easily work with a MC.
 	
 	\subsubsection{Irreducibility}
@@ -123,19 +120,15 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	\begin{theorem} \label{thm:existance_stationary}
 		For any ergodic Markov chain, there exist at least one stationary distribution.
 	\end{theorem}
-	The proof of the Theorem \ref{thm:existance_stationary} can be found in \cite{haggstrom2002finite}.
 	
-	\begin{theorem}
+	
+	\begin{theorem} \label{thm:convergance}
 		Let $(X_n)$ be a ergodic Markov chain, then:
 		\begin{equation*}
 			\lim_{n \rightarrow \infty} p_{ij}(n) = \pi_j.
 		\end{equation*}
 	\end{theorem}
-	\begin{proof}
-		content...
-	\end{proof}
-	
-	Those theorems tell us for some MC we are able to predict their behaviors after enough time passes. It also gives us a tool to approximate sampling from a given distribution $\bfpi$ using Markov chains.
+	The proofs of the Theorems \ref{thm:existance_stationary} and \ref{thm:convergance} can be found in \cite{haggstrom2002finite}. Those theorems tell us for some MC we are able to predict their behaviors after enough time passes. It also gives us a tool to approximate sampling from a given distribution $\bfpi$ using Markov chains.
 	
 \subsection{Reversibility}
 	A reversible MC has a property of having the same distribution in the past and in the future.

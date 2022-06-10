@@ -130,7 +130,7 @@ In the previous section we have seen that a deterministic approach of computing 
 		
 		Light gray cells are neighbours with one index swapped close to considered set, and darker gray cells are neighbours with two indices swapped close to considered set. 
 		
-		Unfortunately there is no other way rather than compute manually weight difference for darker gray cells, because their edges close to $k=2$ and $l=7$ are completely different. 
+		Unfortunately there is no other way rather than compute manually weight difference for darker gray cells, because their edges close to $k=2$ and $l=7$ are completely different. These do not cause a lot of computation, because there are only $\binom{6}{2} = \frac{6 \cdot 5}{2}=15$ cases.
 		
 		We can say something more about light gray ones, where there is only one index close to the considered set. Let us set $m=3$ and $n=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
 		\begin{align*}
