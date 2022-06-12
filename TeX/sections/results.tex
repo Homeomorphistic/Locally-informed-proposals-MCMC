@@ -27,6 +27,8 @@ In this section we will present the results of simulations and compare them with
 	
 	The plots \ref{fig:berlin52_comp}, \ref{fig:kroA150_comp}, \ref{fig:att532_comp}, \ref{fig:dsj1000_comp} present distance of a solution as a function of number of steps. Both algorithms start at the same state and have the same seed. We can se how quickly they diverge. First steps of locally-informed proposals algorithm is taking the best neighbours it can and stays there or makes small improvements. Prolonged stays happen in smaller datasets as there is less deviation at each step and it is harder to choose a better neighbour. At the beginning LIP algorithm has obviously better results in all cases.
 	
+	Additionally the plot \ref{fig:low_iter} compares two methods but on a shorter distances and only for two smaller dataset. The number of vertices is smaller, so LIP finds better solutions quickly and it is easier to compare the methods with fewer iterations. We can see, that less than 100 iterations are enough to create a massive gap between these methods.
+	
 	\input{tables/comparison_tables}
 	
 	The tables \ref{tab:results_comp_cool=1} and \ref{tab:results_comp_cool=2.73} present comparison of those two methods for different cooling parameters. They contain distances of tours, time the algorithm took and ratio of the solution to the optimum. For bigger datasets the ratio is growing, which is behaving as expected -- the more vertices to search through, so more iterations are needed to reach optimum. The LIP algorithm outperforms random candidates, given small amount of iterations. We can also notice that the cooling parameter does not cause any significant difference.
