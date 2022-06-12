@@ -30,37 +30,22 @@
 \end{algorithm}
 		
 The main algorithm uses a sub-algorithm \ref{alg:update_diff} which updates weights in swaps that we need to consider separately. It uses function \textit{get\_difference}, which is just getting appropriate weights to remove and add. 
+
 \begin{algorithm}[!htb]
 	\caption{update\_differences}\label{alg:update_diff}
 	\begin{algorithmic}[1]
 		\Require $\bfd_{\sigma'}$
 		\Ensure $\bfd_{\sigma'}$
-		\For{$r = 1, 2, \ldots, n$}
-			\For{$s = r+1, \ldots, n$}
-				\If{$r \; \mathrm{or} \; s \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
-					\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
-				\EndIf
-			\EndFor
-		\EndFor
-	\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[!htb]
-	\caption{update\_differences\_alt}\label{alg:update_diff_alt}
-	\begin{algorithmic}[1]
-		\Require $\bfd_{\sigma'}$
-		\Ensure $\bfd_{\sigma'}$
 		\For{$r = k-1, k, k+1, l-1, l, l+1$}
 			\For{$s = r+1, \ldots, n$}
-				\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
+				\State{$\bfd_{\sigma'}[(r,s)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
 			\EndFor
 		\EndFor
 		
-		\For{$r = k+2, k+3, \ldots, l-2$}
-			\For{$s = l-1, l, l+1$}
-				\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
+		\For{$s = k-1, k, k+1, l-1, l, l+1$}
+			\For{$r = 1, 2, \ldots l$}
+				\State{$\bfd_{\sigma'}[(r,s)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
 			\EndFor
 		\EndFor
 	\end{algorithmic}
 \end{algorithm}
-Alternate algorithm explanation: ??
