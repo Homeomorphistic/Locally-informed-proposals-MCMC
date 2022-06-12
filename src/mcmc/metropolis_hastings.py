@@ -152,9 +152,9 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
         self.save_optimum(time=0.0,
                           max_iter=0,
                           tolerance=tolerance)
-        save_set = {5, 10, 20, 30, 50, 70, 100, 200, 300, 500, 700, 900, 1000, 1250, 1500,
+        save_set = {100, 250, 500, 750, 1000, 1250, 1500,
                     1750, 2000, 2500, 5000, 7500, 10000, 12500, 15000, 17500,
-                    20000, 50000, 100000, 200000, 500000}
+                    20000, 50000, 100000, 200000, 500000, 1000000, 3000000}
         # Stop when chain stays at the same state for too long or some stop
         # condition is achieved or too many iterations.
         start = perf_counter()
@@ -163,7 +163,7 @@ class MonteCarloMarkovChain(ABC, MarkovChain[State]):
                and self._step_num < max_iter):
             if save and (self.step_num in save_set):
                 stop = perf_counter()
-                self.save_optimum(time=stop - start,
+                self.save_optimum(time= stop - start,
                                   max_iter=self.step_num,
                                   tolerance=tolerance)
                 print(f'tsp_solver at {self.step_num} step.')

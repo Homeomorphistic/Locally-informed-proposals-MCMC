@@ -32,3 +32,7 @@ In this section we will present the results of simulations and compare them with
 	\input{tables/comparison_tables}
 	
 	The tables \ref{tab:results_comp_cool=1} and \ref{tab:results_comp_cool=2.73} present comparison of those two methods for different cooling parameters. They contain distances of tours, time the algorithm took and ratio of the solution to the optimum. For bigger datasets the ratio is growing, which is behaving as expected -- the more vertices to search through, so more iterations are needed to reach optimum. The LIP algorithm outperforms random candidates, given small amount of iterations. We can also notice that the cooling parameter does not cause any significant difference.
+	
+	\input{tables/time_to_reach}
+	
+	The table \ref{tab:time_to_reach} presents time required for random neighbours algorithm to reach the same result as LIP algorithm (with the same seeds). As we can see is much lower than for its competitor with the exception of \textit{berlin52} dataset. This one could not converge to the same distance.
