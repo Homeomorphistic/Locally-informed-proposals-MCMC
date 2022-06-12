@@ -152,10 +152,10 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC(name='berlin52')
-    opt_uni = (berlin_uni.find_optimum(max_iter=5000, stay_count=10000))
+    opt_uni = (berlin_uni.find_optimum(max_iter=100, stay_count=100))
     print(opt_uni)
     berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True)
-    opt_loc = berlin_loc.find_optimum(max_iter=5000, stay_count=10000)
+    opt_loc = berlin_loc.find_optimum(max_iter=100, stay_count=100)
     print(opt_loc)
 
 
