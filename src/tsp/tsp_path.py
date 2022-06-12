@@ -156,15 +156,22 @@ class TSPath:
         # EXCEPTIONS
         i_l, i_r = (i - 1) % n, (i + 1) % n
         j_l, j_r = (j - 1) % n, (j + 1) % n
-        exception_set = {i_l, i, i_r, j_l, j, j_r}
+        exception_list = [i_l, i, i_r, j_l, j, j_r]
         neighbour_id = 0
 
-        for k in range(n):
+        for k in exception_list:
+            neighbour_id = TSPath._neighbours_dict.get((k, k+1))
             for l in range(k + 1, n):
-                if (k in exception_set) or (l in exception_set):
-                    weights[neighbour_id] = self.path_neighbour_weight(
-                        path=neighbour, i=k, j=l)
+                weights[neighbour_id] = self.path_neighbour_weight(
+                    path=neighbour, i=k, j=l)
+                neighbour_id += 1
 
+
+        for k in range(i_r + 1, j_l):
+            neighbour_id = TSPath._neighbours_dict.get((k, j_l))
+            for l in [j_l, j, j_r]:
+                weights[neighbour_id] = self.path_neighbour_weight(
+                    path=neighbour, i=k, j=l)
                 neighbour_id += 1
 
         return weights

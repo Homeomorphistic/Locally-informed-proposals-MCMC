@@ -105,7 +105,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                        current: TSPath,
                        tolerance: float = 0.01
                        ) -> bool:
-        return current._weight >= 9276 #return current._weight <= previous._weight * (1 + tolerance)
+        return True #return current._weight <= previous._weight * (1 + tolerance)
 
     def save_optimum(self,
                      time: float,
@@ -152,10 +152,10 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
 
 if __name__ == "__main__":
     berlin_uni = TravelingSalesmenMCMC(name='berlin52')
-    opt_uni = (berlin_uni.find_optimum(max_iter=100, stay_count=100))
+    opt_uni = (berlin_uni.find_optimum(max_iter=500, stay_count=1000))
     print(opt_uni)
     berlin_loc = TravelingSalesmenMCMC(name='berlin52', locally=True)
-    opt_loc = berlin_loc.find_optimum(max_iter=100, stay_count=100)
+    opt_loc = berlin_loc.find_optimum(max_iter=500, stay_count=1000)
     print(opt_loc)
 
 
