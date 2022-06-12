@@ -1,0 +1,17 @@
+\begin{algorithm}
+	\caption{Metropolis-Hastings algorithm}\label{alg:metro-hast}
+	\begin{algorithmic}[1]
+		\State{Choose a state $i \in S$.}
+		\State{$X_0 \gets i$}
+		\For{$k = 1,2, \ldots$}
+			\State{Sample $j \sim \bfQ_i = (\bfQ_{i,1}, \bfQ_{i,2}, \ldots, \bfQ_{i,N})$.}
+			\State{Sample $U \sim Unif(0,1)$.}
+			
+			\If{$U \leq \min \left(1, \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right)$}
+				\State $X_{k+1} \gets j$
+			\Else
+				\State $X_{k+1} \gets X_n$
+			\EndIf
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}

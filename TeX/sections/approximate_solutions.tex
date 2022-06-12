@@ -45,23 +45,23 @@ In the previous section we have seen that a deterministic approach of computing 
 	These neighbours are the original tour with two swaped indices. This let's us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
 \subsection{Random neighbours}
-	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing a random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
+	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
 	
 	\subsubsection{Computational considerations}
 		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma_i$ we need to calculate its distance (weight):
 		\begin{equation*}
-			w_i = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(j)} + w_{\sigma(n), \sigma(1)}.
+			w_\sigma = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(i+1)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
 		
 		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have tours (permutations of vertices):
 		\begin{align*}
-			\sigma = (1, 2, \ldots, k-1, k, k+1, \ldots, l-1, l, l+1, \ldots) \\
-			\sigma' = (1, 2, \ldots, k-1, l, k+1, \ldots, l-1, k, l+1, \ldots)
+			\sigma = (\sigma(1), \ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+			\sigma' = (\sigma(1), \ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 		\end{align*}
-		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{k-1, k}$, $w_{k, k+1}$, $w_{l-1, l}$, $w_{l, l+1}$ and add $w_{k-1, l}, w_{l, k+1}, w_{l-1, k}, w_{k, l+1}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
+		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
 		
 	\subsubsection{Implementation}
-		To sum up all the information we present the algorithm for this method (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
+		To sum up all the information we summarize it in Algorithm (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
 		
 		\input{algs/rnd_neigh}
 		
@@ -88,33 +88,33 @@ In the previous section we have seen that a deterministic approach of computing 
 		\begin{equation*}
 			\log\left(\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right) = \left( -(w_j-w_i) \left(1 - \frac{2}{\tau}\right) \right) + \log\left(C_j\right) - \log\left(C_i\right).
 		\end{equation*}
-		If temperature parameter is too high the proposal may increase the reverse probability, and when it is too low it may increase local probability (??).The temperature parameter that achieve balance is $\tau=2$ and was considered in \cite{zanella2020informed}.
+		The temperature parameter that achieve balance is $\tau=2$ and was considered in \cite{zanella2020informed}.
 	
 	\subsubsection{Computational considerations}
 		The observation here is similar to the previous one -- when we have differences in weights for all neighbours of a starting tour, we can update them and only some of them change in a significant way. Then we can calculate softmax on neighbour weights differences. One might notice now, that this procedure is not symmetrical, because softmax can be different when the sums dividing exponent of weights differences will be different. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, as it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
 		
 		Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
 		\begin{align*}
-			\sigma = (1, 2, \ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
-			\sigma' = (1, 2, \ldots, (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
+			\sigma = (\sigma(1), \ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+			\sigma' = (\sigma(1), \ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 		\end{align*}
-		Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $m$ and $n$. When $m$ and $n$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{mn}$, $\sigma'_{mn}$ of $\sigma$ and $\sigma'$ respectively look like: 
+		Now we need to think of a neighbour connected to some other swap for both of those tours, let's say $r$ and $s$. When $r$ and $s$ are far away from $k$ and $l$ we have almost the same tours, but with a swap on $k$ and $l$. So the neighbours $\sigma_{r,s}$, $\sigma'_{r,s}$ of $\sigma$ and $\sigma'$ respectively look like: 
 		\begin{align*}
-			\sigma_{mn} = &(\ldots, (m-1), n, (m+1), \ldots, (n-1), m,( n+1), \ldots, \\
-			&\ldots, (k-1), k, (k+1), \ldots, (l-1), l, (l+1), \ldots) \\
-			\sigma'_{mn} = &(\ldots, (m-1), n, (m+1), \ldots, (n-1), m, (n+1), \ldots, \\
-			&\ldots (k-1), l, (k+1), \ldots, (l-1), k, (l+1), \ldots)
+			\sigma_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots, \sigma(s-1), \sigma(r),\sigma(s+1), \ldots, \\
+			&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+			\sigma'_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \\
+			&\ldots \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 		\end{align*}
-		This time we need differences in weights, so assuming we know it for neighbour $\sigma_{mn}$ of $\sigma$, we can see that difference in weight of neighbour $\sigma'_{mn}$ of $\sigma'$ is the same, because the weights changed only on $m$ and $n$ place, which are not connected to $k$ and $l$. This case covers most of the neighbours. 
+		This time we need differences in weights, so assuming we know it for neighbour $\sigma_{r,s}$ of $\sigma$, we can see that difference in weight of neighbour $\sigma'_{r,s}$ of $\sigma'$ is the same, because the weights changed only on $r$ and $s$ place, which are not connected to $k$ and $l$. This case covers most of the neighbours. 
 		
-		Let us think now about the case, when swap of $m$ and $n$ indices happen somewhere close to $k$ and $l$, for example $k = m-1$:
+		Let us think now about the case, when swap of $r$ and $s$ indices happen somewhere close to $k$ and $l$, for example $k = r-1$:
 		\begin{align*}
-			\sigma_{mn} = &(\ldots, (k-1), k, n, (m+1), \ldots, \\
-			&\ldots, (n-1), m,( n+1), \ldots, (l-1), l, (l+1), \ldots) \\
-			\sigma'_{mn} = &(\ldots, (k-1), l, n, (m+1), \ldots, \\
-			& \ldots, (n-1), m, (n+1), \ldots, (l-1), k, (l+1), \ldots)
+			\sigma_{r,s} = &(\ldots, \sigma(k-1), \sigma(k), \sigma(s), \sigma(r+1), \ldots, \\
+			&\ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+			\sigma'_{r,s} = &(\ldots, \sigma(k-1), \sigma(l), \sigma(s), \sigma(r+1), \ldots, \\
+			& \ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 		\end{align*}
-		This time the difference in weights $\sigma_{mn}$ and $\sigma'_{mn}$ cannot be the same, because there are different edges connected to $n$. That forces us to manually get weights corresponding to different edges and update the differences in weights. It means, that some neighbours (swaps) have to be considered separately. These are the scenarios when $m$ or $n$ are elements of $\left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$.
+		This time the difference in weights $\sigma_{r,s}$ and $\sigma'_{r,s}$ cannot be the same, because there are different edges connected to $s$. That forces us to manually get weights corresponding to different edges and update the differences in weights. It means, that some neighbours (swaps) have to be considered separately. These are the scenarios when $r$ or $s$ are elements of $\left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$.
 		
 	\subsubsection{Example}
 		To see this problem let us focus on some easier example and then generalize it to get an estimation of number of steps required to update weights.
@@ -132,13 +132,13 @@ In the previous section we have seen that a deterministic approach of computing 
 		
 		Unfortunately there is no other way rather than compute manually weight difference for darker gray cells, because their edges close to $k=2$ and $l=7$ are completely different. These do not cause a lot of computation, because there are only $\binom{6}{2} = \frac{6 \cdot 5}{2}=15$ cases.
 		
-		We can say something more about light gray ones, where there is only one index close to the considered set. Let us set $m=3$ and $n=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
+		We can say something more about light gray ones, where there is only one index close to the considered set. Let us set $r=3$ and $s=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
 		\begin{align*}
 			\sigma_{3,9} &= (1, 2, 9, 4, 5, 6, 7, 8, 3, \ldots) \\
 			\sigma'_{3,9} &= (1, 7, 9, 4, 5, 6, 2, 8, 3, \ldots).
 		\end{align*}
 		
-		Let us denote $d_{3,9} = w_{\sigma} - w_{\sigma_{3,9}}$ as a difference between current permutation and its neighbour connected to swap  $m=3$ and $n=9$. Similarly $d'_{3,9} = w_{\sigma'} - w_{\sigma'_{3,9}}$ is a difference between neighbour of current permutation and its neighbour. Assume we know vector of differences for $\sigma$ and its weight $w_\sigma$. Given that, we also know $w_{\sigma_{3,9}}$, because
+		Let us denote $d_{3,9} = w_{\sigma} - w_{\sigma_{3,9}}$ as a difference between current permutation and its neighbour connected to swap  $r=3$ and $s=9$. Similarly $d'_{3,9} = w_{\sigma'} - w_{\sigma'_{3,9}}$ is a difference between neighbour of current permutation and its neighbour. Assume we know vector of differences for $\sigma$ and its weight $w_\sigma$. Given that, we also know $w_{\sigma_{3,9}}$, because
 		\begin{equation*}
 			w_{\sigma_{3,9}} = w_\sigma + d_{3,9}.
 		\end{equation*}
@@ -158,13 +158,13 @@ In the previous section we have seen that a deterministic approach of computing 
 		\begin{equation*}
 			w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
 		\end{equation*}
-		This difference is some function of $p$, changing this index will not change values of any other weights. So we can have a general formula for any $m \in \left\{ 1,2,3,6,7,8 \right\}$ and $n \notin \left\{ 1,2,3,6,7,8 \right\}$, constant $C$ and indices $2,7$ will change depending on $k,l$ and their relative position to $m$.
+		This difference is some function of $p$, changing this index will not change values of any other weights. So we can have a general formula for any $r \in \left\{ 1,2,3,6,7,8 \right\}$ and $s \notin \left\{ 1,2,3,6,7,8 \right\}$, constant $C$ and indices $2,7$ will change depending on $k,l$ and their relative position to $r$.
 		
-		Now we know, that for a given row from $\left\{ 1,2,3,6,7,8 \right\}$ we can compute the difference $d'_{3,9}$. We can do it efficiently using vector operations -- we need one vector subtraction and one computation of constant $C$. In reality vector subtraction is just subtracting each number for each other, so for each $m \in \left\{ 1,2,3,6,7,8 \right\}$ we have at most $N$ (number of vertices) operations and we have $6$ distinct choices of $m$, so $6\cdot N$ operations.
+		Now we know, that for a given row from $\left\{ 1,2,3,6,7,8 \right\}$ we can compute the difference $d'_{3,9}$. We can do it efficiently using vector operations -- we need one vector subtraction and one computation of constant $C$. In reality vector subtraction is just subtracting each number for each other, so for each $r \in \left\{ 1,2,3,6,7,8 \right\}$ we have at most $n$ (number of vertices) operations and we have $6$ distinct choices of $r$, so $6\cdot n$ operations.
 	
 	\subsubsection{Implementation}
 	
-		To sum up all the information we present the algorithm for this method (\ref{alg:loc_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
+		To sum up all the information we summarize it in Algorithm (\ref{alg:loc_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
 
 		The core of this algorithm is still the same, but we need to add more complicated part with computing neighbour weights differences and updating them after each step of a main loop.
 		
@@ -177,7 +177,7 @@ In the previous section we have seen that a deterministic approach of computing 
 	\subsubsection{Complexity}
 		This algorithm is more complicated and it significantly lowers the performance. This time for each step of M-H algorithm we need to compute softmax to get probabilities, which is already a hard task, because of computing exponents. Besides that we need to sample from (sometimes) long vector. There is also a sub-procedure with two loops.
 		
-		The function \textit{get\_difference} is not implemented as in example, because we wanted to avoid working with large matrices and so avoid problems with memory. In practice one would need to keep matrix of weights, which would be of size $N \times N$ and the same for differences. More than a half of its elements would be empty (zeros) so we would waste a lot of memory and also do many unnecessary operations when adding or subtracting vectors from those matrices. Not using large matrices was also our goal when choosing MCMC methods for this problem.
+		The function \textit{get\_difference} is not implemented as in example, because we wanted to avoid working with large matrices and so avoid problems with memory. In practice one would need to keep matrix of weights, which would be of size $n \times n$ and the same for differences. More than a half of its elements would be empty (zeros) so we would waste a lot of memory and also do many unnecessary operations when adding or subtracting vectors from those matrices. Not using large matrices was also our goal when choosing MCMC methods for this problem.
 		
 		Space complexity is  also constant, but a lot bigger than previously, because we need to keep two  long vectors of probabilities (or weight differences).
 	

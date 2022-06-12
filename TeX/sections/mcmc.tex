@@ -7,7 +7,7 @@ If we could generate a MC with a stationary distribution proportional to some fu
 \subsection{Metropolis-Hastings algorithm}
 	We seek an algorithm constructing a MC, which has a stationary distribution of our given probability distribution $\bfpi$ ($\pi_i > 0$). One could of course find such a transition matrix $\PP$ that has stationary distribution $\bfpi$ but this does not avoid the problem of enormous state space -- the matrix $\PP$ would also be enormous. So it would be a feasible idea, when the state space is small and also deterministic algorithms are able to find solutions. 
 	
-	Regardless of this fact let us start with constructing such a matrix. Assume that we have another stochastic matrix $\bfQ$ which is irreducible and aperiodic. Let us consider a matrix defined us:
+	Regardless of this fact let us start with constructing such a matrix. Assume that we have another stochastic matrix $\bfQ$ which is irreducible and aperiodic. Let us consider a matrix defined as:
 	\begin{equation} \label{eq:PQ}
 		\PP_{i,j} = 
 		\begin{cases}
@@ -30,23 +30,8 @@ If we could generate a MC with a stationary distribution proportional to some fu
 	The matrix $\bfQ$ is called \textit{candidate matrix} or a \textit{proposal distribution} as it will be later proposing candidates for a MC. It is kind of a parameter for our later algorithms -- a well chosen matrix will give better or worse results. We proved more general case, but if matrix $\bfQ$ is symmetric some terms cancel and the proof becomes easier.
 	
 	The \textit{Metropolis-Hastings algorithm} (abbrv. M-H) utilizes this construction to generate irreducible, aperiodic MC with a stationary distribution $\bfpi$. When candidate matrix $\bfQ$ is symmetric we call this a \textit{Metropolis algorithm}.
-	\begin{algorithm}
-		\caption{Metropolis-Hastings algorithm}\label{alg:metro-hast}
-		\begin{algorithmic}[1]
-			\State{Choose a state $i \in S$.}
-			\State{$X_0 \gets i$}
-			\For{$n = 1,2, \ldots$}
-				\State{Sample $j \sim \bfQ_i = (\bfQ_{i,1}, \bfQ_{i,2}, \ldots, \bfQ_{i,N})$.}
-				\State{Sample $U \sim Unif(0,1)$.}
-				
-				\If{$U \leq \min \left(1, \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right)$}
-					\State $X_{n+1} \gets j$
-				\Else
-					\State $X_{n+1} \gets X_n$
-				\EndIf
-			\EndFor
-		\end{algorithmic}
-	\end{algorithm}
+	\input{algs/metropolis_hastings}
+	
 	
 	In reality one does not need to create whole candidate matrix or a transition matrix. We just need to know how to sample at one step, so how to choose a candidate given a current state. If the procedure is symmetric it simplifies drastically, we need only to know the quotient of distribution $\bfpi$ at this step. The next constructions use this as an advantage to reduce number of computations.
 	

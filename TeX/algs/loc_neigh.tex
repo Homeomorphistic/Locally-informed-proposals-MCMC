@@ -35,10 +35,10 @@
 			\begin{algorithmic}[1]
 				\Require $\bfd_{\sigma'}$
 				\Ensure $\bfd_{\sigma'}$
-				\For{$m = 1, 2, \ldots, N$}
-					\For{$n = m+1, \ldots, N$}
-						\If{$m \; \mathrm{or} \; n \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
-							\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(m,n)]$)}
+				\For{$r = 1, 2, \ldots, n$}
+					\For{$s = r+1, \ldots, n$}
+						\If{$r \; \mathrm{or} \; s \; \mathrm{in} \left\{ (k-1), k, (k+1), (l-1), l, (l+1) \right\}$}
+							\State{$\bfd_{\sigma'}[(m,n)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
 						\EndIf
 					\EndFor
 				\EndFor

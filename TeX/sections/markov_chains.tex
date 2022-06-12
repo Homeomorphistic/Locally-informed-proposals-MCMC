@@ -32,31 +32,31 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	In this subsection we will formally define a Markov chain and list some of its basic properties.
 	
 	\begin{definition}
-		A Markov chain (abbrv. MC) is a sequence of random variables $\left( X_n\right)_{n \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
+		A Markov chain (abbrv. MC) is a sequence of random variables $\left( X_k\right)_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
 		\begin{equation*}
-			P(X_{n+m} = j | X_n = i, X_{l_{k-1}} = i_{l_{k-1}}, X_{l_{k-2}} = i_{l_{k-2}}, \ldots, X_{l_1} = i_1) = P(X_{n+m} = j | X_n = i),
+			P(X_{k+m} = j | X_k = i, X_{l_{p-1}} = i_{l_{p-1}}, X_{l_{p-2}} = i_{l_{p-2}}, \ldots, X_{l_1} = i_1) = P(X_{k+m} = j | X_k = i),
 		\end{equation*}
-		for all indices $l_1< \ldots < l_{k-1} < n < n+m, \; 1 \leq k < n$ and all states $j, i, i_{n-1}, i_{n-2}, \ldots, i_0 \in S$.
+		for all indices $l_1< \ldots < l_{p-1} < k < k+m, \; 1 \leq p < k$ and all states $j, i, i_{k-1}, i_{k-2}, \ldots, i_0 \in S$.
 	\end{definition}
 	This definition indicates independence of the past of a MC. The probabilities depend on current state and the number of steps.
 
 	\begin{definition}
 		A Markov chain is homogeneous if additionally:
 		\begin{equation*}
-			P(X_{n+m} = j | X_m = i) = P(X_{n} = j | X_0 = i).
+			P(X_{k+m} = j | X_m = i) = P(X_{k} = j | X_0 = i).
 		\end{equation*}
 		In this case we define:
 		\begin{equation*}
-			p_{i,j}(n) \overset{df}{=} P(X_{n} = j | X_0 = i).
+			p_{i,j}(k) \overset{df}{=} P(X_{k} = j | X_0 = i).
 		\end{equation*}
 	\end{definition}
 	Homogeneous Markov chains are more natural for us and easier to study. These eliminate the dependence on the number of steps that a Markov chain went through. From now on, whenever we use a term \textit{markov chain} we will mean a \textit{homogeneous markov chain}.
 	
 	The probabilities $p_{i,j}(n)$ give us a probability of transition between states $i$ and $j$ in $n$  steps. We can use them to form a special matrix that will be linked with a MC.
 	\begin{definition}
-		A transition matrix in $n$ steps $\PP(n)$ for a MC is a stochastic matrix constructed using transition probabilities:
+		A transition matrix in $k$ steps $\PP(k)$ for a MC is a stochastic matrix constructed using transition probabilities:
 		\begin{equation*}
-			\PP_{i,j}(n) = p_{i,j}(n), \; \PP_{i,j}(0) = \mathds{I}, \; \PP \overset{df}{=} \PP_{i,j}(1).
+			\PP_{i,j}(k) = p_{i,j}(k), \; \PP_{i,j}(0) = \mathds{I}, \; \PP \overset{df}{=} \PP_{i,j}(1).
 		\end{equation*}
 	\end{definition}
 	
@@ -67,9 +67,9 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	A transition matrix together with initial distribution define a MC, so these are the only objects that need to be analyzed if one wants to study those chains.
 	
 	\begin{theorem}
-		Let $\bfmu^{(n)} \in \R^N$ be a distribution of a MC at $n$-th step and $\bfmu \in \R^N$ the initial distribution, then for all $n$:
+		Let $\bfmu^{(k)} \in \R^N$ be a distribution of a MC at $k$-th step and $\bfmu \in \R^N$ the initial distribution, then for all $k$:
 		\begin{equation*}
-			\bfmu^{(n)} = \bfmu \PP^n.
+			\bfmu^{(k)} = \bfmu \PP^k.
 		\end{equation*}
 	\end{theorem}
 	Proof of this theorem involves unfolding vectorized equation and using basic induction so it will be left. It also shows that given some knowledge of matrix $\PP$ one can easily work with a MC.
@@ -79,7 +79,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 		\begin{definition}[Irreducibility]
 			A Markov chain with transition matrix $\PP$ is called irreducible if and only if for every pair of states $i$ and $j$ there exists a positive probability of transition between them \ie
 			\begin{equation*}
-				\forall \; i,j \in S \; \exists \, n \, \PP_{i,j}(n) > 0.
+				\forall \; i,j \in S \; \exists \, n \, \PP_{i,j}(k) > 0.
 			\end{equation*}
 		\end{definition}
 	
@@ -88,7 +88,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 		\begin{definition}[Periodicity]
 			Let $d_i$ be a greatest common divisor of those $n$ such that $\PP_{i,i}(n)>0$ \ie
 			\begin{equation*}
-				d_i = gcd\{ n \geq : \PP_{i,i}(n)>0 \}
+				d_i = gcd\{ k \geq : \PP_{i,i}(k)>0 \}
 			\end{equation*}
 			If $d_i > 1$ then state $i$ is periodic. If $d_i = 1$ then state $i$ is aperiodic.
 		\end{definition}
@@ -125,7 +125,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	\begin{theorem} \label{thm:convergance}
 		Let $(X_n)$ be a ergodic Markov chain, then:
 		\begin{equation*}
-			\lim_{n \rightarrow \infty} p_{ij}(n) = \pi_j.
+			\lim_{k \rightarrow \infty} p_{ij}(k) = \pi_j.
 		\end{equation*}
 	\end{theorem}
 	The proofs of the Theorems \ref{thm:existance_stationary} and \ref{thm:convergance} can be found in \cite{haggstrom2002finite}. Those theorems tell us for some MC we are able to predict their behaviors after enough time passes. It also gives us a tool to approximate sampling from a given distribution $\bfpi$ using Markov chains.
@@ -133,7 +133,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 \subsection{Reversibility}
 	A reversible MC has a property of having the same distribution in the past and in the future.
 	\begin{definition}[Reversibility]
-		A Markov chain $(X_n)$ is reversible if random vectors
+		A Markov chain $(X_k)$ is reversible if random vectors
 		\begin{equation*}
 			(X_{i_1}, X_{i_2}, \ldots, X_{i_k}) \; \mathrm{and} \; (X_{m-i_1}, X_{m-i_2}, \ldots, X_{m-i_k}),
 		\end{equation*}

@@ -1,8 +1,8 @@
 In this section we will share with our conclusions regarding a new approach of locally-informed proposals.
 
-Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the begging it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm. Given more time (iterations) this randomness should reach also the better result.
+Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the beginning it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm. Given more time (iterations) this randomness should reach also the better result.
 
-Only datasets with small number of vertices (52, 150) are have close results, as the number of neighbours is smaller, so random picking is able to reach smaller distances quicker.
+Only datasets with small number of vertices (52, 150) have close results, as the number of neighbours is smaller, so random picking is able to reach smaller distances quicker.
 
 This of course, comes at a price of computational complexity. The LIP algorithm is considerably slower. While random algorithm oscillates within $1.5$ seconds for each dataset, LIP algorithm reaches over $1.5$ hour for the biggest dataset.
 
