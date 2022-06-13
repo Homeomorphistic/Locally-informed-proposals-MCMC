@@ -1,4 +1,4 @@
-\begin{algorithm}
+\begin{algorithm}[H]
 	\caption{Metropolis-Hastings algorithm}\label{alg:metro-hast}
 	\begin{algorithmic}[1]
 		\State{Choose a state $i \in S$.}
@@ -10,7 +10,7 @@
 			\If{$U \leq \min \left(1, \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right)$}
 				\State $X_{k+1} \gets j$
 			\Else
-				\State $X_{k+1} \gets X_n$
+				\State $X_{k+1} \gets X_k$
 			\EndIf
 		\EndFor
 	\end{algorithmic}

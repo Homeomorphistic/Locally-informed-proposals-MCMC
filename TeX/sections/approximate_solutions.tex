@@ -69,9 +69,10 @@ In the previous section we have seen that a deterministic approach of computing 
 		As mentioned before this algorithm is simple because of uniform distribution. It requires 2 samplings, which in practice both are the same (random sampling) and 8 operations of adding and subtracting which in theory could be instant, but in reality are of linear complexity, because of searching of weights through the list.
 		
 		Space complexity is constant -- we need only two variables to contain current weight and state. In practice we also use a memory for storing weights of the problem.
-
+		\clearpage
+		
 \subsection{Locally-informed proposals}
-	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. 
+	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. This idea was mentioned in \cite{maddison2021oops} and we will try to apply it efficiently.
 	
 	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its around 1 million neighbours).
 	

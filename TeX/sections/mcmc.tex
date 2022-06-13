@@ -1,13 +1,13 @@
-In this section we will show how to use aforementioned properties of Markov chains for solving problems. The idea is to use a Markov chain to simulate complicated models and estimate relevant parameters.
+In this section we will show how to use aforementioned properties of MC for solving problems. The idea is to use a MC to simulate complicated models and estimate relevant parameters.
 
-The classical example is measuring the area under a curve or a figure, with counting how many randomly generated points are inside or outside the figure and estimating area as a mean. Such a sequence of points is a sequence of random independent variables, which is also a MC, but without any dependence.
+The classical example is measuring the area under a curve or a figure, with counting how many randomly generated points are inside or outside the figure and estimating area as a ratio of points inside. Such a sequence of points is a sequence of random independent variables, which is also a MC, but without any dependence.
 
-If we could generate a MC with a stationary distribution proportional to some function of our interest we could find its maximum, by counting frequencies of states. That is the core idea of Metropolis algorithm.
+If we could generate a MC with a stationary distribution proportional to some function of our interest we could find its maximum, by counting frequencies of the states. That is the core idea behind Metropolis-Hastings algorithm.
 
 \subsection{Metropolis-Hastings algorithm}
 	We seek an algorithm constructing a MC, which has a stationary distribution of our given probability distribution $\bfpi$ ($\pi_i > 0$). One could of course find such a transition matrix $\PP$ that has stationary distribution $\bfpi$ but this does not avoid the problem of enormous state space -- the matrix $\PP$ would also be enormous. So it would be a feasible idea, when the state space is small and also deterministic algorithms are able to find solutions. 
 	
-	Regardless of this fact let us start with constructing such a matrix. Assume that we have another stochastic matrix $\bfQ$ which is irreducible and aperiodic. Let us consider a matrix defined as:
+	Regardless of this fact let us start with constructing such a matrix. Assume that we have another stochastic matrix $\bfQ$ which is irreducible and aperiodic and $\bfQ_{i,j} >0 \iff \bfQ_{j,i} > 0$. Let us consider a matrix defined as:
 	\begin{equation} \label{eq:PQ}
 		\PP_{i,j} = 
 		\begin{cases}
@@ -27,7 +27,7 @@ If we could generate a MC with a stationary distribution proportional to some fu
 		We see that this matrix satisfies detailed balance, co the distribution $\bfpi$ is stationary.
 	\end{proof}
 	
-	The matrix $\bfQ$ is called \textit{candidate matrix} or a \textit{proposal distribution} as it will be later proposing candidates for a MC. It is kind of a parameter for our later algorithms -- a well chosen matrix will give better or worse results. We proved more general case, but if matrix $\bfQ$ is symmetric some terms cancel and the proof becomes easier.
+	The matrix $\bfQ$ is called \textit{candidate matrix} or a \textit{proposal distribution} as it will be later proposing candidates for a MC. It is a kind of parameter for our later algorithms -- a well chosen matrix will give better or worse results. We proved more general case, but if matrix $\bfQ$ is symmetric some terms cancel and the proof becomes easier.
 	
 	The \textit{Metropolis-Hastings algorithm} (abbrv. M-H) utilizes this construction to generate irreducible, aperiodic MC with a stationary distribution $\bfpi$. When candidate matrix $\bfQ$ is symmetric we call this a \textit{Metropolis algorithm}.
 	\input{algs/metropolis_hastings}

@@ -1,16 +1,16 @@
-Traveling salesman problem (abbrv. TSP) is a well known for being hard to solve and this is why many researchers, including us, use it as a benchmark problem for testing new methods. It is an old problem, with no solution, only with methods that try to achieve the best answer. It is proved to be a NP-hard problem, so deterministic algorithms cannot be reasonably used. This is why probabilistic methods like MCMC become interesting as they eliminate the need of computing all the steps or states of the problem.
+Traveling salesman problem (abbrv. TSP) is a well known for being hard to solve and this is why many researchers, including us, use it as a benchmark problem for testing new methods. It is an old problem, with no solution, only with methods that try to achieve the best answer. It is proved to be a NP-hard problem, so deterministic algorithms cannot be reasonably used. This is why probabilistic methods like MCMC become interesting, because they eliminate the need of computing all the steps or states of the problem.
 
-TSP asks to find a shortest (the least costly) path between the vertices of a given graph, that covers all of them and is a cycle. This question becomes harder to answer with more vertices added to a graph. It started as a problem of salesman visiting all of the cities and coming back to his place.
+TSP asks to find a shortest (the least costly) path between the vertices of a given graph, that covers all of them (once) and is a cycle. This question becomes harder to answer with more vertices added to a graph. It started as a problem of salesman visiting all of the cities and coming back to his place.
 
 \subsection{Statement of the problem}
-	To state this problem we need to define weighted graphs and paths as they can represent the problem. 
+	To state this problem we need to define weighted graphs and paths, because they can represent the problem. 
 	
 	\begin{definition}
 		A undirected graph $G$ is a pair $(V, E)$, where $V$ is a set of vertices and $E \subseteq V \times V$ is a set of edges.
 	\end{definition}
 
 	\begin{definition}
-		A weighted undirected graph $G = (V, E)$ is a graph such that each edge $e$ has assigned a weight $w_e \in \R \cup \left\{ \infty \right\}$.
+		A undirected weighted graph $G = (V, E)$ is a graph such that each edge $e$ has assigned a weight $w_e \in \R \cup \left\{ \infty \right\}$.
 	\end{definition}
 	Vertices could be any set, so we can think of them as a set of all cities. An edge is a pair of vertices, so it can be a connection between cities. A weight is just a function on edges, so it could be a distance between cities. 
 	
