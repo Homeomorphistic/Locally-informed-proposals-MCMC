@@ -105,7 +105,7 @@ class TravelingSalesmenMCMC(MonteCarloMarkovChain[TSPath]):
                        current: TSPath,
                        tolerance: float = 0.01
                        ) -> bool:
-        return True #return current._weight <= previous._weight * (1 + tolerance)
+        return current._weight >= 199343433 #return current._weight <= previous._weight * (1 + tolerance)
 
     def save_optimum(self,
                      time: float,

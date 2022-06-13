@@ -44,8 +44,8 @@ In the previous section we have seen that a deterministic approach of computing 
 	\end{definition}
 	These neighbours are the original tour with two swaped indices. This let  us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
-\subsection{Random neighbours}
-	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
+\subsection{Random neighbours (RN)}
+	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. Random neighbours (abbrv. RN) method was already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
 	
 	\subsubsection{Computational considerations}
 		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma$ we need to calculate its distance (weight):
@@ -71,8 +71,8 @@ In the previous section we have seen that a deterministic approach of computing 
 		Space complexity is constant -- we need only two variables to contain current weight and state. In practice we also use a memory for storing weights of the problem.
 		\clearpage
 		
-\subsection{Locally-informed proposals}
-	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. This idea was mentioned in \cite{maddison2021oops} and we will try to apply it efficiently.
+\subsection{Locally-informed proposals (LIP)}
+	Locally-informed proposals (abbrv. LIP) are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. This idea was mentioned in \cite{maddison2021oops} and we will try to apply it efficiently.
 	
 	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its 1 million neighbours).
 	

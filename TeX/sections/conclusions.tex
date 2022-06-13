@@ -1,10 +1,12 @@
 In this section we will share our conclusions regarding a new approach of locally-informed proposals.
 
-Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the beginning it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm. Given more time (iterations) this randomness should reach also the better result.
+Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the beginning it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm.
+
+The last table (\ref{tab:time_to_reach}) suggests that using LIP algorithm is still useful, because it reaches better results in feasible time. Only first hundreds iterations really matter and this is where the potential of this method lies.
 
 Only datasets with small number of vertices (52, 150) have close results, as the number of neighbours is smaller, so random picking is able to reach smaller distances quicker.
 
-This of course, comes at a price of computational complexity. The LIP algorithm is considerably slower. While random algorithm oscillates within $1.5$ seconds for each dataset, LIP algorithm reaches over $1.5$ hour for the biggest dataset.
+This of course, comes at a price of computational complexity. The LIP algorithm is considerably slower for a longer run. While random neighbours oscillates within $1.5$ seconds for each dataset, LIP algorithm reaches over $1.5$ hour for the biggest dataset and maximum number of iterations done in simulations.
 
 It may seem that the time here is an obvious drawback and there is no point in further studying this approach. However, there are still many areas to improve, which makes this method promising.
 
