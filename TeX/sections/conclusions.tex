@@ -1,4 +1,4 @@
-In this section we will share with our conclusions regarding a new approach of locally-informed proposals.
+In this section we will share our conclusions regarding a new approach of locally-informed proposals.
 
 Every result confirms that LIP algorithm is decreasing the distance quicker than randomly choosing neighbours, no matter the dataset. This is understandable because at the beginning it easily chooses the best neighbours. As time (iterations) passes by, there is a difficulty in finding neighbour that improves the distance, so locally-informed proposal is flattening and algorithm slowly converges to some value. What is important, that this value is almost always smaller than the random candidates algorithm. Given more time (iterations) this randomness should reach also the better result.
 
@@ -11,9 +11,11 @@ It may seem that the time here is an obvious drawback and there is no point in f
 \subsection{Areas to improve}
 	There are some important areas to improve upon, that could significantly speed up the algorithm. There are two significant problems: updating weights and sampling from the softmax of differences in weights. 
 	
-	Updating differences in weights depends on problem, so for some it could be done really efficiently. As we mentioned earlier, getting weights for edges is not a constant complexity, because we need to search through a vector of weights for many edges (there many more than vertices), which grows quadratically with number of vertices. One way to alleviate this problem is to use \textit{interning}, a method in \textit{Python3} language, which saves objects into Python's memory for quick access. Of course, better knowledge of data structures could be helpful, for example, maybe looking through dictionaries is faster than through lists. This is lowering the complexity.
+	Updating differences in weights depends on problem, so for some it could be done really efficiently. As we mentioned earlier, getting weights for edges is not a constant complexity, because we need to search through a matrix of weights for many vertices (there many more than vertices), which grows quadratically with number of vertices. One way to alleviate this problem is to use \textit{interning}, a method in \textit{Python3} language, which saves objects into Python's memory for quick access. Of course, better knowledge of data structures could be helpful, for example, maybe looking through dictionaries is faster than through lists. This is lowering the complexity.
 	
-	The second problem of sampling is actually a close problem to the one that we are trying to solve now -- how to sample efficiently using MCMC methods. Sampling in this thesis is done by sampling exactly from a long vector, but it seems that the locally-informed proposal is a perfect candidate for M-H algorithm. We know that quotient of LIP is:
+	Another approach could be using concurrent computing, when calculating vector of differences of edges. The idea would be to compute a few parts of this vector in parallel. The calculations do not depend on each other, so it is a viable method. It could significantly improve the speed. The only problem would be shared resource  -- matrix of edges. It needs a careful planning.
+	
+	The problem of sampling is actually a close problem to the one that we are trying to solve now -- how to sample efficiently using MCMC methods. Sampling from locally-informed proposal in this thesis is done by sampling exactly from a long vector, but it seems that the locally-informed proposal is a perfect candidate for M-H algorithm. We know that quotient of LIP is:
 	\begin{equation*}
 		\frac{\bfQ_{j,i}}{\bfQ_{i,j}} = \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} =  e^\frac{-2}{\tau}(w_{i} - w_j) \cdot \frac{C_j}{C_i},
 	\end{equation*}

@@ -53,7 +53,7 @@ In the previous section we have seen that a deterministic approach of computing 
 			w_\sigma = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(i+1)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
 		
-		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have tours (permutations of vertices):
+		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have tours:
 		\begin{align*}
 			\sigma = (\sigma(1), \ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
 			\sigma' = (\sigma(1), \ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
@@ -74,7 +74,7 @@ In the previous section we have seen that a deterministic approach of computing 
 \subsection{Locally-informed proposals}
 	Locally-informed proposals are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. This idea was mentioned in \cite{maddison2021oops} and we will try to apply it efficiently.
 	
-	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its around 1 million neighbours).
+	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its 1 million neighbours).
 	
 	\subsubsection{Theoretical background}
 		The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute. One way is to use locally-informed proposals, which will be proportional to the same quotient of target distribution as in M-H step, so:
@@ -92,7 +92,7 @@ In the previous section we have seen that a deterministic approach of computing 
 		The temperature parameter that achieve balance is $\tau=2$ and was considered in \cite{zanella2020informed}.
 	
 	\subsubsection{Computational considerations}
-		The observation here is similar to the previous one -- when we have differences in weights for all neighbours of a starting tour, we can update them and only some of them change in a significant way. Then we can calculate softmax on neighbour weights differences. One might notice now, that this procedure is not symmetrical, because softmax can be different when the sums dividing exponent of weights differences will be different. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, as it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
+		The observation here is similar to the previous one -- when we have differences in weights for all neighbours of a starting tour, we can update them and only some of them change in a significant way. Then we can calculate softmax on neighbour weights differences. One might notice now, that this procedure is not symmetrical, because softmax can be different when the sums dividing exponent of weights differences will be different. Most notably, when a neighbour will have a high transition probability, getting back will have lower probability, because it means that there is more distance. This means that we will be using M-H algorithm (not only Metropolis).
 		
 		Let us show this on an example: assume that we have chosen tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$. So for this situation we have tours:
 		\begin{align*}
@@ -159,7 +159,7 @@ In the previous section we have seen that a deterministic approach of computing 
 		\begin{equation*}
 			w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
 		\end{equation*}
-		This difference is some function of $p$, changing this index will not change values of any other weights. So we can have a general formula for any $r \in \left\{ 1,2,3,6,7,8 \right\}$ and $s \notin \left\{ 1,2,3,6,7,8 \right\}$, constant $C$ and indices $2,7$ will change depending on $k,l$ and their relative position to $r$.
+		This difference is some function of $p$, changing this index will not change values of any other weights. So we can have a general formula for any $r \in \left\{ 1,2,3,6,7,8 \right\}$ and $s \notin \left\{ 1,2,3,6,7,8 \right\}$. Constant $C$ and indices $2,7$ will change depending on $k,l$ and their relative position to $r$.
 		
 		Now we know, that for a given row from $\left\{ 1,2,3,6,7,8 \right\}$ we can compute the difference $d'_{3,9}$. We can do it efficiently using vector operations -- we need one vector subtraction and one computation of constant $C$. In reality vector subtraction is just subtracting each number for each other, so for each $r \in \left\{ 1,2,3,6,7,8 \right\}$ we have at most $n$ (number of vertices) operations and we have $6$ distinct choices of $r$, so $6\cdot n$ operations.
 	
@@ -183,14 +183,14 @@ In the previous section we have seen that a deterministic approach of computing 
 		Space complexity is  also constant, but a lot bigger than previously, because we need to keep two  long vectors of probabilities (or weight differences).
 	
 \subsection{Simulated annealing}
-	There is one important parameter that can be used both with random candidates and locally-informed proposals and is associated with cooling. It has its roots within physics and is connected to energetic states of particles and Boltzmann distribution. The idea is to describe a probability of state using a temperature parameter (different than $\tau$ in LIP) such that it reminds the cooling of a metal:
+	There is one important parameter that can be used both with random neighbours and locally-informed proposals and is associated with cooling. It has its roots within physics and is connected to energetic states of particles and Boltzmann distribution. The idea is to describe a probability of state using a cooling parameter $t_k$ (different than $\tau$ in LIP) such that it reminds the cooling of a metal and may change with each step:
 	\begin{equation*}
-		\pi_i = \frac{e^{\frac{-E_i}{t_n}}}{C},
+		\pi_i = \frac{e^{\frac{-E_i}{t_k}}}{C},
 	\end{equation*}
 	where $C$ is normalizing constant.The quotient of probabilities then is:
 	\begin{equation*}
-		\frac{\pi_j}{\pi_i} = e^{\frac{E_i - E_j}{t_n}}
+		\frac{\pi_j}{\pi_i} = e^{\frac{E_i - E_j}{t_k}}
 	\end{equation*}
-	Setting this parameter high constitutes to all of the states are equally likely and with low value of parameter we have probability concentrated in the state with minimal energy.
+	Setting this parameter high constitutes to all of the states being equally likely and with low value of parameter we have probability concentrated in the state with minimal energy.
 	
-	Using $t_n$ as a function of step in acceptance criterion will give us a non-homogeneous Markov chain. Setting it to a constant value will produce a homogeneous Markov chain.
+	Using $t_k$ as a function of step in acceptance criterion will give us a non-homogeneous MC. Setting it to a constant value will produce a homogeneous MC.

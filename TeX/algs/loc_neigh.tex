@@ -7,7 +7,7 @@
 		\State{Compute all neighbour weight differences $\bfd_\sigma$.}
 		\State{$s(\bfd_\sigma) = \mathrm{softmax}(\bfd_\sigma)$}
 		
-		\For{$i = 1,2, \ldots$}
+		\For{$i = 0,1, \ldots$}
 			\State{Sample $\sigma' \sim s(\bfd_\sigma)$.}
 			\State{Find $k, l$ connected with swapping.}
 			
@@ -19,6 +19,7 @@
 			\State{$s(\bfd_{\sigma'}) = \mathrm{softmax}(\bfd_{\sigma'})$}
 			\State{Sample $U \sim Unif(0,1)$.}
 			\If{$\log(U) \leq \min \left(0, -(w_{\sigma'} - w_\sigma) + \log(s(\bfd_{\sigma'})[(k,l)]) - \log(s(\bfd_\sigma)[(k,l)]) \right)$}
+				\State $X_{i+1} \gets X_i$
 				\State $X_{i+1}(k), X_{i+1}(l) \gets X_{i+1}(l), X_{i+1}(k)$
 				\State{$w_{\sigma} \gets w_{\sigma'}$}
 				\State $\bfd_{\sigma} \gets \bfd_{\sigma'}$
