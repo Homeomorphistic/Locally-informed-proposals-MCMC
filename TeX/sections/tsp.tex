@@ -8,13 +8,15 @@ TSP asks to find a shortest (the least costly) path between the vertices of a gi
 	\begin{definition}
 		A undirected graph $G$ is a pair $(V, E)$, where $V$ is a set of vertices and $E \subseteq V \times V$ is a set of edges.
 	\end{definition}
-
 	\begin{definition}
-		A undirected weighted graph $G = (V, E)$ is a graph such that each edge $e$ has assigned a weight $w_e \in \R \cup \left\{ \infty \right\}$.
+		A weighted graph $G = (V, E)$ is a graph such that each edge $e$ has assigned a weight $w_e \in \R \cup \left\{ \infty \right\}$. A undirected weighted graph has symmetrical weights, so
+		\begin{equation*}
+			\forall_{i,j \in V} \; w_{i,j} = w_{j,i}.
+		\end{equation*}
 	\end{definition}
 	Vertices could be any set, so we can think of them as a set of all cities. An edge is a pair of vertices, so it can be a connection between cities. A weight is just a function on edges, so it could be a distance between cities. 
 	
-	Again, because we have finite number of cities, we can work on set of indices instead. We will associate weight $w_{i,j}$ with the weight of an edge between vertices $i$ and $j$.
+	Again, because we have finite number of cities, we can work on set of indices instead. We will associate weight $w_{i,j}$ with the weight of an edge between cities $i$ and $j$ which is the same as $w_{j,i}$.
 	
 	\begin{definition}
 		A path is a sequence of edges, in which all edges (and vertices joining them) are distinct.
@@ -37,7 +39,7 @@ TSP asks to find a shortest (the least costly) path between the vertices of a gi
 		\end{equation*}
 		where $S_n$ is a set of all permutations of vertices and $w_{i,j}$ is distance (weight) between state i and j.
 	\end{definition}
-	This definition exactly states the Traveling salesman problem: visit all cities once, with the least distance covered.
+	This definition exactly states the TSP: visit all cities once, with the least distance covered. Of course, not every permutation could be a tour, it depends on a graph and its edges -- some vertices might be not connected. In this case we can add missing edge and give it a weight of $\infty$, so that we will never choose such a tour.
 	
 \subsection{Complexity}
 	At first glance, one might not think of this as a hard problem, but to understand complexity of that, it is enough to think of all the permutation of vertices. The set of $n$ vertices $S_n$ has $n!$ elements, a number which grows rapidly. It means that if we want to check all possible salesman tours, we need to compute distances at most $n!$ times, which becomes infeasible with only $20$ cities. 

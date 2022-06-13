@@ -5,8 +5,8 @@ In the previous section we have seen that a deterministic approach of computing 
 	\begin{definition}
 		For a given vector $\x = (x_1, x_2, \ldots, x_d)^T \in \R^d$ a softmax function $s: \R^d \rightarrow \left[0, 1\right]^d$ is defined as
 		\begin{align*}
-			s(\x)_i &= \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
-			s(\x) &= \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
+			&s(\x)_i = \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
+			&s(\x) = \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
 		\end{align*}
 	\end{definition}
 	Such defined function is a probability distribution and it does not change the order of a given vector. This is important for us, because we can apply a softmax to the distances (weights) of the tours, so that we change them into distribution, but we will not change the relation between tours -- ones with longer distances will have greater probability. As we are interested in shortest distances, we can add a minus sign to give them the greatest probability.
@@ -38,17 +38,17 @@ In the previous section we have seen that a deterministic approach of computing 
 	Now that we have a target distribution we can try sampling using a MC produced by M-H algorithm and after some point we should reach the tour with highest probability, \ie smallest distance covered. To do that we need to define candidate matrix $\bfQ$. The better the candidates, the faster MC can get to the minimum.
 
 \subsection{Candidates}
-	Let us start with considering what the candidate is. We know that the space of all possible tours is enormous, so we cannot take every tour into consideration. Instead we focus on, what we will call from now on \textit{neighbours}.
+	Let us start with considering what the candidate is. We know that the space of all possible tours is enormous, so we cannot take every tour into consideration. Instead we focus on what we will call from now on \textit{neighbours}.
 	\begin{definition}
 		A neighbour $\sigma'$ of a permutation $\sigma$ is a permutation, that for some $k, l$ it satisfies $\sigma'(k) = \sigma(l)$, $\sigma'(l) = \sigma(k)$ and $\sigma'(i) = \sigma(i)$ for the rest of indices.
 	\end{definition}
-	These neighbours are the original tour with two swaped indices. This let's us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
+	These neighbours are the original tour with two swaped indices. This let  us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
 \subsection{Random neighbours}
-	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
+	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. It was already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
 	
 	\subsubsection{Computational considerations}
-		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma_i$ we need to calculate its distance (weight):
+		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma$ we need to calculate its distance (weight):
 		\begin{equation*}
 			w_\sigma = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(i+1)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
