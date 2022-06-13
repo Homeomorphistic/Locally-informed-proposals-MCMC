@@ -61,10 +61,10 @@ for cooling in [1.0, 2.73]:
 
 
 # Finishing touches for chart.
-plt.title(f'{data}, locally={locally}')
+plt.title(f'{data}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend(['t_n=1', 't_n=3/log(n+2)'], loc='center right', title='Cooling')
+plt.legend(['t_k=1', 't_k=3/log(k+2)'], loc='upper right', title='Cooling')
 
 # Saving figure or printing depending on --save param.
 if save:

@@ -89,10 +89,11 @@ opt_dict = load(open('data/tsp_optimal.json', 'r'))
 plt.axhline(y=opt_dict[data], linestyle='dashed', color="red")
 
 # Finishing touches for chart.
-plt.title(f'{data}, temp={temperature}, cool={cooling}')
+cool_tit = '1' if cooling == 1 else '3/log(k+2)'
+plt.title(f'{data}, tau={temperature}, t_k={cool_tit}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend(['Nonlocal', 'Local', 'optimum'], loc='upper right')
+plt.legend(['RN', 'LIP', 'optimum'], loc='upper right')
 
 # Saving figure or printing depending on --save param.
 if save:

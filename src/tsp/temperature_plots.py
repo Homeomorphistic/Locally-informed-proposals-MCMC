@@ -63,7 +63,7 @@ for temp in [0.01, 0.5, 5.0, 20.0]:
 plt.title(f'{data}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend([0.01, 0.5, 5.0, 20.0], loc='upper right', title='Temperature')
+plt.legend([0.01, 0.5, 5.0, 20.0], loc='upper right', title='Tau')
 
 # Saving figure or printing depending on --save param.
 if save:
