@@ -34,6 +34,7 @@ def parse_arguments():
                         help='Save flag: bool = False')
     args = parser.parse_args()
     args.save = True if args.save == 'True' else False
+    args.locally = True if args.locally == 'True' else False
 
     return (args.data, args.locally, args.sprint, float(args.temperature),
             float(args.cooling), args.save)
@@ -68,10 +69,11 @@ for seed in {1, 2, 3, 4}:
 
 
 # Finishing touches for chart.
-plt.title(f'{data}, locally={locally}')
+title = "LIP" if locally else "RN"
+plt.title(f'{data}, {title}')
 plt.xlabel('Number of steps')
 plt.ylabel('Distance')
-plt.legend([1, 2, 3, 4], loc='center right', title='Seeds')
+plt.legend([1, 2, 3, 4], loc='upper right', title='Seeds')
 
 # Saving figure or printing depending on --save param.
 if save:
