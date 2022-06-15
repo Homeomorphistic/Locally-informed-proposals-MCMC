@@ -29,10 +29,10 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	The number of entries of a transition matrix grows quadratically with number of states, so it quickly becomes a large object, not possible to fit into the memory of a computer. Now with the notation and the background we are able to define a Markov chain.
 	
 \subsection{Definition and basic properties}
-	In this subsection we will formally define a Markov chain and list some of its basic properties.
+	In this subsection we will formally define a Markov chain (abbrv. MC) and list some of its basic properties.
 	
 	\begin{definition}
-		A Markov chain (abbrv. MC) is a sequence of random variables $\left( X_k\right)_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
+		A Markov chain is a sequence of random variables $\left\{X_k\right\}_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
 		\begin{equation*}
 			P(X_{k+m} = j | X_k = i, X_{l_{p-1}} = i_{l_{p-1}}, X_{l_{p-2}} = i_{l_{p-2}}, \ldots, X_{l_1} = i_1) = P(X_{k+m} = j | X_k = i),
 		\end{equation*}
@@ -84,7 +84,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 		\end{definition}
 	
 	\subsubsection{Periodicity}
-		Periodicity tells us something about the structure of the transition matrix. It especially indicates when there is a possibility of a chain staying in one state.
+		Periodicity tells us something about the structure of the transition matrix. It especially indicates when there is a possibility of a MC coming back to a state.
 		\begin{definition}[Periodicity]
 			Let $d_i$ be a greatest common divisor of those $k$ such that $\PP_{i,i}(k)>0$ \ie
 			\begin{equation*}
@@ -123,7 +123,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 	
 	
 	\begin{theorem} \label{thm:convergance}
-		Let $(X_n)$ be a ergodic Markov chain, then:
+		Let $\left\{X_k\right\}$ be a ergodic Markov chain, then:
 		\begin{equation*}
 			\lim_{k \rightarrow \infty} p_{ij}(k) = \pi_j.
 		\end{equation*}
@@ -133,7 +133,7 @@ In this thesis we will focus only on stochastic processes  with discrete time st
 \subsection{Reversibility}
 	A reversible MC has a property of having the same distribution in the past and in the future.
 	\begin{definition}[Reversibility]
-		A Markov chain $(X_k)$ is reversible if random vectors
+		A Markov chain $\left\{X_k\right\}$ is reversible if random vectors
 		\begin{equation*}
 			(X_{i_1}, X_{i_2}, \ldots, X_{i_l}) \; \mathrm{and} \; (X_{m-i_1}, X_{m-i_2}, \ldots, X_{m-i_l}),
 		\end{equation*}

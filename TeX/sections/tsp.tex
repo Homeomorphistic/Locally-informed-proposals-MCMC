@@ -3,10 +3,10 @@ Traveling salesman problem (abbrv. TSP) is a well known for being hard to solve 
 TSP asks to find a shortest (the least costly) path between the vertices of a given graph, that covers all of them (once) and is a cycle. This question becomes harder to answer with more vertices added to a graph. It started as a problem of salesman visiting all of the cities and coming back to his place.
 
 \subsection{Statement of the problem}
-	To state this problem we need to define weighted graphs and paths, because they can represent the problem. 
+	To state this problem we need to define weighted graphs and cycles, because they can represent the problem. 
 	
 	\begin{definition}
-		A undirected graph $G$ is a pair $(V, E)$, where $V$ is a set of vertices and $E \subseteq V \times V$ is a set of edges.
+		A undirected graph $G$ is a pair $(V, E)$, where $V$ is a set of vertices and $E$ is a set of edges, which is a subset of all unordered pairs of vertices.
 	\end{definition}
 	\begin{definition}
 		A weighted graph $G = (V, E)$ is a graph such that each edge $e$ has assigned a weight $w_e \in \R \cup \left\{ \infty \right\}$. A undirected weighted graph has symmetrical weights, so
@@ -42,14 +42,14 @@ TSP asks to find a shortest (the least costly) path between the vertices of a gi
 	This definition exactly states the TSP: visit all cities once, with the least distance covered. Of course, not every permutation could be a tour, it depends on a graph and its edges -- some vertices might be not connected. In this case we can add missing edge and give it a weight of $\infty$, so that we will never choose such a tour.
 	
 \subsection{Complexity}
-	At first glance, one might not think of this as a hard problem, but to understand complexity of that, it is enough to think of all the permutation of vertices. The set of $n$ vertices $S_n$ has $n!$ elements, a number which grows rapidly. It means that if we want to check all possible salesman tours, we need to compute distances at most $n!$ times, which becomes infeasible with only $20$ cities. 
+	At first glance, one might not think of this as a hard problem, but to understand complexity of that, it is enough to think of all the permutation of vertices $S_n$. It has $n!$ elements, a number which grows rapidly. It means that if we want to check all possible salesman tours, we need to compute distances at most $n!$ times, which becomes infeasible with only $20$ cities. 
 	
 	Depending on a method of calculating the distance we obtain complexity $O(n! \cdot d(n))$ where $d(n)$ is a number of steps needed to calculate distance of one path. If one just adds all weights then the complexity will be of $O(n! \cdot n)$, which is a lot more than a polynomial complexity and quickly becomes impossible to compute.
 	
-	There are other methods like dynamic programming -- Held-Karp algorithm, but the complexity $O(n^2 \cdot 2^n)$ is still a lot. The problem has been shown to be $NP$-hard even with removing some of the constraints or using easier metrics.
+	There are other methods like dynamic programming -- Held-Karp algorithm, but the complexity $O(n^2 \cdot 2^n)$ is still a lot. The problem has been proven to be $NP$-hard even with removing some of the constraints or using easier metrics.
 
 \subsection{Dataset}
-	To test our methods we have obtained data from \textit{TSPLIB}(\cite{TSPLIB8:online}) a site, which is a library of sample instances for TSP (not only that) from various sources and types. All the files there are of the extension \textit{.tsp} (or alternatively \textit{.xml}) and of following structure: \textit{nameN.tsp}. \textit{name} defines where does the data come from and \textit{N} defines how many vertices there are. For handling this extension we use \textit{tsplib95} package in \textit{Python3}
+	To test our methods, we have obtained data from \textit{TSPLIB}(\cite{TSPLIB8:online}) a site, which is a library of sample instances for TSP (not only that) from various sources and types. All the files there are of the extension \textit{.tsp} (or alternatively \textit{.xml}) and of following structure: \textit{nameN.tsp}. \textit{name} defines where does the data come from and \textit{N} defines how many vertices there are. For handling this extension we use \textit{tsplib95} package in \textit{Python3}
 	
 	All of the datasets there have an optimal solution, so we are able to compare our solutions. We have chosen only some of them:
 	\begin{itemize}

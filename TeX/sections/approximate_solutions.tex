@@ -1,4 +1,4 @@
-In the previous section we have seen that a deterministic approach of computing salesman tours is infeasible, so we can turn now to probabilistic methods of MCMC. 
+In the previous section we have seen that a deterministic approach of computing salesman tours is infeasible, so we can turn our attention to probabilistic methods of MCMC. 
 
 \subsection{Basic idea}
 	Instead of checking all possible tours, now we want sample from this space, so the question is, how do we define a distribution there? It is usually done with a \textit{softmax}, a transformation of our target function, which is in this case a distance of a tour.
@@ -18,7 +18,7 @@ In the previous section we have seen that a deterministic approach of computing 
 	where $w_{\sigma}$ is distance (weight) of a tour (permutation) $\sigma$. When $\sigma_{\min}$ is maximizing probability it means when we sample from this distribution it will appear most often. This is the core of MCMC methods -- approximate solution with most probable state. 
 
 \subsection{Metropolis-Hastings algorithm}
-	Let us get back to the notation of weights and use a vector $\bfw = (w_1, w_2, \ldots, w_N)^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_j}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need actually probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
+	Let us use the notation of weights as a vector $\bfw = (w_1, w_2, \ldots, w_N)^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_j}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need actually probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
 	\begin{equation*}
 		\pi_i \propto e^{-w_i}.
 	\end{equation*}
@@ -45,7 +45,7 @@ In the previous section we have seen that a deterministic approach of computing 
 	These neighbours are the original tour with two swaped indices. This let  us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
 \subsection{Random neighbours (RN)}
-	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. Random neighbours (abbrv. RN) method was already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further.
+	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. Random neighbours (abbrv. RN) method has already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further. The candidate matrix related to such a procedure is symmetrical, irreducible and aperiodic.
 	
 	\subsubsection{Computational considerations}
 		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma$ we need to calculate its distance (weight):
@@ -53,12 +53,12 @@ In the previous section we have seen that a deterministic approach of computing 
 			w_\sigma = \sum_{i=1}^{n-1} w_{\sigma(i), \sigma(i+1)} + w_{\sigma(n), \sigma(1)}.
 		\end{equation*}
 		
-		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when changing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let's say $k,l$. So for this situation we have tours:
+		What was observed in \cite{decryption_tsp_MCMC} is that the weight does not change drastically when replacing a tour to its neighbour. It is because most of the edges stay the same. When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let us say $k,l$. So for this situation we have tours:
 		\begin{align*}
 			\sigma = (\sigma(1), \ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
 			\sigma' = (\sigma(1), \ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 		\end{align*}
-		Assuming that we know the sum of weights for tour $\sigma$ to obtain the new one for neighbour $\sigma'$ we need to remove from it weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
+		Assuming that we know the sum of weights for tour $\sigma$, we can obtain a new weight for the neighbour $\sigma'$. To do that we need to remove from it weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$. This is only $8$ operations per neighbour, a constant complexity cost (if we can get instantly weights).
 		
 	\subsubsection{Implementation}
 		To sum up all the information we summarize it in Algorithm (\ref{alg:rnd_neigh}). As mentioned before, we will be working on logarithms, because they are better suited for computer computations.
@@ -74,7 +74,7 @@ In the previous section we have seen that a deterministic approach of computing 
 \subsection{Locally-informed proposals (LIP)}
 	Locally-informed proposals (abbrv. LIP) are more complicated family of methods, they include more computational labor. The approach with uniform distribution of candidates is less complex, but forces us to make a lot of iterations. It is because choosing neighbours randomly conveys no information, so it is required for us to check a lot of neighbours until we find a better one. This idea was mentioned in \cite{maddison2021oops} and we will try to apply it efficiently.
 	
-	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its 1 million neighbours).
+	This time, we want to compute a \textit{local} distribution of neighbours and sample them from it. This is why the method is called \textit{locally-informed proposals} (abbrv. LIP) -- we compute a local proposal. It has to be done efficiently too, because number of neighbours grows quadratically with the number of vertices (so for \textit{dsj1000} its 1 million neighbours). The candidate matrix related to such a procedure is irreducible, aperiodic and satisfies $\bfQ_{i,j} >0 \iff \bfQ_{j,i} > 0$.
 	
 	\subsubsection{Theoretical background}
 		The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute. One way is to use locally-informed proposals, which will be proportional to the same quotient of target distribution as in M-H step, so:
@@ -125,7 +125,7 @@ In the previous section we have seen that a deterministic approach of computing 
 			\sigma &= (1, 2, 3, 4, 5, 6, 7, 8, 9, \ldots) \\
 			\sigma' &= (1, 7, 3, 4, 5, 6, 2, 8, 9, \ldots).
 		\end{align*}
-		We can represent neighbours as a tuple of integers, which mean the indices to swap. The table \ref{tab:neighbours} represents neighbours. To not repeat elements, we can focus only on the upper triangle of a matrix of those tuples.
+		We can represent neighbours as a tuple of integers, which mean the indices to swap. The Table \ref{tab:neighbours} represents neighbours. To not repeat elements, we can focus only on the upper triangle of a matrix of those tuples.
 		
 		\input{tables/neighbours}
 		
@@ -171,7 +171,7 @@ In the previous section we have seen that a deterministic approach of computing 
 		
 		Unfortunately, there are more practical things to consider this time. In this algorithm we are actually calculating softmax function, nothing is vanishing here. Computing exponents of large numbers ends up with $\infty$ or $-\infty$ on a computer. Also, for datasets like \textit{dsj1000} there are around 1 million neighbours, and we need to keep probabilities with higher precision, that is a lot of memory to use.
 		
-		Working on differences can alleviate this problem (for some cases). Let's say we know weight of our current tour $w_\sigma$ and its neighbours weights vector $\bfw_\sigma$. We can think of every weight in this vector as a difference between it and current tour weight: $\bfd_{\sigma}[i] = w_\sigma + d_i$. By $\bfd_\sigma[(i,j)]$ we mean the index of a swap $i,j$ (it needs to be found).
+		Working on differences can alleviate this problem (for some cases). Let us say we know weight of our current tour $w_\sigma$ and its neighbours weights vector $\bfw_\sigma$. We can think of every weight in this vector as a difference between it and current tour weight: $\bfd_{\sigma}[i] = w_\sigma + d_i$. By $\bfd_\sigma[(i,j)]$ we mean the index of a swap $i,j$ (it needs to be found).
 		
 		\input{algs/loc_neigh}
 		

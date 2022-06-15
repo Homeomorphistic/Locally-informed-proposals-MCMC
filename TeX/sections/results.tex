@@ -1,17 +1,17 @@
 In this section we will present the results of simulations and compare them with previous methods and true optima.
 
 \subsection{Initial condition}
-	First we have to check if changing the initial state makes any difference to the output of an algorithm. This is achieved via setting a different seed and repeating algorithms for the same number of iterations. Seeds guarantee us the different ``randomness'' with each seed. It is because the generators are only generating \textit{pseudo-random numbers} which we can control. Both random neighbours (abbrv. RN) and locally-informed proposals (LIP) algorithms will have the same seeds and in our case these are $1,2,3,4$. We use default parameters of temperature $\tau=2$ and cooling parameter $t_k=1$ and run simulation for 5000 iterations.
+	First we have to check if changing the initial state makes any difference to the output of an algorithm. This is achieved via setting a different seed and repeating algorithms for the same number of iterations. Seeds guarantee us the different ``randomness'' with each seed. It is because the generators are only generating \textit{pseudo-random numbers} which we can control. Both random neighbours (abbrv. RN) and locally-informed proposals (abbrv. LIP) algorithms will have the same seeds and in our case these are $1,2,3,4$. We use default parameters of temperature $\tau=2$ and cooling parameter $t_k=1$ and run simulation for 5000 iterations.
 	\input{plots/seed_plots}
 
 	Both plots \ref{fig:berlin52_seeds} and \ref{fig:kroA150_seeds} suggest that initial state matters for finding a better tour, but it is not changing the behavior of algorithms.
 	
 \subsection{Simulated annealing}
-	Before we proceed with comparing algorithms we need to find out if simulated annealing is improving them. We will compare parameters $t_k=1$ and $t_k= \frac{3}{\log(k+2)}$ where $k$ is a number of step. The temperature parameter for locally-informed proposals will stay at default $\tau=2$. Every simulation has the same seed and the number of iterations for these simulations is 1 million.
+	Before we proceed with comparing algorithms we need to find out if simulated annealing is improving them. We will compare parameters $t_k=1$ and $t_k= \frac{3}{\log(k+2)}$ where $k$ is a number of step. The temperature parameter for LIP will stay at default $\tau=2$. Every simulation has the same seed and the number of iterations for these simulations is 1 million.
 	
 	\input{plots/annealing_plots}
 	
-	This time to see the difference between cooling parameters we had to extend number of iterations to 1 million. This number of steps is not viable for locally-informed proposals, so only random neighbours were used. We can see slight the improvement at the end of iterations, which has potential when the distances are huge. 
+	This time to see the difference between cooling parameters we had to extend number of iterations to 1 million. This number of steps is not viable for LIP, so only RN were used. We can see slight the improvement at the end of iterations, which has potential when the distances are huge. 
 	
 \subsection{Temperature}
 	The same needs to be done with temperature parameter $\tau$. It was proven in \cite{zanella2020informed} that $\tau=2$ is optimal for balancing out likelihoods, but maybe for this problem it is worth considering as it has an influence on probabilities. Every simulation has the same seed and the number of iterations for these simulations is 10000.
@@ -21,18 +21,18 @@ In this section we will present the results of simulations and compare them with
 	The plots \ref{fig:temperature_1} and \ref{fig:temperature_2} present LIP algorithm with the same initial state and different temperature parameter $\tau=0.01, 0.5, 5, 20$. For two datasets the results are almost identical, while on two others some temperatures offer better results, but they are not consistent with each other. This is why we opted for $\tau=2$.
 	
 \subsection{Algorithms comparison}
-	Now we are able to present all the results, we will be using $\tau=2$, two different cooling parameters $t_k=1, \, t_k=\frac{3}{\log(k+2)}$ and two different methods: random neighbours (abbrv. RN) and locally-informed proposals (abbrv. LIP). Every simulation has the same seed and the number of iterations is $20000$.
+	Now we are able to present all the results, we will be using $\tau=2$, two different cooling parameters $t_k=1, \, t_k=\frac{3}{\log(k+2)}$ and two different methods: random neighbours (RN) and locally-informed proposals (LIP). Every simulation has the same seed and the number of iterations is $20000$.
 	
 	\input{plots/comparison_plots}
 	
-	The plots \ref{fig:berlin52_comp}, \ref{fig:kroA150_comp}, \ref{fig:att532_comp}, \ref{fig:dsj1000_comp} present distance of a solution as a function of number of iterations. Both algorithms start at the same state and have the same seed. We can se how quickly they diverge. First steps of locally-informed proposals algorithm is taking the best neighbours it can and stays there or makes small improvements. Prolonged stays happen in smaller datasets as there is less deviation at each step and it is harder to choose a better neighbour. At the beginning LIP algorithm has obviously better results in all cases.
+	The plots \ref{fig:berlin52_comp}, \ref{fig:kroA150_comp}, \ref{fig:att532_comp}, \ref{fig:dsj1000_comp} present distance of a solution as a function of number of iterations. Both algorithms start at the same state and have the same seed. We can se how quickly they diverge. First steps of LIP algorithm is taking the best neighbours it can and stays there or makes small improvements. Prolonged stays happen in smaller datasets as there is less deviation at each step and it is harder to choose a better neighbour. At the beginning LIP algorithm has obviously better results in all cases.
 	
 	Additionally the plot \ref{fig:low_iter} compares two methods but using smaller number of iterations and only for two smaller datasets. The number of vertices is lower, so LIP finds better solutions quickly and it is easier to compare the methods with fewer iterations. We can see, that less than 100 iterations are enough to create a massive gap between these methods.
 	
 	\input{tables/comparison_tables}
 	
-	The tables \ref{tab:results_comp_cool=1} and \ref{tab:results_comp_cool=2.73} present comparison of those two methods for different cooling parameters. They contain data from the last point of plots above (20000-th step). They contain distances of tours, time the algorithm took and ratio of the solution to the optimum. For bigger datasets the ratio is growing, which is behaving as expected -- the more vertices to search through, so more iterations are needed to reach optimum. The LIP algorithm outperforms RN, given small amount of iterations. We can also notice that the cooling parameter does not cause any significant difference.
+	The Tables \ref{tab:results_comp_cool=1} and \ref{tab:results_comp_cool=2.73} present comparison of those two methods for different cooling parameters. They contain data from the last point of plots above (20000-th step). They contain distances of tours, time the algorithm took and ratio of the solution to the optimum. For bigger datasets the ratio is growing, which is behaving as expected -- the more vertices to search through, so more iterations are needed to reach optimum. The LIP algorithm outperforms RN, given small amount of iterations. We can also notice that the cooling parameter does not cause any significant difference.
 	
 	\input{tables/time_to_reach}
 	
-	The table \ref{tab:time_to_reach} presents time and steps required for LIP algorithm to reach the best result of RN for LIP algorithm with the same seeds. As we can see, LIP algorithm needs a lot less iterations to get shorter tours and time required for that is also favorable. It is especially visible with smaller datasets, that do not need a lot of computation, and times there are only in seconds.
+	The Table \ref{tab:time_to_reach} presents amount of time and number of steps required for LIP algorithm to reach the best result of RN (after 20000 steps) with the same seeds and cooling $t_k=1$. As we can see, LIP algorithm needs a lot less iterations to get shorter tours and time required for that is also favorable. It is especially visible with smaller datasets, that do not need a lot of computation, and times there are only in seconds.
