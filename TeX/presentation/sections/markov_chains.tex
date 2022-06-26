@@ -1,0 +1,58 @@
+\begin{frame}
+	\frametitle{Markov chain}
+	\begin{definition}[State space]
+		 A state space of a Markov chain is a countable set $S$.
+	\end{definition}
+	\begin{definition}[Index set]
+		An index set of a Markov chain is a countable set $T$.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Markov chain}
+	\begin{definition}
+		A Markov chain is a sequence of random variables $\left\{X_k\right\}_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
+		\begin{align*}
+			&P(X_{k+m} = j | X_k = i, X_{l_{p-1}} = i_{l_{p-1}}, \ldots, X_{l_1} = i_1) = \\= &P(X_{k+m} = j | X_k = i),
+		\end{align*}
+		for all indices $l_1< \ldots < l_{p-1} < k < k+m, \; 1 \leq p \leq k$, all states $j, i, i_{p-1}, i_{p-2}, \ldots, i_0 \in S$ and $m \geq 1$.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Properties}
+	\begin{definition}[Irreducibility]
+		A Markov chain with transition matrix $\PP$ is called irreducible if and only if for every pair of states $i$ and $j$ there exists a positive probability of transition between them.
+	\end{definition}
+	\begin{definition}[Periodicity]
+		Let $d_i$ be a greatest common divisor of those $k$ such that $\PP_{i,i}(k)>0$. If $d_i > 1$ then state $i$ is periodic. If $d_i = 1$ then state $i$ is aperiodic.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Properties}
+	\begin{definition}[Stationarity]
+		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)$ is called stationary if it satisfies
+		\begin{equation*}
+		\pi_j = \sum_{i \in S} \pi_i p_{ij},
+		\end{equation*}
+		or equivalently in vector form:
+		\begin{equation*}
+		\bfpi = \bfpi \PP.
+		\end{equation*}
+		This equation is often described as the balance equation.
+	\end{definition}
+	\begin{definition}[Ergodicity]
+		A Markov chain is ergodic when it is irreducible and aperiodic.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Ergodic chains}
+	\begin{theorem}
+		Let $\left\{X_k\right\}$ be a ergodic Markov chain, then:
+		\begin{equation*}
+		\lim_{k \rightarrow \infty} p_{ij}(k) = \pi_j.
+		\end{equation*}
+	\end{theorem}
+\end{frame}

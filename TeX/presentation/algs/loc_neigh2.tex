@@ -1,0 +1,19 @@
+\begin{algorithm}[H]
+	\tiny
+	\caption{update\_differences}
+	\begin{algorithmic}[1]
+		\Require $\bfd_{\sigma'}$
+		\Ensure $\bfd_{\sigma'}$
+		\For{$r = k-1, k, k+1, l-1, l, l+1$}
+		\For{$s = r+1, \ldots, n$}
+		\State{$\bfd_{\sigma'}[(r,s)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
+		\EndFor
+		\EndFor
+		
+		\For{$s = k-1, k, k+1, l-1, l, l+1$}
+		\For{$r = 1, 2, \ldots l$}
+		\State{$\bfd_{\sigma'}[(r,s)] \gets$ \textit{get\_difference}($\bfd_{\sigma'}[(r,s)]$)}
+		\EndFor
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}

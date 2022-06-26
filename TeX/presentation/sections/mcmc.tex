@@ -1,0 +1,37 @@
+\begin{frame}
+	\frametitle{Metropolis-Hastings algorithm}
+	Construct a MC, which has a stationary distribution $\bfpi$ ($\pi_i > 0$).
+	Assume that $\bfQ$ is stochastic matrix which is irreducible, aperiodic and $\bfQ_{i,j} >0 \iff \bfQ_{j,i} > 0$. Let us consider a matrix defined as:
+	\begin{equation} \label{eq:PQ}
+	\PP_{i,j} = 
+	\begin{cases}
+	\bfQ_{i,j} \min \left(1, \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right) & \text{ if } i \neq j, \\ 
+	1 - \sum_{j \in S \setminus \left\{ i \right\} } \PP_{i,j}& \text{ if } i = j.
+	\end{cases}
+	\end{equation} 
+	
+	\begin{theorem}
+		A matrix defined in \ref{eq:PQ} is stochastic, irreducible, aperiodic and has a stationary distribution $\bfpi$.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Metropolis-Hastings algorithm}
+	\begin{algorithm}[H]
+		\caption{Metropolis-Hastings algorithm}\label{alg:metro-hast}
+		\begin{algorithmic}[1]
+			\State{Choose a state $i \in S$.}
+			\State{$X_0 \gets i$}
+			\For{$k = 0,1, \ldots$}
+			\State{Sample $j \sim \bfQ_i = (\bfQ_{i,1}, \bfQ_{i,2}, \ldots, \bfQ_{i,N})$.}
+			\State{Sample $U \sim Unif(0,1)$.}
+			
+			\If{$U \leq \min \left(1, \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right)$}
+			\State $X_{k+1} \gets j$
+			\Else
+			\State $X_{k+1} \gets X_k$
+			\EndIf
+			\EndFor
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}

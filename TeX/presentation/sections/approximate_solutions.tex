@@ -1,0 +1,143 @@
+\begin{frame}
+	\frametitle{Softmax}
+	\begin{definition}
+		For a given vector $\x = (x_1, x_2, \ldots, x_d)^T \in \R^d$ a softmax function $s: \R^d \rightarrow \left[0, 1\right]^d$ is defined as
+		\begin{align*}
+		&s(\x)_i = \frac{e^{x_i}}{\sum_{j=1}^{d} e^{x_j}}, \\
+		&s(\x) = \left( s(\x)_1, s(\x)_2, \ldots, s(\x)_d \right).
+		\end{align*}
+	\end{definition}
+	\begin{equation*}
+		\sigma_{\min} = \underset{\sigma \in S_n}{\argmin} \left( w_{\sigma} \right) = \underset{\sigma \in S_n}{\argmax} \frac{e^{-w_{\sigma}}}{\sum_{\sigma' \in S_n} e^{-w_{\sigma'}}},
+	\end{equation*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Metropolis-Hastings algorithm}
+	\begin{equation*}
+		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{\bfQ_{j,i}}{\bfQ_{i,j}}.
+	\end{equation*}
+	\begin{equation*}
+		\log \left( \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} \right) = -(w_j-w_i) + \log(\bfQ_{j,i}) - \log(\bfQ_{i,j}).
+	\end{equation*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Candidates}
+	\begin{definition}
+		A neighbour $\sigma'$ of a permutation $\sigma$ is a permutation, that for some $k, l$ it satisfies $\sigma'(k) = \sigma(l)$, $\sigma'(l) = \sigma(k)$ and $\sigma'(i) = \sigma(i)$ for the rest of indices.
+	\end{definition}
+	These neighbours are the original tour with two swaped indices. This let  us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Random candidates (RN)}
+	Sample neighbours uniformly. It is equivalent to choosing random indices to swap
+\end{frame}
+
+\begin{frame}
+	\frametitle{Random candidates (RN)}
+	When given a tour $\sigma$ and its neighbour $\sigma'$ they differ only on those edges where swap is happening, let us say $k,l$. So for this situation we have tours:
+	\begin{align*}
+		\sigma = (&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
+		&\ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+		\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
+		&\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
+	\end{align*}
+	We need to remove weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Random candidates (RN)}
+	\input{algs/rnd_neigh}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute.
+	\begin{equation*}
+		\bfQ_{i,j} \propto e^\frac{-(w_{j} - w_i)}{\tau}.
+	\end{equation*}
+	The distribution is chosen in such a way, so that we can easily group up the terms in acceptance criterion:
+	\begin{equation*}
+		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} = e^{\left( -(w_j-w_i) \left(1 - \frac{2}{\tau}\right) \right)} \cdot \frac{C_j}{C_i},
+	\end{equation*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	Choose tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$.
+	\begin{align*}
+		\sigma = (&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
+		&\ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+		\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
+		 &\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	The neighbours $\sigma_{r,s}$, $\sigma'_{r,s}$ of $\sigma$ and $\sigma'$ respectively look like: 
+	\begin{align*}
+	\sigma_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots, \\
+	&\ldots, \sigma(s-1), \sigma(r),\sigma(s+1), \ldots, \\
+	&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
+	& \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+	\sigma'_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots \\
+	& \ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \\
+	&\ldots \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
+	& \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example}
+	Let us set $k=2$ and $l=7$, then the set of indices to consider is $\left\{ 1,2,3,6,7,8 \right\}$ and the permutations:
+	\begin{align*}
+	\sigma &= (1, 2, 3, 4, 5, 6, 7, 8, 9, \ldots) \\
+	\sigma' &= (1, 7, 3, 4, 5, 6, 2, 8, 9, \ldots).
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example}
+	\input{tables/neighbours}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example}
+	Let us set $r=3$ and $s=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
+	\begin{align*}
+		\sigma_{3,9} &= (1, 2, 9, 4, 5, 6, 7, 8, 3, \ldots) \\
+		\sigma'_{3,9} &= (1, 7, 9, 4, 5, 6, 2, 8, 3, \ldots).
+	\end{align*}
+	\begin{equation*}
+	w_{\sigma_{3,9}} - w_{\sigma'_{3,9}} = (w_{1,2} + w_{2,9} + w_{6,7} + w_{7,8}) - (w_{1,7} + w_{7,9} + w_{6,2} + w_{2,8}).
+	\end{equation*}
+	We can generalize that equation for any $p \notin \left\{ 1,2,3,6,7,8 \right\}$:
+	\begin{equation*}
+	w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
+	\end{equation*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	\input{algs/loc_neigh}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	\input{algs/loc_neigh2}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Simulated annealing}
+	The idea is to describe a probability of state using a cooling parameter $t_k$ such that it reminds the cooling of a metal and may change with each step:
+	\begin{equation*}
+	\pi_i = \frac{e^{\frac{-E_i}{t_k}}}{C},
+	\end{equation*}
+	where $C$ is normalizing constant.The quotient of probabilities then is:
+	\begin{equation*}
+	\frac{\pi_j}{\pi_i} = e^{\frac{E_i - E_j}{t_k}}
+	\end{equation*}
+\end{frame}
