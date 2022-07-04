@@ -48,11 +48,6 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Random candidates (RN)}
-	\input{algs/rnd_neigh}
-\end{frame}
-
-\begin{frame}
 	\frametitle{Locally-informed proposals (LIP)}
 	The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute.
 	\begin{equation*}
@@ -64,70 +59,20 @@
 	\end{equation*}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Locally-informed proposals (LIP)}
-	Choose tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$.
-	\begin{align*}
-		\sigma = (&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
-		&\ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
-		\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
-		 &\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
-	\end{align*}
-\end{frame}
 
-\begin{frame}
-	\frametitle{Locally-informed proposals (LIP)}
-	The neighbours $\sigma_{r,s}$, $\sigma'_{r,s}$ of $\sigma$ and $\sigma'$ respectively look like: 
-	\begin{align*}
-	\sigma_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots, \\
-	&\ldots, \sigma(s-1), \sigma(r),\sigma(s+1), \ldots, \\
-	&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
-	& \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
-	\sigma'_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots \\
-	& \ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \\
-	&\ldots \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
-	& \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
-	\end{align*}
-\end{frame}
 
 \begin{frame}
 	\frametitle{Example}
 	Let us set $k=2$ and $l=7$, then the set of indices to consider is $\left\{ 1,2,3,6,7,8 \right\}$ and the permutations:
 	\begin{align*}
-	\sigma &= (1, 2, 3, 4, 5, 6, 7, 8, 9, \ldots) \\
-	\sigma' &= (1, 7, 3, 4, 5, 6, 2, 8, 9, \ldots).
+	\sigma &= (1, \bm{2}, 3, 4, 5, 6, \bm{7}, 8, 9, \ldots) \\
+	\sigma' &= (1, \bm{7}, 3, 4, 5, 6, \bm{2}, 8, 9, \ldots).
 	\end{align*}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Example}
 	\input{tables/neighbours}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Example}
-	Let us set $r=3$ and $s=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
-	\begin{align*}
-		\sigma_{3,9} &= (1, 2, 9, 4, 5, 6, 7, 8, 3, \ldots) \\
-		\sigma'_{3,9} &= (1, 7, 9, 4, 5, 6, 2, 8, 3, \ldots).
-	\end{align*}
-	\begin{equation*}
-	w_{\sigma_{3,9}} - w_{\sigma'_{3,9}} = (w_{1,2} + w_{2,9} + w_{6,7} + w_{7,8}) - (w_{1,7} + w_{7,9} + w_{6,2} + w_{2,8}).
-	\end{equation*}
-	We can generalize that equation for any $p \notin \left\{ 1,2,3,6,7,8 \right\}$:
-	\begin{equation*}
-	w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
-	\end{equation*}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Locally-informed proposals (LIP)}
-	\input{algs/loc_neigh}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Locally-informed proposals (LIP)}
-	\input{algs/loc_neigh2}
 \end{frame}
 
 \begin{frame}

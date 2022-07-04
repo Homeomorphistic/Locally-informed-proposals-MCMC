@@ -1,0 +1,115 @@
+\begin{frame}
+	\frametitle{Markov chain}
+	\begin{definition}[State space]
+		 A state space of a Markov chain is a countable set $S$.
+	\end{definition}
+	\begin{definition}[Index set]
+		An index set of a Markov chain is a countable set $T$.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Markov chain}
+	\begin{definition}
+		A Markov chain is a sequence of random variables $\left\{X_k\right\}_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
+		\begin{align*}
+			&P(X_{k+m} = j | X_k = i, X_{l_{p-1}} = i_{l_{p-1}}, \ldots, X_{l_1} = i_1) = \\= &P(X_{k+m} = j | X_k = i),
+		\end{align*}
+		for all indices $l_1< \ldots < l_{p-1} < k < k+m, \; 1 \leq p \leq k$, all states $j, i, i_{p-1}, i_{p-2}, \ldots, i_0 \in S$ and $m \geq 1$.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Properties}
+	\begin{definition}[Irreducibility]
+		A Markov chain is called irreducible if and only if for every pair of states $i$ and $j$ there exists a positive probability of transition between them.
+	\end{definition}
+	\begin{definition}[Periodicity]
+		Let $d_i$ be a greatest common divisor of those $k$ such that $\PP_{i,i}(k)>0$. If $d_i > 1$ then state $i$ is periodic. If $d_i = 1$ then state $i$ is aperiodic.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Properties}
+	\begin{definition}[Stationarity]
+		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)$ is called stationary if it satisfies
+		\begin{equation*}
+		\pi_j = \sum_{i \in S} \pi_i p_{ij},
+		\end{equation*}
+		or equivalently in vector form:
+		\begin{equation*}
+		\bfpi = \bfpi \PP.
+		\end{equation*}
+		This equation is often described as the balance equation.
+	\end{definition}
+	\begin{definition}[Ergodicity]
+		A Markov chain is ergodic when it is irreducible and aperiodic.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Traveling salesman problem}
+	\begin{definition}
+		A undirected graph $G$ is a pair $(V, E)$, where $V$ is a set of vertices and $E$ is a set of edges, which is a subset of all unordered pairs of vertices.
+	\end{definition}
+	\begin{definition}
+		A tour is a Hamilitonian cycle and we identify it with a permutation of vertices.
+	\end{definition}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Random candidates (RN)}
+	\input{algs/rnd_neigh}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	\input{algs/loc_neigh}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	\input{algs/loc_neigh2}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	Choose tour $\sigma$ and its neighbour $\sigma'$ that is connected with swapping indices $k$ and $l$.
+	\begin{align*}
+	\sigma = (&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
+	&\ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+	\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
+	&\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Locally-informed proposals (LIP)}
+	The neighbours $\sigma_{r,s}$, $\sigma'_{r,s}$ of $\sigma$ and $\sigma'$ respectively look like: 
+	\begin{align*}
+	\sigma_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots, \\
+	&\ldots, \sigma(s-1), \sigma(r),\sigma(s+1), \ldots, \\
+	&\ldots, \sigma(k-1), \sigma(k), \sigma(k+1), \ldots, \\
+	& \ldots, \sigma(l-1), \sigma(l), \sigma(l+1), \ldots) \\
+	\sigma'_{r,s} = &(\ldots, \sigma(r-1), \sigma(s), \sigma(r+1), \ldots \\
+	& \ldots, \sigma(s-1), \sigma(r), \sigma(s+1), \ldots, \\
+	&\ldots \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
+	& \ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example}
+	Let us set $r=3$ and $s=9$, which means that we are looking for weight differences of neighbours obtained by swapping $3$ and $9$. So the neighbours have form:
+	\begin{align*}
+	\sigma_{3,9} &= (1, 2, 9, 4, 5, 6, 7, 8, 3, \ldots) \\
+	\sigma'_{3,9} &= (1, 7, 9, 4, 5, 6, 2, 8, 3, \ldots).
+	\end{align*}
+	\begin{equation*}
+	w_{\sigma_{3,9}} - w_{\sigma'_{3,9}} = (w_{1,2} + w_{2,9} + w_{6,7} + w_{7,8}) - (w_{1,7} + w_{7,9} + w_{6,2} + w_{2,8}).
+	\end{equation*}
+	We can generalize that equation for any $p \notin \left\{ 1,2,3,6,7,8 \right\}$:
+	\begin{equation*}
+	w_{\sigma_{3,p}} - w_{\sigma'_{3,p}} = f_3(p) = C + w_{2,p} - w_{7,p}.
+	\end{equation*}
+\end{frame}

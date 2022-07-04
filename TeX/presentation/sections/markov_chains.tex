@@ -1,54 +1,37 @@
 \begin{frame}
 	\frametitle{Markov chain}
-	\begin{definition}[State space]
-		 A state space of a Markov chain is a countable set $S$.
-	\end{definition}
-	\begin{definition}[Index set]
-		An index set of a Markov chain is a countable set $T$.
-	\end{definition}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Markov chain}
 	\begin{definition}
-		A Markov chain is a sequence of random variables $\left\{X_k\right\}_{k \in T}$ defined on a common probability space $\left( \Omega, \mathcal{F}, P \right)$, that take values in $S$, such that it satisfies Markov property:
-		\begin{align*}
-			&P(X_{k+m} = j | X_k = i, X_{l_{p-1}} = i_{l_{p-1}}, \ldots, X_{l_1} = i_1) = \\= &P(X_{k+m} = j | X_k = i),
-		\end{align*}
-		for all indices $l_1< \ldots < l_{p-1} < k < k+m, \; 1 \leq p \leq k$, all states $j, i, i_{p-1}, i_{p-2}, \ldots, i_0 \in S$ and $m \geq 1$.
+		A Markov chain is a stochastic process describing a sequence on some countable state space $S$ in which the probability of each event depends only on the state of previous event.
 	\end{definition}
+	\begin{figure}[!htb]
+		\includegraphics[scale=0.15]{img/Markov_diagram.png}
+		\caption{A diagram representing a two-state Markov chain, source: wiki.}
+	\end{figure}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Properties}
 	\begin{definition}[Irreducibility]
-		A Markov chain with transition matrix $\PP$ is called irreducible if and only if for every pair of states $i$ and $j$ there exists a positive probability of transition between them.
+		A Markov chain is irreducible if there is a possibility to reach every state from every state.
 	\end{definition}
-	\begin{definition}[Periodicity]
-		Let $d_i$ be a greatest common divisor of those $k$ such that $\PP_{i,i}(k)>0$. If $d_i > 1$ then state $i$ is periodic. If $d_i = 1$ then state $i$ is aperiodic.
-	\end{definition}
-\end{frame}
 
-\begin{frame}
-	\frametitle{Properties}
+	\begin{definition}[Periodicity]
+		A state is periodic if there is a possibility of coming back to it after some period.
+	\end{definition}
+
 	\begin{definition}[Stationarity]
 		A probability distribution $\bfpi = (\pi_1, \ldots, \pi_N)$ is called stationary if it satisfies
 		\begin{equation*}
 		\pi_j = \sum_{i \in S} \pi_i p_{ij},
 		\end{equation*}
-		or equivalently in vector form:
-		\begin{equation*}
-		\bfpi = \bfpi \PP.
-		\end{equation*}
-		This equation is often described as the balance equation.
-	\end{definition}
-	\begin{definition}[Ergodicity]
-		A Markov chain is ergodic when it is irreducible and aperiodic.
 	\end{definition}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Ergodic chains}
+	\begin{definition}[Ergodicity]
+		A Markov chain is ergodic when it is irreducible and aperiodic.
+	\end{definition}
 	\begin{theorem}
 		Let $\left\{X_k\right\}$ be a ergodic Markov chain, then:
 		\begin{equation*}
