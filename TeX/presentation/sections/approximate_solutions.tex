@@ -15,10 +15,13 @@
 \begin{frame}
 	\frametitle{Metropolis-Hastings algorithm}
 	\begin{equation*}
-		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{\bfQ_{j,i}}{\bfQ_{i,j}}.
+		\pi_\sigma = \frac{e^{-w_{\sigma}}}{\sum_{\sigma' \in S_n} e^{-w_{\sigma'}}}
 	\end{equation*}
 	\begin{equation*}
-		\log \left( \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} \right) = -(w_j-w_i) + \log(\bfQ_{j,i}) - \log(\bfQ_{i,j}).
+		\frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} = e^{-(w_{\sigma'}-w_\sigma)} \cdot \frac{\bfQ_{\sigma',\sigma}}{\bfQ_{\sigma,\sigma'}}.
+	\end{equation*}
+	\begin{equation*}
+		\log \left( \frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} \right) = -(w_{\sigma'}-w_\sigma) + \log(\bfQ_{\sigma',\sigma}) - \log(\bfQ_{\sigma,\sigma'}).
 	\end{equation*}
 \end{frame}
 
@@ -32,7 +35,15 @@
 
 \begin{frame}
 	\frametitle{Random candidates (RN)}
-	Sample neighbours uniformly. It is equivalent to choosing random indices to swap
+	Sample neighbours uniformly. It is equivalent to choosing random indices to swap.
+	\begin{equation*} \label{eq:PQ}
+		\bfQ_{\sigma,\sigma'} = 
+		\begin{cases}
+		\frac{1}{|S_\sigma|} & \text{ if } \sigma \in S_\sigma, \\ 
+		0 & \text{ if } \sigma \notin S_\sigma.
+		\end{cases}
+	\end{equation*} 
+	where $S_\sigma$ is a set of all possible neighbours of $\sigma$.
 \end{frame}
 
 \begin{frame}
@@ -44,18 +55,18 @@
 		\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
 		&\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 	\end{align*}
-	We need to remove weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$.
+	To compute difference $-(w_{\sigma'}-w_\sigma)$ we need to remove weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$.
 \end{frame}
 
 \begin{frame}
 	\frametitle{Locally-informed proposals (LIP)}
 	The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute.
 	\begin{equation*}
-		\bfQ_{i,j} \propto e^\frac{-(w_{j} - w_i)}{\tau}.
+		\bfQ_{\sigma,\sigma'} \propto e^\frac{-(w_{\sigma'} - w_\sigma)}{\tau}.
 	\end{equation*}
 	The distribution is chosen in such a way, so that we can easily group up the terms in acceptance criterion:
 	\begin{equation*}
-		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} = e^{\left( -(w_j-w_i) \left(1 - \frac{2}{\tau}\right) \right)} \cdot \frac{C_j}{C_i},
+		\frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} = e^{-(w_{\sigma'}-w_\sigma)} \cdot \frac{e^\frac{-(w_{\sigma} - w_{\sigma'})}{\tau}}{e^\frac{-(w_{\sigma'} - w_\sigma)}{\tau}} \cdot \frac{C_{\sigma'}}{C_\sigma} = e^{\left( -(w_{\sigma'}-w_\sigma) \left(1 - \frac{2}{\tau}\right) \right)} \cdot \frac{C_{\sigma'}}{C_\sigma},
 	\end{equation*}
 \end{frame}
 

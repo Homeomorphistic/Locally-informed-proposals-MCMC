@@ -1,7 +1,7 @@
 \begin{frame}
 	\frametitle{Metropolis-Hastings algorithm}
 	Construct a MC, which has a stationary distribution $\bfpi$ ($\pi_i > 0$).
-	Assume that $\bfQ$ is stochastic matrix which is irreducible, aperiodic and $\bfQ_{i,j} >0 \iff \bfQ_{j,i} > 0$. Let us consider a matrix defined as:
+	Assume that $\bfQ$ is stochastic matrix which corresponds to an irreducible and aperiodic Markov chain and $\bfQ_{i,j} >0 \iff \bfQ_{j,i} > 0$. Let us consider a matrix defined as:
 	\begin{equation} \label{eq:PQ}
 	\PP_{i,j} = 
 	\begin{cases}
@@ -11,7 +11,7 @@
 	\end{equation} 
 	
 	\begin{theorem}
-		A matrix defined in \ref{eq:PQ} is stochastic, irreducible, aperiodic and has a stationary distribution $\bfpi$.
+		A matrix defined in (1) is stochastic, irreducible, aperiodic and has a stationary distribution $\bfpi$.
 	\end{theorem}
 \end{frame}
 
