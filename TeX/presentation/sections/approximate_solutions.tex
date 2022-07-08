@@ -26,7 +26,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Candidates}
+	\frametitle{Neighbours}
 	\begin{definition}
 		A neighbour $\sigma'$ of a permutation $\sigma$ is a permutation, that for some $k, l$ it satisfies $\sigma'(k) = \sigma(l)$, $\sigma'(l) = \sigma(k)$ and $\sigma'(i) = \sigma(i)$ for the rest of indices.
 	\end{definition}
@@ -34,13 +34,13 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Random candidates (RN)}
+	\frametitle{Random neighbour (RN)}
 	Sample neighbours uniformly. It is equivalent to choosing random indices to swap.
 	\begin{equation*} \label{eq:PQ}
 		\bfQ_{\sigma,\sigma'} = 
 		\begin{cases}
-		\frac{1}{|S_\sigma|} & \text{ if } \sigma \in S_\sigma, \\ 
-		0 & \text{ if } \sigma \notin S_\sigma.
+		\frac{1}{|S_\sigma|} & \text{ if } \sigma' \in S_\sigma, \\ 
+		0 & \text{ if } \sigma' \notin S_\sigma.
 		\end{cases}
 	\end{equation*} 
 	where $S_\sigma$ is a set of all possible neighbours of $\sigma$.
@@ -55,7 +55,7 @@
 		\sigma' = (&\ldots, \sigma(k-1), \sigma(l), \sigma(k+1), \ldots, \\
 		&\ldots, \sigma(l-1), \sigma(k), \sigma(l+1), \ldots)
 	\end{align*}
-	To compute difference $-(w_{\sigma'}-w_\sigma)$ we need to remove weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$.
+	To compute difference $w_{\sigma'}$ we need to remove weights $w_{\sigma(k-1), \sigma(k)}$, $w_{\sigma(k), \sigma(k+1)}$, $w_{\sigma(l-1), \sigma(l)}$, $w_{\sigma(l), \sigma(l+1)}$ and add $w_{\sigma(k-1), \sigma(l)}, w_{\sigma(l), \sigma(k+1)}, w_{\sigma(l-1), \sigma(k)}, w_{\sigma(k), \sigma(l+1)}$.
 \end{frame}
 
 \begin{frame}
