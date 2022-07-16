@@ -18,20 +18,20 @@ In the previous section we have seen that a deterministic approach of computing 
 	where $w_{\sigma}$ is distance (weight) of a tour (permutation) $\sigma$. When $\sigma_{\min}$ is maximizing probability it means when we sample from this distribution it will appear most often. This is the core of MCMC methods -- approximate solution with most probable state. 
 
 \subsection{Metropolis-Hastings algorithm}
-	Let us use the notation of weights as a vector $\bfw = (w_1, w_2, \ldots, w_N)^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_j}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need actually probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
+	Let us use the notation of weights as a vector $\bfw = (w_{\sigma_1}, w_{\sigma_2}, \ldots, w_{\sigma_N})^T$ representing distances of all possible tours. As we noticed earlier, this space is enormous, so calculating softmax of this vector $s(\bfw)$ is again not feasible, because of enormous sum in the denominator $\sum_{j=1}^{N} e^{w_{\sigma_j}}$. This is where Metropolis-Hastings algorithm comes in handy -- we do not need probabilities, we just need their quotients, and this is where the sums will erase each other. What we actually need is something proportional to the probability:
 	\begin{equation*}
-		\pi_i \propto e^{-w_i}.
+		\pi_\sigma \propto e^{-w_\sigma}.
 	\end{equation*}
 	
 	
 	
 	Using softmax is even more beneficial, because of the properties of exponential function. In each step of M-H algorithm we need to compute:
 	\begin{equation*}
-		\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{\bfQ_{j,i}}{\bfQ_{i,j}}.
+		\frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} = e^{-(w_{\sigma'}-w_\sigma)} \cdot \frac{\bfQ_{\sigma',\sigma}}{\bfQ_{\sigma,\sigma'}}.
 	\end{equation*}
 	If candidate matrix $\bfQ$ is symmetric this equation simplifies further. In practice we will be using logarithms of quotients in M-H algorithm, because multiplying numbers from $(0,1)$ get small quickly, so that they get out of the range of computer abilities. After applying logarithm we have:
 	\begin{equation*}
-		\log \left( \frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} \right) = -(w_j-w_i) + \log(\bfQ_{j,i}) - \log(\bfQ_{i,j}).
+		\log \left( \frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} \right) = -(w_{\sigma'}-w_\sigma) + \log(\bfQ_{\sigma',\sigma}) - \log(\bfQ_{\sigma,\sigma'}).
 	\end{equation*}
 	Again, if candidate matrix $\bfQ$ is symmetric we are left only with evaluating $w_j-w_i$ which is simple and it does not involve computing any other weights.
 	
@@ -45,7 +45,16 @@ In the previous section we have seen that a deterministic approach of computing 
 	These neighbours are the original tour with two swaped indices. This let  us consider a smaller space -- there are $\binom{n}{2} = \frac{n(n-1)}{2} \approx n^2$ neighbours if the number of vertices is $n$.
 
 \subsection{Random neighbours (RN)}
-	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. Random neighbours (abbrv. RN) method has already been successfully presented in \cite{decryption_tsp_MCMC}. Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further. The candidate matrix related to such a procedure is symmetrical, irreducible and aperiodic.
+	One approach is to sample neighbours uniformly, it has a benefit of being simple to understand and implement. Random neighbours (abbrv. RN) method has already been successfully presented in \cite{decryption_tsp_MCMC}. In this case candidate matrix has form:
+	\begin{equation*}
+		\bfQ_{\sigma,\sigma'} = 
+		\begin{cases}
+			\frac{1}{|S_\sigma|} & \text{ if } \sigma' \in S_\sigma, \\ 
+			0 & \text{ if } \sigma' \notin S_\sigma.
+		\end{cases}
+	\end{equation*} 
+	where $S_\sigma$ is a set of all possible neighbours of $\sigma$.
+	Sampling them uniformly is equivalent to choosing random indices to swap, so it can be done efficiently. This way we do not need to create a candidate matrix, we just use a simple procedure. Most of the entries in this matrix would be $0$, because we choose only some subset of all possible permutations to be our neighbours. It is a symmetrical procedure (every neighbour has the same probability), so the step in M-H algorithm simplifies further. The candidate matrix related to such a procedure is symmetrical, irreducible and aperiodic.
 	
 	\subsubsection{Computational considerations}
 		For this algorithm to be truly efficient, we need to find some other way to calculate distance (weight) of a tour, as it can also contain many edges. Without any optimizations for each tour $\sigma$ we need to calculate its distance (weight):
@@ -79,15 +88,15 @@ In the previous section we have seen that a deterministic approach of computing 
 	\subsubsection{Theoretical background}
 		The idea is to balance the increase in the probability of neighbour with decrease of reverse probability, such that it will be easy to compute. One way is to use locally-informed proposals, which will be proportional to the same quotient of target distribution as in M-H step, so:
 		\begin{equation*}
-			\bfQ_{i,j} \propto e^\frac{-(w_{j} - w_i)}{\tau}.
+			\bfQ_{\sigma,\sigma'} \propto e^\frac{-(w_{\sigma'} - w_\sigma)}{\tau}.
 		\end{equation*}
 		Here $\tau>0$ is temperature parameter. The distribution is chosen in such a way, so that we can easily group up the terms in acceptance criterion:
 		\begin{equation*}
-			\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}} = e^{-(w_j-w_i)} \cdot \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} = e^{\left( -(w_j-w_i) \left(1 - \frac{2}{\tau}\right) \right)} \cdot \frac{C_j}{C_i},
+			\frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}} = e^{-(w_{\sigma'}-w_\sigma)} \cdot \frac{e^\frac{-(w_{\sigma} - w_{\sigma'})}{\tau}}{e^\frac{-(w_{\sigma'} - w_\sigma)}{\tau}} \cdot \frac{C_{\sigma'}}{C_\sigma} = e^{\left( -(w_{\sigma'}-w_\sigma) \left(1 - \frac{2}{\tau}\right) \right)} \cdot \frac{C_{\sigma'}}{C_\sigma},
 		\end{equation*}
 		where $C_i, C_j$ are normalizing constants. Setting $\tau=2$ terms in exponent cancel out, so we are left with normalizing constants. Again using logarithms is beneficial in computer science, so the acceptance criterion has form:
 		\begin{equation*}
-			\log\left(\frac{\pi_j \bfQ_{j,i}}{\pi_i \bfQ_{i,j}}\right) = \left( -(w_j-w_i) \left(1 - \frac{2}{\tau}\right) \right) + \log\left(C_j\right) - \log\left(C_i\right).
+			\log\left(\frac{\pi_{\sigma'} \bfQ_{\sigma',\sigma}}{\pi_\sigma \bfQ_{\sigma,\sigma'}}\right) = \left( -(w_{\sigma'}-w_\sigma) \left(1 - \frac{2}{\tau}\right) \right) + \log\left(C_{\sigma'}\right) - \log\left(C_\sigma \right).
 		\end{equation*}
 		The temperature parameter that achieve balance is $\tau=2$ and was considered in \cite{zanella2020informed}.
 	
@@ -185,11 +194,11 @@ In the previous section we have seen that a deterministic approach of computing 
 \subsection{Simulated annealing}
 	There is one important parameter that can be used both with random neighbours and locally-informed proposals and is associated with cooling. It has its roots within physics and is connected to energetic states of particles and Boltzmann distribution. The idea is to describe a probability of state using a cooling parameter $t_k$ (different than $\tau$ in LIP) such that it reminds the cooling of a metal and may change with each step:
 	\begin{equation*}
-		\pi_i = \frac{e^{\frac{-E_i}{t_k}}}{C},
+		\pi_\sigma = \frac{e^{\frac{-E_\sigma}{t_k}}}{C},
 	\end{equation*}
 	where $C$ is normalizing constant.The quotient of probabilities then is:
 	\begin{equation*}
-		\frac{\pi_j}{\pi_i} = e^{\frac{E_i - E_j}{t_k}}
+		\frac{\pi_{\sigma'}}{\pi_\sigma} = e^{\frac{E_\sigma - E_{\sigma'}}{t_k}}
 	\end{equation*}
 	Setting this parameter high constitutes to all of the states being equally likely and with low value of parameter we have probability concentrated in the state with minimal energy.
 	

@@ -19,11 +19,11 @@ It may seem that the time here is an obvious drawback and there is no point in f
 	
 	The problem of sampling is actually a close problem to the one that we are trying to solve now -- how to sample efficiently using MCMC methods. Sampling from locally-informed proposal in this thesis is done by sampling exactly from a long vector, but it seems that the locally-informed proposal is a perfect candidate for M-H algorithm. We know that quotient of LIP is:
 	\begin{equation*}
-		\frac{\bfQ_{j,i}}{\bfQ_{i,j}} = \frac{e^\frac{-(w_{i} - w_j)}{\tau}}{e^\frac{-(w_{j} - w_i)}{\tau}} \cdot \frac{C_j}{C_i} =  e^\frac{-2}{\tau}(w_{i} - w_j) \cdot \frac{C_j}{C_i},
+		\frac{\bfQ_{\sigma',\sigma}}{\bfQ_{\sigma,\sigma'}} = \frac{e^\frac{-(w_{\sigma} - w_{\sigma'})}{\tau}}{e^\frac{-(w_{\sigma'} - w_\sigma)}{\tau}} \cdot \frac{C_{\sigma'}}{C_\sigma} =  e^\frac{-2}{\tau}(w_{\sigma} - w_{\sigma'}) \cdot \frac{C_{\sigma'}}{C_\sigma},
 	\end{equation*}
 	and logarithm of that has form:
 	\begin{equation*}
-		\log\left(\frac{\bfQ_{j,i}}{\bfQ_{i,j}}\right)  = \frac{-2}{\tau}(w_{i} - w_j) + \log(C_j) - \log(C_i).
+		\log\left(\frac{\bfQ_{\sigma',\sigma}}{\bfQ_{\sigma,\sigma'}}\right)  = \frac{-2}{\tau}(w_{\sigma} - w_{\sigma'}) + \log(C_{\sigma'}) - \log(C_\sigma).
 	\end{equation*}
 	So if we take this as a acceptance criterion in M-H algorithm, we just need 2 weights and updating normalizing sums. The open question is, how to choose a proposal for this algorithm, such that it will be an efficient way of sampling. This has enormous potential in reducing complexity cost.
 	
