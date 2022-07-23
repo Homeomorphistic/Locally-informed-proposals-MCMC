@@ -1,10 +1,18 @@
 \input{setup/packages}
 \input{setup/macros}
 
+%------------------------Reverse margins for twoside----------------------%
+%\let\tmp\oddsidemargin
+%\let\oddsidemargin\evensidemargin
+%\let\evensidemargin\tmp
+%\reversemarginpar
 
 \begin{document}
 	\input{other/title_page}
-	\newpage
+	\pagebreak
+	\phantom{a}
+	\thispagestyle{empty}
+	\pagebreak
 	
 	\input{other/abstract}
 	\newpage
